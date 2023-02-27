@@ -1,0 +1,12 @@
+.title {
+    text-align: center;
+    margin: 5rem 0;
+}
+
+.addContainer {
+    max-width: min(1400px, calc(100% - 4rem));
+    margin: 0 auto !important;
+    background: var(--nextui-colors-backgroundSecondary);
+    border-radius: var(--nextui-radii-base);
+    padding: 2rem 1rem !important;
+}

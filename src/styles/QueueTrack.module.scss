@@ -1,0 +1,68 @@
+.container {
+    margin: var(--nextui-space-8);
+    display: flex;
+    align-items: center;
+    background: var(--nextui-colors-backgroundSecondary);
+    border-radius: var(--nextui-radii-base);
+    color: var(--nextui-colors-text);
+    overflow: hidden;
+    transition: background 0.2s;
+
+    &:hover {
+        background: var(--nextui-colors-secondaryLightHover);
+    }
+}
+
+.image {
+    width: 50px;
+    height: 50px;
+    background: var(--nextui-colors-waitingBackground);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-shrink: 0;
+    margin-right: var(--nextui-space-8);
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--nextui-radii-base);
+    border: 2px solid var(--nextui-colors-border);
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+
+    .thumbnail {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+}
+
+.info {
+    width: calc(100% - 50px - var(--nextui-space-8));
+    display: block;
+}
+
+.trackName {
+    display: block;
+    font-size: var(--nextui-fontSizes-md);
+    margin-top: -2px;
+    font-weight: var(--nextui-fontWeights-semibold);
+    word-wrap: break-word;
+    width: 90%;
+    min-width: auto;
+}
+
+.artists {
+    display: block;
+    font-size: var(--nextui-fontSizes-sm);
+    color: var(--nextui-colors-text);
+    word-wrap: break-word;
+}
+
+.contextButton {
+    margin: 0px 5px 0 0;
+}

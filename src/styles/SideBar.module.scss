@@ -1,0 +1,104 @@
+.sideBar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 300px;
+    background: var(--nextui-colors-backgroundContrast);
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    .image {
+        max-height: 150px;
+        max-width: 100%;
+        margin: 10px auto 0 auto;
+        display: block;
+    }
+    
+    .spacer {
+        height: 2px;
+        margin: 0 auto;
+        width: 60%;
+        max-width: 90px;
+        background: var(--nextui-colors-accents8);
+        margin-bottom: 40px;
+    }
+}
+
+.topLinks {
+
+    .topLink {
+        display: block;
+        margin: 10px 10px 0 30px;
+        padding: 0 0 0 3px;
+        color: var(--nextui-colors-sidebarUnselectedText);
+        font-size: var(--nextui-fontSizes-2xl);
+        transition: color 0.2s;
+        border: none;
+        background: none;
+        cursor: pointer;
+        border-radius: 0;
+        width: calc(100% - 40px);
+        text-align: left;
+
+        &:hover {
+            color: var(--nextui-colors-text);
+        }
+
+        .topLinkIcon {
+            margin-right: 5px;
+
+            svg {
+                position: relative;
+                top: 1px;
+            }
+        }
+    }
+
+    button span {
+        justify-content: left !important;
+    }
+}
+
+.playlistTop {
+    position: relative;
+    margin: 2rem 10px 2px 30px;
+
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        height: 1px;
+        left: 0;
+        right: 20px;
+        background: var(--nextui-colors-accents6);
+    }
+}
+
+.playlists {
+    flex-grow: 1;
+    overflow-y: scroll;
+    position: relative;
+    margin-bottom: 100px;
+
+    .playlist {
+        margin: 0 10px 0 30px;
+        color: var(--nextui-colors-sidebarUnselectedText);
+        font-size: var(--nextui-fontSizes-lg);
+        display: block;
+        transition: color 0.2s;
+
+        &:hover {
+            color: var(--nextui-colors-text);
+        }
+
+        &:first-of-type {
+            margin-top: 10px;
+        }
+    }
+}

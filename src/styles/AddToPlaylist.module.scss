@@ -1,0 +1,27 @@
+.playlist {
+    margin: 0 0 1rem 0;
+    display: flex;
+    flex-direction: row;
+    background: var(--nextui-colors-backgroundSecondary);
+    border-radius: var(--nextui-radii-base);
+    transition: background 0.2s;
+    padding: 1rem;
+
+    &:hover {
+        background: var(--nextui-colors-secondaryLightHover);
+    }
+
+    .name {
+        display: inline;
+        flex-grow: 1;
+        text-align: left;
+    }
+
+    .add {
+        display: inline-block;
+    }
+
+    h3 {
+        margin: 0;
+    }
+}

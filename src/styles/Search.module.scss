@@ -1,0 +1,25 @@
+.top {
+    position: sticky;
+    display: flex;
+    flex-direction: row;
+    top: 1rem;
+    z-index: 99999999;
+
+    &>* {
+        // box-shadow: 0 12px 20px 6px var(--nextui-colors-primaryAlpha);
+        background: var(--nextui-colors-accents0);
+    }
+}
+
+.list {
+    position: relative;
+    margin-top: 3rem;
+    min-height: calc(100vh - 170px - 3rem);
+    padding-bottom: calc(100px - 1rem);
+}
+
+.button {
+    height: 52px !important;
+    background: var(--nextui-colors-accents0) !important;
+    margin-left: 1rem;
+}

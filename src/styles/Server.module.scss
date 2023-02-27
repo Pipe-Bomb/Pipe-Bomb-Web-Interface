@@ -1,0 +1,55 @@
+.container {
+    display: flex;
+    margin: var(--nextui-space-12) auto !important;
+    transition: opacity 0.2s;
+    background: var(--nextui-colors-backgroundSecondary);
+    border-radius: var(--nextui-radii-base);
+    color: var(--nextui-colors-text);
+    transition: background 0.2s;
+    overflow: hidden;
+    max-width: min(1400px, calc(100% - 4rem));
+
+    &:hover {
+        background: var(--nextui-colors-secondaryLightHover);
+    }
+
+    .content {
+        flex-grow: 1;
+        margin-top: 1rem;
+    }
+
+    h4 {
+        margin-bottom: 1rem;
+    }
+
+    .button {
+        margin: 0 1rem 1rem 0;
+    }
+
+    .smallButton {
+        margin: 0 1rem 1rem 0;
+        padding: 0;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+
+    .iconContainer {
+        padding: 0 1rem;
+        position: relative;
+
+        .icon {
+            width: 50px;
+            height: 50px;
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+
+        }
+    }
+
+    .buttonIcon {
+        width: 30px;
+        height: 30px;
+    }
+}
