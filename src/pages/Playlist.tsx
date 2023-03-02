@@ -24,17 +24,25 @@ export default function Playlist() {
 
     const playlistID: number = paramID;
 
-    useEffect(() => {
-        setPlaylist(null);
-        PipeBombConnection.getInstance().getApi().v1.getPlaylist(playlistID)
-        .then(collection => {
-            setPlaylist(collection);
+    const callback = (collection: Collection) => {
+        if (!collection) return;
             collection.getTrackList(PipeBombConnection.getInstance().getApi().trackCache)
             .then(tracks => {
                 setTrackList(tracks);
-            }).catch(error => {
-                console.error(error);
-            })
+            });
+    }
+
+    useEffect(() => {
+        setTrackList(false);
+        setPlaylist(null);
+        let alive = true;
+        PlaylistIndex.getInstance().getPlaylist(playlistID)
+        .then(collection => {
+            if (!alive) return;
+            setPlaylist(collection);
+
+            collection.getTrackList(PipeBombConnection.getInstance().getApi().trackCache)
+            .then(setTrackList);
         }).catch(error => {
             if (error?.statusCode == 400) {
                 setErrorCode(400);
@@ -43,7 +51,23 @@ export default function Playlist() {
                 console.error(error);
             }
         });
+
+        return () => {
+            alive = false;
+        }
     }, [paramID]);
+
+    useEffect(() => {
+        if (playlist) {
+            playlist.registerUpdateCallback(callback);
+        }
+
+        return () => {
+            if (playlist) {
+                playlist.unregisterUpdateCallback(callback);
+            }
+        }
+    }, [playlist]);
 
     if (errorCode == 400) {
         return (
@@ -75,6 +99,7 @@ export default function Playlist() {
             </>
         )
     }
+
 
     const newTrackList: Track[] = trackList || [];
 

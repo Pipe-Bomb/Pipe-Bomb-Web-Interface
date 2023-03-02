@@ -12,7 +12,7 @@ import Account from "../logic/Account";
 import { Button } from "@nextui-org/react";
 import { openCreatePlaylist } from "./CreatePlaylist";
 import { GoPlus } from "react-icons/go";
-import { MdHome, MdSearch } from "react-icons/md";
+import { MdHome, MdSearch, MdOutlinePlaylistPlay } from "react-icons/md";
 import { IoServer } from "react-icons/io5";
 
 export default function SideBar() {
@@ -67,7 +67,7 @@ export default function SideBar() {
                 Change Server
             </Button>
             
-            <Button className={styles.topLink} onPress={openCreatePlaylist}>
+            <Button className={styles.topLink} onPress={() => openCreatePlaylist()}>
                 <GoPlus className={styles.topLinkIcon} />
                 Create Playlist
             </Button>
@@ -76,9 +76,14 @@ export default function SideBar() {
 
         </div>
         <div className={styles.playlists}>
-            {playlists.map(playlist => (<Link key={playlist.collectionID} to={`/playlist/${playlist.collectionID}`} className={styles.playlist}>
-                {playlist.getName()}
-            </Link>))}
+            {playlists.map((playlist, index) => (
+                <>
+                    <Link key={index} to={`/playlist/${playlist.collectionID}`} className={styles.playlist}>
+                        <MdOutlinePlaylistPlay className={styles.playlistIcon} />
+                        {playlist.getName()}
+                    </Link>
+                </>
+            ))}
         </div>
     </div>
 }

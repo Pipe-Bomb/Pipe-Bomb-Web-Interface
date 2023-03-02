@@ -63,12 +63,7 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
                 break;
             case "remove":
                 if (parentPlaylist) {
-                    parentPlaylist.removeTracks(track)
-                    .then(() => {
-                        console.log("removed!");
-                    }).catch(error => {
-                        console.error(error);
-                    })
+                    parentPlaylist.removeTracks(track);
                 }
                 break;
         }
@@ -102,7 +97,7 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
                 {!hasImage && (<Loading loadingCss={{ $$loadingSize: "80px", $$loadingBorder: "10px" }} css={{margin: "10px"}} />)}
             </div>
             <div className={styles.info}>
-                <span className={styles.trackName}>{metadata?.title || (track.trackID + " (failed)")}</span>
+                <span className={styles.trackName}>{metadata?.title || track.trackID}</span>
                 {metadata && (
                     <span className={styles.artists}>{convertArrayToString(metadata.artists)}</span>
                 )}

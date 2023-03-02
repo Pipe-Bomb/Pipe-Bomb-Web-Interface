@@ -95,13 +95,13 @@ export default function SquarePlaylist({ playlist }: Props) {
     }
 
     return (
-        <Link to={`/playlist/${playlist.collectionID}`}>
-            <div className={styles.container}>
+        <div className={styles.container}>
+            <Link to={`/playlist/${playlist.collectionID}`} className={styles.link}>
                 {generateImageHTML()}
                 <div className={styles.title}>
                     <Text h3>{playlist.getName()}</Text>
                 </div>
-            </div>
-        </Link>
+            </Link>
+        </div>
     )
 }

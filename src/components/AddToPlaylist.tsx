@@ -8,7 +8,7 @@ import { openCreatePlaylist } from "./CreatePlaylist";
 import CustomModal from './CustomModal';
 
 let openModal = () => {};
-let addToPlaylist = (playlist: Collection) => {};
+let addToPlaylist = (playlistID: number) => {};
 let selectedTrack: Track | null = null;
 
 export function openAddToPlaylist(track: Track) {
@@ -17,7 +17,7 @@ export function openAddToPlaylist(track: Track) {
 }
 
 export function addTrack(playlist: Collection) {
-    addToPlaylist(playlist);
+    addToPlaylist(playlist.collectionID);
 }
 
 interface lastButton {
@@ -49,27 +49,32 @@ export default function AddToPlaylist() {
         }
     }, []);
 
-    addToPlaylist = (playlist: Collection) => {
-        if (!selectedTrack || (lastTrackButton.playlistID == playlist.collectionID && lastTrackButton.value == "Added")) return;
-        
-        setLastTrackButton({
-            playlistID: playlist.collectionID,
-            value: <Loading type="points"></Loading>
-        });
+    addToPlaylist = (playlistID: number) => {
+        if (!selectedTrack || (lastTrackButton.playlistID == playlistID && lastTrackButton.value == "Added")) return;
 
-        playlist.addTracks(selectedTrack)
-        .then(() => {
+        PlaylistIndex.getInstance().getPlaylist(playlistID)
+        .then(playlist => {
             setLastTrackButton({
                 playlistID: playlist.collectionID,
-                value: "Added"
+                value: <Loading type="points"></Loading>
             });
-        }).catch(error => {
-            console.error(error);
-            setLastTrackButton({
-                playlistID: playlist.collectionID,
-                value: "Error"
+
+            if (!selectedTrack) return;
+    
+            playlist.addTracks(selectedTrack)
+            .then(() => {
+                setLastTrackButton({
+                    playlistID: playlist.collectionID,
+                    value: "Added"
+                });
+            }).catch(error => {
+                console.error(error);
+                setLastTrackButton({
+                    playlistID: playlist.collectionID,
+                    value: "Error"
+                });
             });
-        });
+        })
     }
 
     return (
@@ -78,7 +83,7 @@ export default function AddToPlaylist() {
                 {playlists.map(playlist => (
                     <div key={playlist.collectionID} className={styles.playlist}>
                         <Text className={styles.name} h3>{playlist.getName()}</Text>
-                        <Button className={styles.add} color="secondary" auto onPress={() => addToPlaylist(playlist)} disabled={lastTrackButton.playlistID == playlist.collectionID}>{lastTrackButton.playlistID == playlist.collectionID ? lastTrackButton.value : "Add"}</Button>
+                        <Button className={styles.add} color="secondary" auto onPress={() => addToPlaylist(playlist.collectionID)} disabled={lastTrackButton.playlistID == playlist.collectionID}>{lastTrackButton.playlistID == playlist.collectionID ? lastTrackButton.value : "Add"}</Button>
                     </div>
                 ))}
                 <Grid.Container justify="flex-end">

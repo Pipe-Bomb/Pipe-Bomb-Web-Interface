@@ -2,6 +2,12 @@ import Cookies from "js-cookie";
 import Axios from "axios";
 import PipeBombConnection from "./PipeBombConnection";
 
+export interface UserDataFormat {
+    username: string,
+    userID: string,
+    email: string
+}
+
 export default class Account {
     private static instance: Account;
 
@@ -9,6 +15,8 @@ export default class Account {
     private username: string | null = null;
     private userID: string | null = null;
     private email: string | null = null;
+
+    private dataAwaitCallbacks: (() => void)[] = [];
 
     private constructor() {
         if (location.hash.length > 1) {
@@ -70,8 +78,14 @@ export default class Account {
                         expires: 365
                     });
                     history.pushState("", document.title, location.pathname + location.search);
+
+                    while (this.dataAwaitCallbacks.length) {
+                        const callback = this.dataAwaitCallbacks.shift();
+                        if (callback) callback();
+                    }
                     return resolve(true);
                 }
+
                 resolve(false);
             }, error => {
                 console.error(error);
@@ -80,11 +94,23 @@ export default class Account {
         })
     }
 
-    public getUserData() {
-        return {
-            username: this.username,
-            userID: this.userID,
-            email: this.email
-        }
+    public async getUserData() {
+        return new Promise<UserDataFormat>((resolve) => {
+            if (this.userID && this.username && this.email) return resolve({
+                username: this.username,
+                userID: this.userID,
+                email: this.email
+            });
+
+            console.log("requested user data that we dont have");
+
+            this.dataAwaitCallbacks.push(() => {
+                resolve({
+                    username: this.username || "",
+                    userID: this.userID || "",
+                    email: this.email || ""
+                });
+            });
+        });
     }
 }

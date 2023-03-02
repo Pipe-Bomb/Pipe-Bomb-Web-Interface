@@ -4,7 +4,7 @@ import Collection from "pipebomb.js/dist/collection/Collection";
 export default class PlaylistIndex {
     private static instance: PlaylistIndex;
 
-    private playlists: Map<number, Collection> = new Map();
+    private playlists: Map<string, Collection> = new Map();
     private callbacks: ((playlists: Collection[]) => void)[] = [];
     
 
@@ -32,11 +32,12 @@ export default class PlaylistIndex {
 
         for (let playlist of playlists) {
             playlistIndexes.push(playlist.collectionID);
-            this.playlists.set(playlist.collectionID, playlist);
+            let stringID = playlist.collectionID.toString();
+            this.playlists.set(stringID, playlist);
         }
 
         for (let [key] of this.playlists.entries()) {
-            if (!playlistIndexes.includes(key)) this.playlists.delete(key);
+            if (!playlistIndexes.includes(parseInt(key))) this.playlists.delete(key);
         }
         this.updateCallbacks();
         return Array.from(playlists.values());
@@ -64,7 +65,12 @@ export default class PlaylistIndex {
     }
 
     public async getPlaylist(playlistID: number) {
-        const playlist = this.playlists.get(playlistID);
-        return playlist || null;
+        const playlist = this.playlists.get(playlistID.toString());
+        if (playlist) {
+            return playlist;
+        }
+        const newPlaylist = await PipeBombConnection.getInstance().getApi().v1.getPlaylist(playlistID);
+
+        return newPlaylist || null;
     }
 }

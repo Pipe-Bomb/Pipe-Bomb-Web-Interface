@@ -14,7 +14,7 @@ export default function Home() {
         }
     }, []);
 
-    function playlistHtml() {
+    function generatePlaylistHTML() {
         if (playlists.length) {
             return (
                 <>
@@ -22,14 +22,20 @@ export default function Home() {
                     {playlists.map(playlist => <SquarePlaylist key={playlist.collectionID} playlist={playlist} />)}
                 </>
             )
-        } else {
-            return <></>
         }
+        return null;
     }
+
+    const playlistHTML: JSX.Element | null = generatePlaylistHTML();
 
 
     return <>
         <h1>Pipe Bomb</h1>
-        {playlistHtml()}
+        {playlistHTML}
+        {!playlistHTML ? (
+            <>
+                no playlists?
+            </>
+        ) : null}
     </>
 }

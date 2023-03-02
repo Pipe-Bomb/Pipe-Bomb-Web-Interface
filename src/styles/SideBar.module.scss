@@ -87,11 +87,15 @@
     margin-bottom: 100px;
 
     .playlist {
-        margin: 0 10px 0 30px;
+        margin: 5px 10px 5px 30px;
         color: var(--nextui-colors-sidebarUnselectedText);
         font-size: var(--nextui-fontSizes-lg);
         display: block;
         transition: color 0.2s;
+        position: relative;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
 
         &:hover {
             color: var(--nextui-colors-text);
@@ -99,6 +103,12 @@
 
         &:first-of-type {
             margin-top: 10px;
+        }
+
+        .playlistIcon {
+            position: relative;
+            top: 2px;
+            margin-right: 0.5rem;
         }
     }
 }
