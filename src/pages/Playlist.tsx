@@ -26,10 +26,10 @@ export default function Playlist() {
 
     const callback = (collection: Collection) => {
         if (!collection) return;
-            collection.getTrackList(PipeBombConnection.getInstance().getApi().trackCache)
-            .then(tracks => {
-                setTrackList(tracks);
-            });
+        collection.getTrackList(PipeBombConnection.getInstance().getApi().trackCache)
+        .then(tracks => {
+            setTrackList(tracks);
+        });
     }
 
     useEffect(() => {

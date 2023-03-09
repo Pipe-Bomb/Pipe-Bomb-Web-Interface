@@ -60,21 +60,35 @@ export default function Player() {
         .then(data => {
 
             if (!data.image) {
-                console.log("no image");
-                setHasImage(true);
-                // set stock image
-                return;
+                const element: any = thumbnail.current;
+                if (element) {
+                    element.onload = () => {
+                        setHasImage(true);
+                    }
+                    element.src = "/no-album-art.png";
+                }
+            } else {
+                const icon = data.image || "/no-album-art.png";
+            
+                const element: any = thumbnail.current;
+                if (element) {
+                    element.onload = () => {
+                        setHasImage(true);
+                    }
+                    element.src = icon;
+                }
             }
-            const element: any = thumbnail.current;
-            element.onload = () => {
-                setHasImage(true);
-            }
-            element.src = data.image;
 
             setTitle(data.title);
             setArtist(convertArrayToString(data.artists));
         }).catch(error => {
             console.error(error);
+            const element: any = thumbnail.current;
+            if (!element) return;
+            element.onload = () => {
+                setHasImage(true);
+            }
+            element.src = "/no-album-art.png";
         });
 
         return () => {}

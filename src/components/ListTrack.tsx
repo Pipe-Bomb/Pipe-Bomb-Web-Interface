@@ -22,32 +22,41 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
         track.getMetadata()
         .then(data => {
             if (!data) {
-                setHasImage(true);
+                const element: any = thumbnail.current;
+                if (!element) return;
+                element.onload = () => {
+                    setHasImage(true);
+                }
+                element.src = "/no-album-art.png";
                 return;
             }
             setMetadata(data);
-            if (!data.image) {
-                console.log("no image");
-                setHasImage(true);
-                // set stock image
-                return;
-            }
+            const icon = data.image || "/no-album-art.png";
+            
             const element: any = thumbnail.current;
             if (!element) return;
             element.onload = () => {
                 setHasImage(true);
             }
-            element.referrerPolicy = "no-referrer";
-            element.src = data.image;
+            element.src = icon;
         }).catch(error => {
             console.error(error);
-            setHasImage(true);
-            // set missing image
+            const element: any = thumbnail.current;
+            if (!element) return;
+            element.onload = () => {
+                setHasImage(true);
+            }
+            element.src = "/no-album-art.png";
         });
     }, [track]);
 
     function playTrack() {
         AudioPlayer.getInstance().playTrack(track);
+    }
+
+    if (thumbnail.current) {
+        const element: any = thumbnail.current;
+        element.referrerPolicy = "no-referrer";
     }
 
     function contextMenu(button: React.Key) {
