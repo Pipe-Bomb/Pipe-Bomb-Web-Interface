@@ -47,13 +47,12 @@
 }
 
 .trackName {
-    display: block;
     font-size: var(--nextui-fontSizes-2xl);
     margin-top: -2px;
     font-weight: var(--nextui-fontWeights-semibold);
     word-wrap: break-word;
-    width: 90%;
     min-width: auto;
+    cursor: pointer;
 }
 
 .artists {

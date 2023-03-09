@@ -8,6 +8,9 @@ interface Props {
 
 export default function LazyImage({ src, className }: Props) {
     const image = useRef<HTMLImageElement>(null);
+    
+    const anyImage: any = image.current;
+    anyImage.referrerPolicy = "no-referrer";
 
     function load() {
         if (image.current) {

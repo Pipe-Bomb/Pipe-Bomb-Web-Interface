@@ -28,10 +28,14 @@ export default function CustomModal(props: Props) {
                 width="600px"
                 scroll
             >
-                <Text h2 className={styles.title}>{props.title}</Text>
-                <div className={styles.contents}>
-                    {props.children}
-                </div>
+                <Modal.Header>
+                    <Text h2 className={styles.title}>{props.title}</Text>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className={styles.contents}>
+                        {props.children}
+                    </div>
+                </Modal.Body>
             </Modal>
         </>
     );

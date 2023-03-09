@@ -31,6 +31,7 @@ export default function QueueTrack({ track, index }: Props) {
             element.onload = () => {
                 setHasImage(true);
             }
+            element.referrerPolicy = "no-referrer";
             element.src = data.image;
         }).catch(error => {
             console.error(error);

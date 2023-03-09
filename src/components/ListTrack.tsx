@@ -37,6 +37,7 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
             element.onload = () => {
                 setHasImage(true);
             }
+            element.referrerPolicy = "no-referrer";
             element.src = data.image;
         }).catch(error => {
             console.error(error);
@@ -97,7 +98,9 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
                 {!hasImage && (<Loading loadingCss={{ $$loadingSize: "80px", $$loadingBorder: "10px" }} css={{margin: "10px"}} />)}
             </div>
             <div className={styles.info}>
-                <span className={styles.trackName}>{metadata?.title || track.trackID}</span>
+                <div>
+                    <span className={styles.trackName} onClick={playTrack}>{metadata?.title || track.trackID}</span>
+                </div>
                 {metadata && (
                     <span className={styles.artists}>{convertArrayToString(metadata.artists)}</span>
                 )}
@@ -107,6 +110,5 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
                 {dropdown()}
             </Dropdown>
         </div>
-    // </Link>
     );
 }
