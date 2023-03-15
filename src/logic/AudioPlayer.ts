@@ -3,10 +3,12 @@ import AudioPlayerStatus from "./AudioPlayerStatus";
 import PipeBombConnection from "./PipeBombConnection";
 import { convertArrayToString } from "./Utils";
 import { Howl } from "howler";
+import KeyboardShortcuts from "./KeyboardShortcuts";
 
 export default class AudioPlayer {
     private static instance: AudioPlayer;
     private audio: HTMLAudioElement | null = null;
+    private keyboardShortcuts = KeyboardShortcuts.getInstance();
     private status: AudioPlayerStatus = {
         paused: false,
         time: 0,
@@ -219,10 +221,22 @@ export default class AudioPlayer {
 
     public setTime(percent: number) {
         if (!this.audio) return;
-        const time = this.status.duration / 100 * percent;
+        const time = this.status.duration / 100 * Math.min(Math.max(percent, 0), 100);
         this.status.seekTime = time;
         this.status.time = time;
         this.audio.currentTime = time;
+    }
+
+    public addTime(seconds: number) {
+        if (!this.audio || this.status.loading) return;
+        const time = Math.max(Math.min(this.status.time + seconds, this.status.duration), 0);
+        if (time < this.status.duration) {
+            this.status.seekTime = time;
+            this.status.time = time;
+            this.audio.currentTime = time;
+        } else {
+            this.nextTrack();
+        }
     }
 
     public addToQueue(tracks: Track[], position?: number) {
