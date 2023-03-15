@@ -77,12 +77,10 @@ export default function SideBar() {
         </div>
         <div className={styles.playlists}>
             {playlists.map((playlist, index) => (
-                <>
-                    <Link key={index} to={`/playlist/${playlist.collectionID}`} className={styles.playlist}>
-                        <MdOutlinePlaylistPlay className={styles.playlistIcon} />
-                        {playlist.getName()}
-                    </Link>
-                </>
+                <Link key={index} to={`/playlist/${playlist.collectionID}`} className={styles.playlist}>
+                    <MdOutlinePlaylistPlay className={styles.playlistIcon} />
+                    {playlist.getName()}
+                </Link>
             ))}
         </div>
     </div>

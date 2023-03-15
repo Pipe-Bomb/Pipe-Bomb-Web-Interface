@@ -154,7 +154,7 @@ export default function Player() {
                     </Grid.Container>
                 </div>
 
-                <span className={styles.time}>{audioStatus.track && !audioStatus.loading ? formatTime(progressValue.current == -1 ? audioStatus.time : (progressValue.current / 100 * audioStatus.duration)) : ""}</span>
+                <span className={styles.time}>{audioStatus.track && audioStatus.duration != -1 ? formatTime(progressValue.current == -1 ? (audioStatus.seekTime == -1 ? audioStatus.time : audioStatus.seekTime) : (progressValue.current / 100 * audioStatus.duration)) : ""}</span>
                 <div className={styles.progressBar}>
                     {audioStatus.loading || !audioStatus.track ? null : (
                         <input ref={slider} min={0} max={100} step={0.1} type="range" className={styles.progressRange + (progressValue.current == -1 ? "" : ` ${styles.progressActive}`)} onInput={e => progressChange(e)} />
@@ -170,7 +170,7 @@ export default function Player() {
                         />
                     </div>
                 </div>
-                <span className={styles.time}>{audioStatus.track && !audioStatus.loading ? formatTime(audioStatus.duration) : ""}</span>
+                <span className={styles.time}>{audioStatus.track && audioStatus.duration != -1 ? formatTime(audioStatus.duration) : ""}</span>
             </div>
             <div className={styles.queueContainer}>
                 <Popover placement={"top-right"}>

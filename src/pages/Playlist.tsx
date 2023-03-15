@@ -12,6 +12,9 @@ import { shuffle } from "../logic/Utils";
 import { MdShuffle, MdPlayArrow, MdMoreHoriz } from "react-icons/md";
 import PlaylistIndex from "../logic/PlaylistIndex";
 import { useNavigate } from "react-router-dom";
+import Account, { UserDataFormat } from "../logic/Account";
+
+let lastPlaylistID = 0;
 
 export default function Playlist() {
     let paramID: any = useParams().playlistID;
@@ -19,6 +22,7 @@ export default function Playlist() {
     const [playlist, setPlaylist] = useState<Collection | null>(null);
     const [trackList, setTrackList] = useState<Track[] | null | false>(false);
     const [errorCode, setErrorCode] = useState(0);
+    const [selfInfo, setSelfInfo] = useState<UserDataFormat | null>(null);
     const navigate = useNavigate();
 
 
@@ -28,11 +32,13 @@ export default function Playlist() {
         if (!collection) return;
         collection.getTrackList(PipeBombConnection.getInstance().getApi().trackCache)
         .then(tracks => {
+            if (lastPlaylistID != paramID) return;
             setTrackList(tracks);
         });
     }
 
     useEffect(() => {
+        lastPlaylistID = paramID;
         setTrackList(false);
         setPlaylist(null);
         let alive = true;
@@ -40,9 +46,7 @@ export default function Playlist() {
         .then(collection => {
             if (!alive) return;
             setPlaylist(collection);
-
-            collection.getTrackList(PipeBombConnection.getInstance().getApi().trackCache)
-            .then(setTrackList);
+            callback(collection);
         }).catch(error => {
             if (error?.statusCode == 400) {
                 setErrorCode(400);
@@ -58,6 +62,10 @@ export default function Playlist() {
     }, [paramID]);
 
     useEffect(() => {
+        if (!selfInfo) {
+            Account.getInstance().getUserData().then(setSelfInfo);
+        }
+
         if (playlist) {
             playlist.registerUpdateCallback(callback);
         }
@@ -127,9 +135,32 @@ export default function Playlist() {
         }
     }
 
+    const isOwnPlaylist = selfInfo && selfInfo.userID == playlist.owner.userID;
+
+    function generateContextMenu() {
+        if (isOwnPlaylist) {
+            return (
+                <Dropdown.Menu onAction={contextMenu} disabledKeys={["rename"]}>
+                    <Dropdown.Item key="rename">Rename Playlist</Dropdown.Item>
+                    <Dropdown.Item key="delete" color="error">Delete Playlist</Dropdown.Item>
+                </Dropdown.Menu>
+            );
+        } else {
+            return (
+                <Dropdown.Menu onAction={contextMenu} disabledKeys={["like"]}>
+                    <Dropdown.Item key="like">Like Playlist</Dropdown.Item>
+                </Dropdown.Menu>
+            )
+        }
+        
+    }
+
     return (
         <>
             <Text h1>{playlist.getName()}</Text>
+            {!isOwnPlaylist && (
+                <Text h4>by {playlist.owner.username}</Text>
+            )}
             <Grid.Container gap={2} alignItems="center">
                 <Grid>
                     <Button size="xl" auto onPress={playPlaylist} className={styles.roundButton} color="gradient"><MdPlayArrow /></Button>
@@ -144,10 +175,7 @@ export default function Playlist() {
                                 <MdMoreHoriz />
                             </Button>
                         </Dropdown.Trigger>
-                        <Dropdown.Menu onAction={contextMenu} disabledKeys={["rename"]}>
-                            <Dropdown.Item key="rename">Rename Playlist</Dropdown.Item>
-                            <Dropdown.Item key="delete" color="error">Delete Playlist</Dropdown.Item>
-                        </Dropdown.Menu>
+                        { generateContextMenu() }
                     </Dropdown>
                 </Grid>
             </Grid.Container>

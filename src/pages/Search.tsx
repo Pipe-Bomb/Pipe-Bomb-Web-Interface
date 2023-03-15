@@ -5,6 +5,7 @@ import Track from "pipebomb.js/dist/music/Track";
 import ListTrack from "../components/ListTrack";
 import styles from "../styles/Search.module.scss";
 import Loader from "../components/Loader";
+import ServiceInfo from "pipebomb.js/dist/ServiceInfo";
 
 let value = "";
 let storedTrackList: Track[] = [];
@@ -13,6 +14,7 @@ let storedPlatform = "Youtube Music";
 export default function Search() {
     const input = useRef<HTMLInputElement>(null);
     const [currentPlatform, setCurrentPlatform] = useState(storedPlatform);
+    const [services, setServices] = useState<ServiceInfo[] | null>(null);
     const [trackList, setTrackList] = useState(storedTrackList);
     const [loading, setLoading] = useState(false);
 
@@ -20,6 +22,16 @@ export default function Search() {
         if (event.key !== "Enter") return;
         search();
     }
+
+    useEffect(() => {
+        if (services === null) {
+            PipeBombConnection.getInstance().getApi().v1.getServices()
+            .then(setServices)
+            .catch(e => {
+                console.error(e);
+            });
+        }
+    });
 
     function search() {
         const target = input.current?.value;
@@ -45,7 +57,27 @@ export default function Search() {
         search();
     }
 
-    function generateHtml() {
+    function generateServices() {
+        if (services === null) {
+            return <Loader text="Loading Services..."></Loader>;
+        } else {
+            return <>
+                <div className={styles.buttonGroup}>
+                    { services.map(service => (
+                        <Button className={styles.serviceButton} key={service.name} disabled={currentPlatform == service.name} onPress={() => setPlatform(service.name)} light={currentPlatform != service.name} auto>
+                            <img className={styles.icon} src={`/public/music-services/${service.prefix}.png`} />
+                            {service.name}
+                        </Button>
+                    )) }
+                </div>
+                <div className={styles.list}>
+                    { generateList() }
+                </div>
+            </>;
+        }
+    }
+
+    function generateList() {
         if (loading) {
             return <Loader text="Searching..."></Loader>;
         } else {
@@ -82,13 +114,7 @@ export default function Search() {
                 Search
             </Button>
         </div>
-        <Button.Group bordered className={styles.serviceButtons} css={{margin: "calc(20px + 1rem) 0 0 0"}}>
-            <Button disabled={currentPlatform == "Youtube Music"} onPress={() => setPlatform("Youtube Music")}>Youtube Music</Button>
-            <Button disabled={currentPlatform == "SoundCloud"} onPress={() => setPlatform("SoundCloud")}>SoundCloud</Button>
-        </Button.Group>
-        <div className={styles.list}>
-            {generateHtml()}
-        </div>
+        { generateServices() }
     </>
   );
 }

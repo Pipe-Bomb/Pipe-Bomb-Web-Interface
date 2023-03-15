@@ -14,7 +14,7 @@
 .list {
     position: relative;
     margin-top: 3rem;
-    min-height: calc(100vh - 170px - 3rem);
+    min-height: calc(100vh - 260px - 3rem);
     padding-bottom: calc(100px - 1rem);
 }
 
@@ -26,4 +26,17 @@
 
 .searchButtons {
     margin: 50px 0 0 0 !important;
+}
+
+.buttonGroup {
+    margin-top: 2rem;
+    display: flex;
+    gap: 0.5rem;
+
+    .icon {
+        width: 1.5rem;
+        height: 1.5rem;
+        object-fit: contain;
+        margin-right: 0.5rem;
+    }
 }

@@ -6,13 +6,14 @@ import { Howl } from "howler";
 
 export default class AudioPlayer {
     private static instance: AudioPlayer;
-    private audio: Howl | null = null;
+    private audio: HTMLAudioElement | null = null;
     private status: AudioPlayerStatus = {
         paused: false,
         time: 0,
-        duration: 1,
+        duration: -1,
         loading: false,
         track: null,
+        seekTime: -1,
         queue: []
     };
     private updateCallbacks: ((status: AudioPlayerStatus) => void)[] = [];
@@ -26,7 +27,7 @@ export default class AudioPlayer {
         }
 
         setInterval(() => {
-            const newTime = this.audio?.seek();
+            const newTime = this.status.seekTime == -1 ? this.audio?.currentTime : this.status.seekTime;
             if (newTime != this.status.time && !(this.status.time === 0 && newTime === undefined)) {
                 if (newTime === undefined) {
                     this.status.time = 0;
@@ -48,54 +49,90 @@ export default class AudioPlayer {
             if (this.status.paused) this.play();
             return;
         }
-        if (this.audio) {
-            this.audio.stop();
-            this.audio.unload();
-        }
         this.status.track = track;
 
         this.status.loading = true;
         this.status.paused = false;
         this.status.time = 0;
         const url = `${PipeBombConnection.getInstance().getUrl()}/v1/audio/${track.trackID}`;
-        this.audio = new Howl({
-            src: [url],
-            format: "mp3",
-            html5: false,
-            onplay: () => {
-                this.status.paused = false;
-                this.sendCallbacks();
-            },
-            onpause: () => {
+
+        this.status.loading = true;
+        this.status.duration = -1;
+        this.sendCallbacks();
+        if (this.audio) {
+            this.audio.src = url;
+            this.audio.load();
+        } else {
+            this.audio = new Audio(url);
+        }
+        
+
+        this.audio.onplay = () => {
+            if (!this.status.loading) this.status.paused = false;
+            this.sendCallbacks();
+        }
+
+        this.audio.onplaying = () => {
+            setTimeout(() => {
+                this.status.loading = false;
+            });
+        }
+
+        this.audio.onpause = () => {
+            if (!this.status.loading) this.status.paused = true;
+            this.sendCallbacks();
+        };
+        
+        this.audio.onended = () => {
+            console.log("track ended, next song");
+            const nextTrack = this.status.queue.shift();
+            if (nextTrack) {
+                console.log("next!");
+                this.playTrack(nextTrack, true);
+            } else {
+                console.log("not next");
                 this.status.paused = true;
                 this.sendCallbacks();
-            },
-            onend: () => {
-                console.log("track ended, next song");
-                const nextTrack = this.status.queue.shift();
-                if (nextTrack) {
-                    console.log("next!");
-                    this.playTrack(nextTrack, true);
+            }
+        };
+
+        this.audio.onloadeddata = () => {
+            if (!this.audio) return;
+            this.status.duration = this.audio.duration;
+        }
+
+        this.audio.oncanplay = () => {
+            if (!this.audio) return;
+            const difference = Math.abs(this.status.seekTime - this.audio.currentTime);
+            if (difference < 1 || this.status.seekTime == -1) {
+                this.status.loading = false;
+                this.sendCallbacks();
+                if (this.status.paused) {
+                    this.audio.pause();
                 } else {
-                    console.log("not next");
-                    this.status.paused = true;
+                    this.audio.play();
+                }
+            }
+        }
+        
+        this.audio.onerror = error => {
+            console.error(error);
+        };
+
+        this.audio.onseeked = () => {
+            if (!this.audio) return;
+            const difference = Math.abs(this.status.seekTime - this.audio.currentTime);
+            if (difference > 1) {
+                this.audio.pause();
+                if (!this.status.loading) {
+                    this.status.loading = true;
                     this.sendCallbacks();
                 }
-            },
-            onload: () => {
-                this.status.loading = false;
-                if (this.audio) {
-                    this.status.duration = this.audio.duration();
-                }
-            },
-            onloaderror: error => {
-                console.log("failed to load");
-            },
-            onplayerror: () => {
-                console.log("player error");
+                this.audio.currentTime = this.status.seekTime;
+            } else {
+                this.status.seekTime = -1;
             }
-        });
-        this.status.duration = this.audio.duration();
+        }
 
         if (!this.status.paused) {
             this.audio.play();
@@ -144,13 +181,22 @@ export default class AudioPlayer {
 
     public pause() {
         if (!this.audio) return;
+        this.status.paused = true;
         this.audio.pause();
     }
 
     public play() {
         if (!this.audio) return;
-        if (this.audio.duration() == this.audio.seek()) this.audio.seek(0);
-        if (!this.status.track && this.status.queue.length) return this.nextTrack();
+        if (this.audio.duration == this.audio.currentTime) {
+            this.audio.currentTime = 0;
+            this.audio.play();
+            return;
+        }
+        if (!this.status.track && this.status.queue.length) {
+            this.nextTrack()
+            return;
+        }
+        this.status.paused = false;
         this.audio.play();
     }
 
@@ -163,7 +209,7 @@ export default class AudioPlayer {
 
     public previousTrack() {
         if (!this.audio) return;
-        if (this.audio.seek() > 10 || 1) {
+        if (this.audio.currentTime > 10 || 1) {
             this.setTime(0);
             this.audio.play();
         } else {
@@ -174,7 +220,9 @@ export default class AudioPlayer {
     public setTime(percent: number) {
         if (!this.audio) return;
         const time = this.status.duration / 100 * percent;
-        this.audio.seek(time);
+        this.status.seekTime = time;
+        this.status.time = time;
+        this.audio.currentTime = time;
     }
 
     public addToQueue(tracks: Track[], position?: number) {
@@ -191,7 +239,6 @@ export default class AudioPlayer {
     }
 
     public setQueueOrder(order: number[]) {
-        console.log(order);
         let newOrder: Track[] = [];
 
         for (let index of order) {
