@@ -65,7 +65,7 @@ export default function Search() {
                 <div className={styles.buttonGroup}>
                     { services.map(service => (
                         <Button className={styles.serviceButton} key={service.name} disabled={currentPlatform == service.name} onPress={() => setPlatform(service.name)} light={currentPlatform != service.name} auto>
-                            <img className={styles.icon} src={`/public/music-services/${service.prefix}.png`} />
+                            <img className={styles.icon} src={`/music-services/${service.prefix}.png`} />
                             {service.name}
                         </Button>
                     )) }
