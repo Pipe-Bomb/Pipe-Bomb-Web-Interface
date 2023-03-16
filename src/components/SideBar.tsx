@@ -14,6 +14,7 @@ import { openCreatePlaylist } from "./CreatePlaylist";
 import { GoPlus } from "react-icons/go";
 import { MdHome, MdSearch, MdOutlinePlaylistPlay } from "react-icons/md";
 import { IoServer } from "react-icons/io5";
+import Loader from "./Loader";
 
 export default function SideBar() {
     const playlistIndex = PlaylistIndex.getInstance();
@@ -48,6 +49,20 @@ export default function SideBar() {
         }
     }, []);
 
+    function generatePlaylistHTML() {
+        if (playlists === null) {
+            return (
+                <Loader />
+            )
+        }
+        return playlists.map((playlist, index) => (
+            <Link key={index} to={`/playlist/${playlist.collectionID}`} className={styles.playlist}>
+                <MdOutlinePlaylistPlay className={styles.playlistIcon} />
+                {playlist.getName()}
+            </Link>
+        ))
+    }
+
     return <div className={styles.sideBar}>
         <Link to="/" className={styles.logo}>
             <img src={logo} className={styles.image} />
@@ -76,12 +91,7 @@ export default function SideBar() {
 
         </div>
         <div className={styles.playlists}>
-            {playlists.map((playlist, index) => (
-                <Link key={index} to={`/playlist/${playlist.collectionID}`} className={styles.playlist}>
-                    <MdOutlinePlaylistPlay className={styles.playlistIcon} />
-                    {playlist.getName()}
-                </Link>
-            ))}
+            { generatePlaylistHTML() }
         </div>
     </div>
 }

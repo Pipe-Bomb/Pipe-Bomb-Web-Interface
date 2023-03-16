@@ -11,7 +11,7 @@
     -moz-user-select: none;
     z-index: 1000;
     display: grid;
-    grid-template-columns: 1fr 1.8fr 1fr;
+    grid-template-columns: 1fr 1.5fr 1fr;
 }
 
 .progressContainer {
@@ -135,6 +135,10 @@
         font-size: var(--nextui-fontSizes-lg);
         font-weight: var(--nextui-fontWeights-semibold);
         margin-top: var(--nextui-space-4);
+    }
+
+    .artist {
+        margin-top: -5px;
     }
 }
 

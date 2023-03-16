@@ -17,7 +17,7 @@ export default function Player() {
     const audioPlayer = AudioPlayer.getInstance();
 
     const progressValue = useRef(-1);
-    const slider = useRef(null);
+    const slider = useRef<HTMLInputElement>(null);
 
     const thumbnail = useRef(null);
     const [title, setTitle] = useState("");
@@ -54,6 +54,12 @@ export default function Player() {
             document.removeEventListener("mouseup", mouseUpHandler);
         }
     }, []);
+
+    function sliderFocus() {
+        if (slider.current) {
+            slider.current.blur();
+        }
+    }
 
     useEffect(() => {
         audioStatus.track?.getMetadata()
@@ -157,7 +163,7 @@ export default function Player() {
                 <span className={styles.time}>{audioStatus.track && audioStatus.duration != -1 ? formatTime(progressValue.current == -1 ? (audioStatus.seekTime == -1 ? audioStatus.time : audioStatus.seekTime) : (progressValue.current / 100 * audioStatus.duration)) : ""}</span>
                 <div className={styles.progressBar}>
                     {audioStatus.loading || !audioStatus.track ? null : (
-                        <input ref={slider} min={0} max={100} step={0.1} type="range" className={styles.progressRange + (progressValue.current == -1 ? "" : ` ${styles.progressActive}`)} onInput={e => progressChange(e)} />
+                        <input ref={slider} min={0} max={100} step={0.1} type="range" className={styles.progressRange + (progressValue.current == -1 ? "" : ` ${styles.progressActive}`)} onInput={e => progressChange(e)} onFocus={sliderFocus} />
                     )}
                     <div className={styles.progress}>
                         <Progress

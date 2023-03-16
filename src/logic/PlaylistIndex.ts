@@ -4,7 +4,7 @@ import Collection from "pipebomb.js/dist/collection/Collection";
 export default class PlaylistIndex {
     private static instance: PlaylistIndex;
 
-    private playlists: Map<string, Collection> = new Map();
+    private playlists: Map<string, Collection> | null = null;
     private callbacks: ((playlists: Collection[]) => void)[] = [];
     
 
@@ -27,12 +27,14 @@ export default class PlaylistIndex {
 
     public async checkPlaylists() {
         const playlists = await PipeBombConnection.getInstance().getApi().v1.getPlaylists();
+        if (!this.playlists) this.playlists = new Map();
 
         let playlistIndexes: number[] = [];
 
         for (let playlist of playlists) {
             playlistIndexes.push(playlist.collectionID);
             let stringID = playlist.collectionID.toString();
+            if (!this.playlists) this.playlists = new Map();
             this.playlists.set(stringID, playlist);
         }
 
@@ -45,6 +47,7 @@ export default class PlaylistIndex {
 
     private updateCallbacks() {
         const playlists = this.getPlaylists();
+        if (!playlists) return;
         for (let callback of this.callbacks) {
             callback(playlists);
         }
@@ -61,13 +64,16 @@ export default class PlaylistIndex {
     }
 
     public getPlaylists() {
+        if (!this.playlists) return null;
         return Array.from(this.playlists.values());
     }
 
     public async getPlaylist(playlistID: number) {
-        const playlist = this.playlists.get(playlistID.toString());
-        if (playlist) {
-            return playlist;
+        if (this.playlists) {
+            const playlist = this.playlists.get(playlistID.toString());
+            if (playlist) {
+                return playlist;
+            }
         }
         const newPlaylist = await PipeBombConnection.getInstance().getApi().v1.getPlaylist(playlistID);
 

@@ -6,6 +6,7 @@ import PlaylistIndex from '../logic/PlaylistIndex';
 import styles from "../styles/AddToPlaylist.module.scss";
 import { openCreatePlaylist } from "./CreatePlaylist";
 import CustomModal from './CustomModal';
+import Loader from './Loader';
 
 let openModal = () => {};
 let addToPlaylist = (playlistID: number) => {};
@@ -77,15 +78,21 @@ export default function AddToPlaylist() {
         })
     }
 
+    function generatePlaylistHTML() {
+        if (!playlists) return <Loader text="Loading Playlists..." />;
+
+        return playlists.map(playlist => (
+            <div key={playlist.collectionID} className={styles.playlist}>
+                <Text className={styles.name} h3>{playlist.getName()}</Text>
+                <Button className={styles.add} color="secondary" auto onPress={() => addToPlaylist(playlist.collectionID)} disabled={lastTrackButton.playlistID == playlist.collectionID}>{lastTrackButton.playlistID == playlist.collectionID ? lastTrackButton.value : "Add"}</Button>
+            </div>
+        ));
+    }
+
     return (
         <>
             <CustomModal visible={visible} onClose={() => setVisible(false)} title="Add to Playlist">
-                {playlists.map(playlist => (
-                    <div key={playlist.collectionID} className={styles.playlist}>
-                        <Text className={styles.name} h3>{playlist.getName()}</Text>
-                        <Button className={styles.add} color="secondary" auto onPress={() => addToPlaylist(playlist.collectionID)} disabled={lastTrackButton.playlistID == playlist.collectionID}>{lastTrackButton.playlistID == playlist.collectionID ? lastTrackButton.value : "Add"}</Button>
-                    </div>
-                ))}
+                { generatePlaylistHTML() }
                 <Grid.Container justify="flex-end">
                     <Grid>
                         <Button onPress={() => openCreatePlaylist(selectedTrack || undefined)} bordered auto>New Playlist</Button>

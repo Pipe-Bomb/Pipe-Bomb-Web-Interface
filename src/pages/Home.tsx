@@ -1,5 +1,6 @@
 import { Text } from "@nextui-org/react";
 import { useEffect, useState } from "react";
+import Loader from "../components/Loader";
 import SquarePlaylist from "../components/SquarePlaylist";
 import PlaylistIndex from "../logic/PlaylistIndex";
 
@@ -15,6 +16,13 @@ export default function Home() {
     }, []);
 
     function generatePlaylistHTML() {
+        if (playlists === null) {
+            console.log("playlists was null!");
+            return (
+                <Loader text="Loading playlists" />
+            )
+        }
+
         if (playlists.length) {
             return (
                 <>
@@ -23,7 +31,10 @@ export default function Home() {
                 </>
             )
         }
-        return null;
+
+        return (
+            <Text h3>No playlists?</Text>
+        )
     }
 
     const playlistHTML: JSX.Element | null = generatePlaylistHTML();
@@ -32,10 +43,5 @@ export default function Home() {
     return <>
         <h1>Pipe Bomb</h1>
         {playlistHTML}
-        {!playlistHTML ? (
-            <>
-                no playlists?
-            </>
-        ) : null}
     </>
 }

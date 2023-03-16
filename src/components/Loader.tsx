@@ -2,7 +2,7 @@ import { Loading } from "@nextui-org/react";
 import styles from "../styles/Loader.module.scss";
 
 interface Props {
-    text: string
+    text?: string
 }
 
 export default function Loader({ text }: Props) {
