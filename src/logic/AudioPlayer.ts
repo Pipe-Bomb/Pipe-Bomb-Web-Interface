@@ -206,6 +206,9 @@ export default class AudioPlayer {
         const nextTrack = this.status.queue.shift();
         if (nextTrack) {
             this.playTrack(nextTrack, true);
+        } else {
+            this.pause();
+            this.setTime(0);
         }
     }
 

@@ -2,7 +2,7 @@
     position: sticky;
     display: flex;
     flex-direction: row;
-    top: 1rem;
+    top: 0;
     z-index: 99999999;
 
     &>* {
@@ -15,7 +15,6 @@
     position: relative;
     margin-top: 3rem;
     min-height: calc(100vh - 260px - 3rem);
-    padding-bottom: calc(100px - 1rem);
 }
 
 .button {
@@ -24,12 +23,8 @@
     margin-left: 1rem;
 }
 
-.searchButtons {
-    margin: 50px 0 0 0 !important;
-}
-
 .buttonGroup {
-    margin-top: 2rem;
+    margin-top: 1rem;
     display: flex;
     gap: 0.5rem;
 

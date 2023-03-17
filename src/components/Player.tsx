@@ -7,13 +7,19 @@ import AudioPlayerStatus from "../logic/AudioPlayerStatus";
 import { convertArrayToString, formatTime } from "../logic/Utils";
 import QueueTrack from "./QueueTrack";
 import { ReactSortable } from "react-sortablejs";
+import Queue from "./Queue";
+import KeyboardShortcuts from "../logic/KeyboardShortcuts";
 
 interface ItemInterface {
     id: number
 }
 
+interface PlayerProps {
+    showQueue: boolean
+}
 
-export default function Player() {
+
+export default function Player({ showQueue }: PlayerProps) {
     const audioPlayer = AudioPlayer.getInstance();
 
     const progressValue = useRef(-1);
@@ -55,10 +61,8 @@ export default function Player() {
         }
     }, []);
 
-    function sliderFocus() {
-        if (slider.current) {
-            slider.current.blur();
-        }
+    function sliderKeyDown(e: React.KeyboardEvent) {
+        KeyboardShortcuts.getInstance().keypress(e.nativeEvent);
     }
 
     useEffect(() => {
@@ -113,25 +117,6 @@ export default function Player() {
         });
     }
 
-    const itemList: ItemInterface[] = [];
-    for (let i = 0; i < audioStatus.queue.length; i++) {
-        itemList.push({
-            id: i
-        });
-    }
-
-    function reArrangeQueue(event: ItemInterface[]) {
-        let different = false;
-        for (let i = 0; i < event.length; i++) {
-            if (itemList[i].id != event[i].id) {
-                different = true;
-                break;
-            }
-        }
-        if (!different) return;
-        audioPlayer.setQueueOrder(event.map(item => item.id));
-    }
-
     return (
         <div className={styles.container}>
             <div className={styles.currentTrackContainer}>
@@ -149,13 +134,13 @@ export default function Player() {
                 <div className={styles.buttons}>
                     <Grid.Container justify={"center"}>
                         <Grid>
-                            <Button auto rounded className={styles.roundButton} light onPress={() => audioPlayer.previousTrack()}><MdSkipPrevious /></Button>
+                            <Button tabIndex={-1} auto rounded className={styles.roundButton} light onPress={() => audioPlayer.previousTrack()}><MdSkipPrevious /></Button>
                         </Grid>
                         <Grid>
-                            {audioStatus.paused || !audioStatus.track ? (<Button auto rounded light className={styles.roundButton} onPress={() => audioPlayer.play()}><MdPlayArrow /></Button>) : (<Button auto rounded light className={styles.roundButton} onPress={() => audioPlayer.pause()}><MdPause /></Button>)}
+                            {audioStatus.paused || !audioStatus.track ? (<Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.play()}><MdPlayArrow /></Button>) : (<Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.pause()}><MdPause /></Button>)}
                         </Grid>
                         <Grid>
-                            <Button auto rounded light className={styles.roundButton} onPress={() => audioPlayer.nextTrack()}><MdSkipNext /></Button>
+                            <Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.nextTrack()}><MdSkipNext /></Button>
                         </Grid>
                     </Grid.Container>
                 </div>
@@ -163,7 +148,7 @@ export default function Player() {
                 <span className={styles.time}>{audioStatus.track && audioStatus.duration != -1 ? formatTime(progressValue.current == -1 ? (audioStatus.seekTime == -1 ? audioStatus.time : audioStatus.seekTime) : (progressValue.current / 100 * audioStatus.duration)) : ""}</span>
                 <div className={styles.progressBar}>
                     {audioStatus.loading || !audioStatus.track ? null : (
-                        <input ref={slider} min={0} max={100} step={0.1} type="range" className={styles.progressRange + (progressValue.current == -1 ? "" : ` ${styles.progressActive}`)} onInput={e => progressChange(e)} onFocus={sliderFocus} />
+                        <input ref={slider} tabIndex={-1} min={0} max={100} step={0.1} type="range" className={styles.progressRange + (progressValue.current == -1 ? "" : ` ${styles.progressActive}`)} onInput={e => progressChange(e)} onKeyDown={sliderKeyDown} />
                     )}
                     <div className={styles.progress}>
                         <Progress
@@ -178,28 +163,9 @@ export default function Player() {
                 </div>
                 <span className={styles.time}>{audioStatus.track && audioStatus.duration != -1 ? formatTime(audioStatus.duration) : ""}</span>
             </div>
-            <div className={styles.queueContainer}>
-                <Popover placement={"top-right"}>
-                    <Popover.Trigger>
-                        <Button auto rounded className={styles.roundButton + " " + styles.queueButton} light><MdQueueMusic /></Button>
-                    </Popover.Trigger>
-                    <Popover.Content className={styles.queuePopover}>
-                        {audioStatus.track ? (
-                            <>
-                                <Text h3 className={styles.queueTitle}>Now Playing</Text>
-                                <QueueTrack key={-1} track={audioStatus.track} index={-1} />
-                            </>
-                        ) : null}
-                        
-                        <Text h3 className={styles.queueTitle}>Queue</Text>
-                        <ReactSortable list={itemList} setList={event => reArrangeQueue(event)} animation={100}>
-                            {trackList.map((track, index) => (
-                                <QueueTrack key={index} track={track} index={index} />
-                            ))}
-                        </ReactSortable>
-                    </Popover.Content>
-                </Popover>
-            </div>
+            {showQueue && (
+                <Queue />
+            )}
         </div>
     )
 }

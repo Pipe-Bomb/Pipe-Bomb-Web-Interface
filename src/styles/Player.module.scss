@@ -141,22 +141,3 @@
         margin-top: -5px;
     }
 }
-
-.queueContainer {
-    text-align: right;
-
-    .queueButton {
-        display: inline-block;
-        margin: 10px 10px 0 0;
-    }
-}
-
-.queuePopover {
-    transform: translate(-1rem, -12px) !important;
-    width: 500px;
-    max-height: calc(100vh - 200px) !important;
-
-    .queueTitle {
-        margin: var(--nextui-space-8);
-    }
-}

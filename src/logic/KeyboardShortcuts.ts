@@ -6,36 +6,39 @@ export default class KeyboardShortcuts {
     private constructor() {
         document.addEventListener("keydown", e => {
             if (e.target != document.body) return;
-
-            const player = AudioPlayer.getInstance();
-
-            switch (e.key) {
-                case " ":
-                    if (player.getStatus().paused) {
-                        player.play();
-                    } else {
-                        player.pause();
-                    }
-                    break;
-                case "ArrowLeft":
-                    if (e.shiftKey) {
-                        player.previousTrack();
-                    } else {
-                        player.addTime(-10);
-                    }
-                    break;
-                case "ArrowRight":
-                    if (e.shiftKey) {
-                        player.nextTrack();
-                    } else {
-                        player.addTime(10);
-                    }
-                    break;
-
-                default: return;
-            }
-            e.preventDefault();
+            this.keypress(e);
         });
+    }
+
+    public keypress(e: KeyboardEvent) {
+        const player = AudioPlayer.getInstance();
+
+        switch (e.key) {
+            case " ":
+                if (player.getStatus().paused) {
+                    player.play();
+                } else {
+                    player.pause();
+                }
+                break;
+            case "ArrowLeft":
+                if (e.shiftKey) {
+                    player.previousTrack();
+                } else {
+                    player.addTime(-10);
+                }
+                break;
+            case "ArrowRight":
+                if (e.shiftKey) {
+                    player.nextTrack();
+                } else {
+                    player.addTime(10);
+                }
+                break;
+
+            default: return;
+        }
+        e.preventDefault();
     }
 
     public static getInstance() {
