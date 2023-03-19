@@ -38,13 +38,16 @@ export default function SuggestionsPlaylist() {
                 track.getSuggestedTracks(api.collectionCache, api.trackCache)
                 .then(suggestions => {
                     if (lastPlaylistID != paramID) return;
-                    setSuggestions(suggestions);
+                    if (!suggestions) {
+                        setSuggestions(false);
+                    } else {
+                        setSuggestions(suggestions);
+                    }
                 }).catch(e => {
                     console.error(e);
                     if (lastPlaylistID != paramID) return;
-                    setSuggestions(false);
+                    setSuggestions(false); 
                 });
-
             }).catch(e => {
                 console.error(e);
                 if (lastPlaylistID != paramID) return;
