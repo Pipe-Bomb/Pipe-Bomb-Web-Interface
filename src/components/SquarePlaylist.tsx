@@ -11,7 +11,7 @@ interface Props {
     playlist: Collection
 }
 
-const meshes: Map<number, {[key: string]: string}> = new Map();
+const meshes: Map<string, {[key: string]: string}> = new Map();
 
 export default function SquarePlaylist({ playlist }: Props) {
     const [imageUrls, setImageUrls] = useState<string[]>([]);
@@ -48,7 +48,7 @@ export default function SquarePlaylist({ playlist }: Props) {
             let temp = meshes.get(playlist.collectionID);
             if (temp) return temp;
 
-            const properties = generateMeshGradient(30, 'red', playlist.collectionID).split("; ");
+            const properties = generateMeshGradient(30, 'red', parseInt(playlist.collectionID)).split("; ");
             const out: {[key: string]: string} = {};
             for (let property of properties) {
                 const split = property.split(":", 2);

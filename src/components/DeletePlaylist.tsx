@@ -16,7 +16,7 @@ export function openDeletePlaylist(track: Track) {
 }
 
 interface lastButton {
-    playlistID: number,
+    playlistID: string,
     value: string | JSX.Element
 }
 
@@ -24,13 +24,13 @@ export default function AddToPlaylist() {
     const [visible, setVisible] = useState(false);
     const [playlists, setPlaylists] = useState(PlaylistIndex.getInstance().getPlaylists());
     const [lastTrackButton, setLastTrackButton] = useState<lastButton>({
-        playlistID: -1,
+        playlistID: "",
         value: ""
     });
 
     openModal = () => {
         setLastTrackButton({
-            playlistID: -1,
+            playlistID: "",
             value: ""
         });
         setVisible(true);
@@ -77,7 +77,7 @@ export default function AddToPlaylist() {
             scroll
         >
             <Text h2>Add to Playlist</Text>
-            {playlists.map(playlist => (
+            {playlists && playlists.map(playlist => (
                 <div key={playlist.collectionID} className={styles.playlist}>
                     <Text className={styles.name} h3>{playlist.getName()}</Text>
                     <Button className={styles.add} color="secondary" auto onPress={() => addToPlaylist(playlist)} disabled={lastTrackButton.playlistID == playlist.collectionID}>{lastTrackButton.playlistID == playlist.collectionID ? lastTrackButton.value : "Add"}</Button>

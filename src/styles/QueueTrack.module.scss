@@ -64,3 +64,17 @@
 .contextButton {
     margin: 0px 5px 0 0;
 }
+
+.dropdownLink {
+    color: inherit;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding-left: var(--nextui-space-6);
+    padding-right: var(--nextui-space-6);
+    border-radius: var(--nextui--dropdownItemBorderRadius);
+    display: flex;
+    align-items: center;
+}

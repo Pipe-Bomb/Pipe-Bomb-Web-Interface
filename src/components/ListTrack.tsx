@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import Track from "pipebomb.js/dist/music/Track";
+import Track, { TrackMeta } from "pipebomb.js/dist/music/Track";
 import { convertArrayToString } from "../logic/Utils";
 import styles from "../styles/ListTrack.module.scss";
 import { Dropdown, Loading } from "@nextui-org/react";
 import AudioPlayer from "../logic/AudioPlayer";
 import Collection from "pipebomb.js/dist/collection/Collection";
 import { openAddToPlaylist } from "./AddToPlaylist";
+import { Link } from "react-router-dom";
 
 interface Props {
   track: Track,
@@ -13,7 +14,7 @@ interface Props {
 }
 
 export default function ListTrack({ track, parentPlaylist }: Props) {
-    const [metadata, setMetadata] = useState<any>(null);
+    const [metadata, setMetadata] = useState<TrackMeta | null>(null);
     const [hasImage, setHasImage] = useState(false);
 
     const thumbnail = useRef(null);
@@ -86,6 +87,7 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
                     <Dropdown.Item key="next-up">Play Next</Dropdown.Item>
                     <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
                     <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
+                    <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${track.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
                     <Dropdown.Item key="remove" color="error">Remove from Playlist</Dropdown.Item>
                 </Dropdown.Menu>
             )
@@ -95,6 +97,7 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
                     <Dropdown.Item key="next-up">Play Next</Dropdown.Item>
                     <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
                     <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
+                    <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${track.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
                 </Dropdown.Menu>
             )
         }

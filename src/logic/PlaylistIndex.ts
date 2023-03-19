@@ -29,17 +29,16 @@ export default class PlaylistIndex {
         const playlists = await PipeBombConnection.getInstance().getApi().v1.getPlaylists();
         if (!this.playlists) this.playlists = new Map();
 
-        let playlistIndexes: number[] = [];
+        let playlistIndexes: string[] = [];
 
         for (let playlist of playlists) {
             playlistIndexes.push(playlist.collectionID);
-            let stringID = playlist.collectionID.toString();
             if (!this.playlists) this.playlists = new Map();
-            this.playlists.set(stringID, playlist);
+            this.playlists.set(playlist.collectionID, playlist);
         }
 
         for (let [key] of this.playlists.entries()) {
-            if (!playlistIndexes.includes(parseInt(key))) this.playlists.delete(key);
+            if (!playlistIndexes.includes(key)) this.playlists.delete(key);
         }
         this.updateCallbacks();
         return Array.from(playlists.values());
@@ -68,9 +67,9 @@ export default class PlaylistIndex {
         return Array.from(this.playlists.values());
     }
 
-    public async getPlaylist(playlistID: number) {
+    public async getPlaylist(playlistID: string) {
         if (this.playlists) {
-            const playlist = this.playlists.get(playlistID.toString());
+            const playlist = this.playlists.get(playlistID);
             if (playlist) {
                 return playlist;
             }

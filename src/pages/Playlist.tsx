@@ -14,7 +14,7 @@ import PlaylistIndex from "../logic/PlaylistIndex";
 import { useNavigate } from "react-router-dom";
 import Account, { UserDataFormat } from "../logic/Account";
 
-let lastPlaylistID = 0;
+let lastPlaylistID = "";
 
 export default function Playlist() {
     let paramID: any = useParams().playlistID;
@@ -23,10 +23,11 @@ export default function Playlist() {
     const [trackList, setTrackList] = useState<Track[] | null | false>(false);
     const [errorCode, setErrorCode] = useState(0);
     const [selfInfo, setSelfInfo] = useState<UserDataFormat | null>(null);
+    const [suggestions, setSuggestions] = useState<Track[] | null>(null);
     const navigate = useNavigate();
 
 
-    const playlistID: number = paramID;
+    const playlistID: string = paramID;
 
     const callback = (collection: Collection) => {
         if (!collection) return;
@@ -34,6 +35,12 @@ export default function Playlist() {
         .then(tracks => {
             if (lastPlaylistID != paramID) return;
             setTrackList(tracks);
+
+            collection.getSuggestedTracks(PipeBombConnection.getInstance().getApi().trackCache)
+            .then(newSuggestions => {
+                if (lastPlaylistID != paramID) return;
+                setSuggestions(newSuggestions);
+            })
         });
     }
 
@@ -41,6 +48,8 @@ export default function Playlist() {
         lastPlaylistID = paramID;
         setTrackList(false);
         setPlaylist(null);
+        setSuggestions(null);
+
         let alive = true;
         PlaylistIndex.getInstance().getPlaylist(playlistID)
         .then(collection => {
@@ -155,6 +164,23 @@ export default function Playlist() {
         
     }
 
+    function generateSuggestions() {
+        if (!suggestions) {
+            return <Loader text="Loading Suggestions..." />;
+        }
+
+        if (!suggestions.length) {
+            return <Text h3>Couldn't find any suggested tracks for this playlist</Text>;
+        }
+
+        return <>
+            <Text h2>Suggested Tracks</Text>
+            {suggestions.map((track, index) => (
+                <ListTrack key={index} track={track} />
+            ))}
+        </>
+    }
+
     return (
         <>
             <Text h1>{playlist.getName()}</Text>
@@ -182,6 +208,9 @@ export default function Playlist() {
             {newTrackList.map((track, index) => (
                 <ListTrack key={index} track={track} parentPlaylist={playlist} />
             ))}
+            <div className={styles.suggestions}>
+                { generateSuggestions() }
+            </div>
         </>
     )
 }

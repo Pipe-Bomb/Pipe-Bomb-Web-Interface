@@ -26,12 +26,13 @@ export default class PipeBombConnection {
     public setHost(host: string) {
         if (this.url == host) return;
         this.url = host;
-        this.api = new PipeBomb(this.url, this.token);
+        this.api.setHost(host);
+        console.log("set host");
     }
 
     public setToken(token: string) {
         if (this.token == token) return;
         this.token = token;
-        this.api = new PipeBomb(this.url, this.token);
+        this.api.setToken(token);
     }
 }

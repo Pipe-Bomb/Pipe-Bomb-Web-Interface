@@ -35,6 +35,39 @@ export default class KeyboardShortcuts {
                     player.addTime(10);
                 }
                 break;
+            
+            case "0":
+                player.setTime(0);
+                break;
+            case "1":
+                player.setTime(10);
+                break;
+            case "2":
+                player.setTime(20);
+                break;
+            case "3":
+                player.setTime(30);
+                break;
+            case "4":
+                player.setTime(40);
+                break;
+            case "5":
+                player.setTime(50);
+                break;
+            case "6":
+                player.setTime(60);
+                break;
+            case "7":
+                player.setTime(70);
+                break;
+            case "8":
+                player.setTime(80);
+                break;
+            case "9":
+                player.setTime(90);
+                break;
+            
+
 
             default: return;
         }

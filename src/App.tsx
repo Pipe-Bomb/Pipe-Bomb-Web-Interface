@@ -13,6 +13,7 @@ import Queue from "./components/Queue";
 import AudioPlayer from "./logic/AudioPlayer";
 import { useEffect, useState } from "react";
 import AudioPlayerStatus from "./logic/AudioPlayerStatus";
+import SuggestionsPlaylist from "./pages/SuggestionsPlaylist";
 
 function App() {
   const size = useWindowSize();
@@ -47,6 +48,10 @@ function App() {
         <Route path="/playlist">
           <Route index element={<Search />} />
           <Route path=":playlistID" element={<Playlist />}></Route>
+        </Route>
+
+        <Route path="/track">
+          <Route path=":ID/suggestions" element={<SuggestionsPlaylist />}></Route>
         </Route>
 
         {/* <Route path="*" element={<Test2 />} /> */}

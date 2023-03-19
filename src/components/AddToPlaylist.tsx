@@ -9,7 +9,7 @@ import CustomModal from './CustomModal';
 import Loader from './Loader';
 
 let openModal = () => {};
-let addToPlaylist = (playlistID: number) => {};
+let addToPlaylist = (playlistID: string) => {};
 let selectedTrack: Track | null = null;
 
 export function openAddToPlaylist(track: Track) {
@@ -22,7 +22,7 @@ export function addTrack(playlist: Collection) {
 }
 
 interface lastButton {
-    playlistID: number,
+    playlistID: string,
     value: string | JSX.Element
 }
 
@@ -30,13 +30,13 @@ export default function AddToPlaylist() {
     const [visible, setVisible] = useState(false);
     const [playlists, setPlaylists] = useState(PlaylistIndex.getInstance().getPlaylists());
     const [lastTrackButton, setLastTrackButton] = useState<lastButton>({
-        playlistID: -1,
+        playlistID: "",
         value: ""
     });
 
     openModal = () => {
         setLastTrackButton({
-            playlistID: -1,
+            playlistID: "",
             value: ""
         });
         setVisible(true);
@@ -50,7 +50,7 @@ export default function AddToPlaylist() {
         }
     }, []);
 
-    addToPlaylist = (playlistID: number) => {
+    addToPlaylist = (playlistID: string) => {
         if (!selectedTrack || (lastTrackButton.playlistID == playlistID && lastTrackButton.value == "Added")) return;
 
         PlaylistIndex.getInstance().getPlaylist(playlistID)
