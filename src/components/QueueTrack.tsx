@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import Track from "pipebomb.js/dist/music/Track";
-import { convertArrayToString } from "../logic/Utils";
+import { convertArrayToString, downloadFile } from "../logic/Utils";
 import styles from "../styles/QueueTrack.module.scss";
 import { Loading, Dropdown } from "@nextui-org/react";
 import AudioPlayer from "../logic/AudioPlayer";
 import { openAddToPlaylist } from "./AddToPlaylist";
 import { Link } from "react-router-dom";
+import PipeBombConnection from "../logic/PipeBombConnection";
 
 interface Props {
   track: Track,
@@ -78,6 +79,10 @@ export default function QueueTrack({ track, index }: Props) {
             case "playlist":
                 openAddToPlaylist(track);
                 break;
+            case "download":
+                const filename = (metadata?.title || track.trackID) + ".mp3";
+                downloadFile(`${PipeBombConnection.getInstance().getUrl()}/v1/audio/${track.trackID}`, filename);
+                break;
         }
     }
 
@@ -86,6 +91,7 @@ export default function QueueTrack({ track, index }: Props) {
             <Dropdown.Menu disabledKeys={[]} onAction={contextMenu}>
                 <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
                 <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${track.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
+                <Dropdown.Item key="download">Download as MP3</Dropdown.Item>
             </Dropdown.Menu>
         );
     } else {
@@ -96,6 +102,7 @@ export default function QueueTrack({ track, index }: Props) {
                 <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
                 <Dropdown.Item key="remove">Remove from Queue</Dropdown.Item>
                 <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${track.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
+                <Dropdown.Item key="download">Download as MP3</Dropdown.Item>
             </Dropdown.Menu>
         )
     }

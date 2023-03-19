@@ -1,0 +1,120 @@
+.group {
+    max-width: 1400px;
+    flex-wrap: wrap;
+    display: flex;
+    gap: 0.8rem;
+    align-items: baseline;
+}
+
+.container {
+    flex: 1 1 calc((100% - 1.6rem) / 3);
+    min-width: min(400px, 100%);
+    display: flex;
+    align-items: baseline;
+}
+
+.addButton {
+    height: auto;
+    flex-shrink: 0;
+    width: 40px !important;
+    padding: 0 !important;
+
+    svg {
+        height: 13px;
+        width: 13px;
+    }
+}
+
+.insideContainer {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    background: var(--nextui-colors-backgroundSecondary);
+    border-radius: var(--nextui-radii-base);
+    color: var(--nextui-colors-text);
+    transition: background 0.2s;
+    overflow: hidden;
+    padding-right: 5px;
+
+    &:hover {
+        background: var(--nextui-colors-secondaryLightHover);
+    }
+}
+
+.image {
+    width: 60px;
+    height: 60px;
+    background: var(--nextui-colors-waitingBackground);
+    flex-shrink: 0;
+    margin-right: var(--nextui-space-8);
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--nextui-radii-base);
+    border: 2px solid var(--nextui-colors-border);
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    cursor: pointer;
+
+    .thumbnail {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        object-fit: cover;
+    }
+}
+
+.info {
+    overflow: hidden;
+    flex-grow: 1;
+    flex-shrink: 1;
+    display: block;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 0.5rem;
+}
+
+.trackName {
+    font-size: var(--nextui-fontSizes-md);
+    margin-top: -2px;
+    font-weight: var(--nextui-fontWeights-semibold);
+    min-width: auto;
+    cursor: pointer;
+    text-overflow: ellipsis;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+
+}
+
+.artists {
+    display: block;
+    color: var(--nextui-colors-text);
+    font-size: var(--nextui-fontSizes-sm);
+    word-wrap: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-bottom: 4px;
+}
+
+.contextButton {
+    flex-shrink: 0;
+}
+
+.dropdownLink {
+    color: inherit;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding-left: var(--nextui-space-6);
+    padding-right: var(--nextui-space-6);
+    border-radius: var(--nextui--dropdownItemBorderRadius);
+    display: flex;
+    align-items: center;
+}

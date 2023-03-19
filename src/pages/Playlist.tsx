@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import Collection from "pipebomb.js/dist/collection/Collection";
 import styles from "../styles/Playlist.module.scss";
+import compactTrackStyles from "../styles/CompactTrack.module.scss";
 import { Button, Dropdown, Grid, Text } from "@nextui-org/react";
 import Loader from "../components/Loader";
 import Track from "pipebomb.js/dist/music/Track";
@@ -13,6 +14,7 @@ import { MdShuffle, MdPlayArrow, MdMoreHoriz } from "react-icons/md";
 import PlaylistIndex from "../logic/PlaylistIndex";
 import { useNavigate } from "react-router-dom";
 import Account, { UserDataFormat } from "../logic/Account";
+import CompactTrack from "../components/CompactTrack";
 
 let lastPlaylistID = "";
 
@@ -132,6 +134,12 @@ export default function Playlist() {
         audioPlayer.nextTrack();
     }
 
+    function playSuggestions() {
+        if (!suggestions) return;
+        audioPlayer.addToQueue(suggestions, 0);
+        audioPlayer.nextTrack();
+    }
+
     function contextMenu(button: React.Key) {
         switch (button) {
             case "delete":
@@ -165,7 +173,7 @@ export default function Playlist() {
     }
 
     function generateSuggestions() {
-        if (!suggestions) {
+        if (!suggestions || !playlist) {
             return <Loader text="Loading Suggestions..." />;
         }
 
@@ -174,10 +182,19 @@ export default function Playlist() {
         }
 
         return <>
-            <Text h2>Suggested Tracks</Text>
-            {suggestions.map((track, index) => (
-                <ListTrack key={index} track={track} />
-            ))}
+            <Grid.Container gap={2} alignItems="center">
+                <Grid>
+                    <Text h2>Suggested Tracks</Text>
+                </Grid>
+                <Grid>
+                    <Button size="md" auto onPress={playSuggestions} className={styles.roundButton} color="gradient"><MdPlayArrow /></Button>
+                </Grid>
+            </Grid.Container>
+            <div className={compactTrackStyles.group}>
+                {suggestions.map((track, index) => (
+                    <CompactTrack key={index} track={track} parentPlaylist={playlist} />
+                ))}
+            </div>
         </>
     }
 

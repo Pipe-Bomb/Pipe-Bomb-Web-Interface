@@ -1,26 +1,34 @@
 import { useState, useEffect, useRef } from "react";
 import Track, { TrackMeta } from "pipebomb.js/dist/music/Track";
 import { convertArrayToString, downloadFile } from "../logic/Utils";
-import styles from "../styles/ListTrack.module.scss";
-import { Dropdown, Loading } from "@nextui-org/react";
+import styles from "../styles/CompactTrack.module.scss";
+import { Button, Dropdown, Loading } from "@nextui-org/react";
 import AudioPlayer from "../logic/AudioPlayer";
 import Collection from "pipebomb.js/dist/collection/Collection";
 import { openAddToPlaylist } from "./AddToPlaylist";
 import { Link } from "react-router-dom";
 import PipeBombConnection from "../logic/PipeBombConnection";
+import { FaPlus } from "react-icons/fa";
+import Account, { UserDataFormat } from "../logic/Account";
 
 interface Props {
   track: Track,
   parentPlaylist?: Collection
 }
 
-export default function ListTrack({ track, parentPlaylist }: Props) {
+export default function CompactTrack({ track, parentPlaylist }: Props) {
     const [metadata, setMetadata] = useState<TrackMeta | null>(null);
     const [hasImage, setHasImage] = useState(false);
+    const [currentlyAdding, setCurrentlyAdding] = useState(false);
+    const [selfInfo, setSelfInfo] = useState<UserDataFormat | null>(null);
 
     const thumbnail = useRef(null);
 
     useEffect(() => {
+        if (!selfInfo) {
+            Account.getInstance().getUserData().then(setSelfInfo);
+        }
+        
         track.getMetadata()
         .then(data => {
             if (!data) {
@@ -111,24 +119,42 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
         }
     }
 
+    function addToPlaylist() {
+        if (!parentPlaylist) return;
+        setCurrentlyAdding(true);
+        parentPlaylist.addTracks(track)
+        .finally(() => {
+            setCurrentlyAdding(false);
+        });
+    }
+
     return (
         <div className={styles.container} key={track.trackID}>
-            <div className={styles.image} onClick={playTrack}>
-                <img ref={thumbnail} className={styles.thumbnail} style={{display: hasImage ? "block" : "none"}} />
-                {!hasImage && (<Loading loadingCss={{ $$loadingSize: "80px", $$loadingBorder: "10px" }} css={{margin: "10px"}} />)}
-            </div>
-            <div className={styles.info}>
-                <div>
-                    <span className={styles.trackName} onClick={playTrack}>{metadata?.title || track.trackID}</span>
+            <div className={styles.insideContainer}>
+                <div className={styles.image} onClick={playTrack}>
+                    <img ref={thumbnail} className={styles.thumbnail} style={{display: hasImage ? "block" : "none"}} />
+                    {!hasImage && (<Loading loadingCss={{ $$loadingSize: "40px", $$loadingBorder: "5px" }} css={{margin: "10px"}} />)}
                 </div>
-                {metadata && (
-                    <span className={styles.artists}>{convertArrayToString(metadata.artists)}</span>
+                <div className={styles.info}>
+                    <div>
+                        <span className={styles.trackName} onClick={playTrack}>{metadata?.title || track.trackID}</span>
+                    </div>
+                    {metadata && (
+                        <span className={styles.artists}>{convertArrayToString(metadata.artists)}</span>
+                    )}
+                </div>
+                <Dropdown>
+                    <Dropdown.Button light className={styles.contextButton}></Dropdown.Button>
+                    {dropdown()}
+                </Dropdown>
+                {parentPlaylist && selfInfo?.userID == parentPlaylist.owner.userID && (
+                    <Button auto className={styles.addButton} light onPress={addToPlaylist} disabled={currentlyAdding}>{currentlyAdding ? (
+                        <Loading type="points"></Loading>
+                    ) : (
+                        <FaPlus />
+                    )}</Button>
                 )}
             </div>
-            <Dropdown>
-                <Dropdown.Button light className={styles.contextButton}></Dropdown.Button>
-                {dropdown()}
-            </Dropdown>
         </div>
     );
 }
