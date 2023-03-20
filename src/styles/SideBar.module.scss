@@ -3,7 +3,7 @@
     left: 0;
     top: 0;
     bottom: 0;
-    width: 300px;
+    width: 250px;
     background: var(--nextui-colors-backgroundContrast);
     user-select: none;
     -webkit-user-select: none;
@@ -14,19 +14,19 @@
 
 .logo {
     .image {
-        max-height: 150px;
+        max-height: 120px;
         max-width: 100%;
-        margin: 10px auto 0 auto;
+        margin: 2rem auto 0 auto;
         display: block;
     }
     
     .spacer {
-        height: 2px;
+        height: 1px;
         margin: 0 auto;
         width: 60%;
-        max-width: 90px;
+        max-width: 80px;
         background: var(--nextui-colors-accents8);
-        margin-bottom: 40px;
+        margin-bottom: 2rem;
     }
 }
 
@@ -34,10 +34,10 @@
 
     .topLink {
         display: block;
-        margin: 10px 10px 0 30px;
-        padding: 0 0 0 3px;
+        margin: 0.2rem 1rem 0 2rem;
+        padding: 0;
         color: var(--nextui-colors-sidebarUnselectedText);
-        font-size: var(--nextui-fontSizes-2xl);
+        font-size: var(--nextui-fontSizes-xl);
         transition: color 0.2s;
         border: none;
         background: none;
@@ -67,7 +67,7 @@
 
 .playlistTop {
     position: relative;
-    margin: 2rem 10px 2px 30px;
+    margin: 2rem 1rem 0 1rem;
 
     &::after {
         content: "";
@@ -87,9 +87,9 @@
     margin-bottom: 100px;
 
     .playlist {
-        margin: 5px 10px 5px 30px;
+        margin: 5px 1rem 5px 1rem;
         color: var(--nextui-colors-sidebarUnselectedText);
-        font-size: var(--nextui-fontSizes-lg);
+        font-size: var(--nextui-fontSizes-md);
         display: block;
         transition: color 0.2s;
         position: relative;
