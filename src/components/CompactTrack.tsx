@@ -130,31 +130,29 @@ export default function CompactTrack({ track, parentPlaylist }: Props) {
 
     return (
         <div className={styles.container} key={track.trackID}>
-            <div className={styles.insideContainer}>
-                <div className={styles.image} onClick={playTrack}>
-                    <img ref={thumbnail} className={styles.thumbnail} style={{display: hasImage ? "block" : "none"}} />
-                    {!hasImage && (<Loading loadingCss={{ $$loadingSize: "40px", $$loadingBorder: "5px" }} css={{margin: "10px"}} />)}
+            <div className={styles.image} onClick={playTrack}>
+                <img ref={thumbnail} className={styles.thumbnail} style={{display: hasImage ? "block" : "none"}} />
+                {!hasImage && (<Loading loadingCss={{ $$loadingSize: "40px", $$loadingBorder: "5px" }} css={{margin: "10px"}} />)}
+            </div>
+            <div className={styles.info}>
+                <div>
+                    <span className={styles.trackName} onClick={playTrack}>{metadata?.title || track.trackID}</span>
                 </div>
-                <div className={styles.info}>
-                    <div>
-                        <span className={styles.trackName} onClick={playTrack}>{metadata?.title || track.trackID}</span>
-                    </div>
-                    {metadata && (
-                        <span className={styles.artists}>{convertArrayToString(metadata.artists)}</span>
-                    )}
-                </div>
-                <Dropdown>
-                    <Dropdown.Button light className={styles.contextButton}></Dropdown.Button>
-                    {dropdown()}
-                </Dropdown>
-                {parentPlaylist && selfInfo?.userID == parentPlaylist.owner.userID && (
-                    <Button auto className={styles.addButton} light onPress={addToPlaylist} disabled={currentlyAdding}>{currentlyAdding ? (
-                        <Loading type="points"></Loading>
-                    ) : (
-                        <FaPlus />
-                    )}</Button>
+                {metadata && (
+                    <span className={styles.artists}>{convertArrayToString(metadata.artists)}</span>
                 )}
             </div>
+            <Dropdown>
+                <Dropdown.Button light className={styles.contextButton}></Dropdown.Button>
+                {dropdown()}
+            </Dropdown>
+            {parentPlaylist && selfInfo?.userID == parentPlaylist.owner.userID && (
+                <Button auto className={styles.addButton} light onPress={addToPlaylist} disabled={currentlyAdding}>{currentlyAdding ? (
+                    <Loading type="points"></Loading>
+                ) : (
+                    <FaPlus />
+                )}</Button>
+            )}
         </div>
     );
 }
