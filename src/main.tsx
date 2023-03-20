@@ -29,7 +29,9 @@ const dark = createTheme({
       backgroundSecondary: "#121414"
     },
     space: {},
-    fonts: {}
+    fonts: {
+      sans: "'Manrope', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif"
+    }
   }
 });
 
