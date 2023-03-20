@@ -28,7 +28,7 @@ const dark = createTheme({
       waitingBackground: "#181825",
       backgroundSecondary: "#181825",
       background: "#11111b",
-      backgroundContrast: "#181825"
+      backgroundContrast: "#181825",
     },
     space: {},
     fonts: {}
