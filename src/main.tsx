@@ -9,24 +9,26 @@ const dark = createTheme({
   type: "dark",
   theme: {
     colors: {
-      primaryLight: '$green200',
-      primaryLightHover: '$green300',
-      primaryLightActive: '$green400',
-      primaryLightContrast: '$green600',
-      primaryAlpha: 'rgba(74, 222, 123, 0.2)',
-      primary: '#4ADE7B',
-      primaryBorder: '$green500',
-      primaryBorderHover: '$green600',
-      primarySolidHover: '$green700',
+      primaryLight: '#8bd5ca',
+      primaryLightHover: '#8bd5ca',
+      primaryLightActive: '#8bd5ca',
+      primaryLightContrast: '#8bd5ca',
+      primaryAlpha: '#cad3f5',
+      primary: '#8bd5ca',
+      primaryBorder: '#8bd5ca',
+      primaryBorderHover: '#8bd5ca',
+      primarySolidHover: '#8bd5ca',
       primarySolidContrast: '$white',
-      primaryShadow: '$green500',
+      primaryShadow: '#89b4fa',
 
-      gradient: 'linear-gradient(112deg, $blue100 -25%, $pink500 -10%, $purple500 80%)',
-      link: '#5E1DAD',
+      gradient: 'linear-gradient(112deg, #8bd5ca -25%, #91d7e3 -10%, #8bd5ca 80%)',
+      link: '#b8c0e0',
 
-      sidebarUnselectedText: "$gray800",
-      waitingBackground: "$gray300",
-      backgroundSecondary: "#121414"
+      sidebarUnselectedText: "#a5adcb",
+      waitingBackground: "#181825",
+      backgroundSecondary: "#181825",
+      background: "#11111b",
+      backgroundContrast: "#181825"
     },
     space: {},
     fonts: {}
