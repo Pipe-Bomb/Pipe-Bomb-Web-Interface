@@ -35,6 +35,43 @@ const dark = createTheme({
   }
 });
 
+const pink = createTheme({
+  type: "pink",
+  theme: {
+    colors: {
+      primaryLight: '#FEC5E5',
+      primaryLightHover: '#FEC5E5',
+      primaryLightActive: '#FEC5E5',
+      primaryLightContrast: '#FEC5E5',
+      primaryAlpha: '#cad3f5',
+      primary: '#FF1694',
+      primaryBorder: '#FD5DA8',
+      primaryBorderHover: '#FEC5E5',
+      primarySolidHover: '#FEC5E5',
+      primarySolidContrast: '$white',
+      primaryShadow: '#89b4fa',
+      
+
+
+      gradient: 'linear-gradient(112deg, #FC46AA -25%, #FF1694 -10%, #FF1694 80%)',
+      link: '#b8c0e0',
+      hover: '#FC94AF',
+
+
+      sidebarUnselectedText: "#FC94AF",
+      text: "#FC94AF",
+      waitingBackground: "#181825",
+      backgroundSecondary: "#181825",
+      background: "#11111b",
+      backgroundContrast: "#181825",
+    },
+    space: {},
+    fonts: {},
+    
+    
+  },
+});
+
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
