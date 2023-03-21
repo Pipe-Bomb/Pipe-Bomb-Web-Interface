@@ -51,10 +51,11 @@
         margin-bottom: -6px;
         width: 50%;
         height: 50%;
+        overflow: hidden;
         object-fit: cover;
     }
 
-    .noImage {
+    .singleImage {
         height: 100%;
         width: 100%;
         position: absolute;

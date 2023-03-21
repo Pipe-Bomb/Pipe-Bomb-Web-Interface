@@ -65,7 +65,7 @@ export default function SquarePlaylist({ playlist }: Props) {
             meshes.set(playlist.collectionID, out);
             return out;
         })();
-        return <div className={styles.noImage} style={css} ></div>;
+        return <div className={styles.singleImage} style={css} ></div>;
     }
 
     function generateImageHTML() {
