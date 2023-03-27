@@ -1,18 +1,13 @@
 import { Button, Grid, Progress, Loading, Text, Popover } from "@nextui-org/react";
 import styles from "../styles/Player.module.scss";
-import { MdQueueMusic, MdSkipNext, MdSkipPrevious, MdPlayArrow, MdPause } from "react-icons/md";
+import { MdSkipNext, MdSkipPrevious, MdPlayArrow, MdPause } from "react-icons/md";
 import { useEffect, useRef, useState } from "react";
 import AudioPlayer from "../logic/AudioPlayer";
 import AudioPlayerStatus from "../logic/AudioPlayerStatus";
 import { convertArrayToString, formatTime } from "../logic/Utils";
-import QueueTrack from "./QueueTrack";
-import { ReactSortable } from "react-sortablejs";
 import Queue from "./Queue";
 import KeyboardShortcuts from "../logic/KeyboardShortcuts";
-
-interface ItemInterface {
-    id: number
-}
+import Volume from "./Volume";
 
 interface PlayerProps {
     showQueue: boolean
@@ -163,9 +158,12 @@ export default function Player({ showQueue }: PlayerProps) {
                 </div>
                 <span className={styles.time}>{audioStatus.track && audioStatus.duration != -1 ? formatTime(audioStatus.duration) : ""}</span>
             </div>
-            {showQueue && (
-                <Queue />
-            )}
+            <div className={styles.rightContainer}>
+                <Volume />
+                {showQueue && (
+                    <Queue />
+                )}
+            </div>
         </div>
     )
 }
