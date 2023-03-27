@@ -14,7 +14,7 @@
 
 .logo {
     .image {
-        max-height: 120px;
+        max-height: 150px;
         max-width: 100%;
         margin: 10px auto 0 auto;
         display: block;
@@ -27,7 +27,6 @@
         max-width: 90px;
         background: var(--nextui-colors-accents8);
         margin-bottom: 40px;
-        margin-top: 15px;
     }
 }
 
@@ -38,7 +37,7 @@
         margin: 10px 10px 0 30px;
         padding: 0 0 0 3px;
         color: var(--nextui-colors-sidebarUnselectedText);
-        font-size: var(--nextui-fontSizes-1xl);
+        font-size: var(--nextui-fontSizes-2xl);
         transition: color 0.2s;
         border: none;
         background: none;
