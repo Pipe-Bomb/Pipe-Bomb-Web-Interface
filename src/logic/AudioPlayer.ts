@@ -5,9 +5,14 @@ import { convertArrayToString } from "./Utils";
 import { Howl } from "howler";
 import KeyboardShortcuts from "./KeyboardShortcuts";
 
+export interface VolumeStatus {
+    volume: number,
+    muted: boolean
+}
+
 export default class AudioPlayer {
     private static instance: AudioPlayer;
-    private audio: HTMLAudioElement | null = null;
+    private audio: HTMLAudioElement = new Audio();
     private keyboardShortcuts = KeyboardShortcuts.getInstance();
     private status: AudioPlayerStatus = {
         paused: false,
@@ -19,6 +24,7 @@ export default class AudioPlayer {
         queue: []
     };
     private updateCallbacks: ((status: AudioPlayerStatus) => void)[] = [];
+    private volumeUpdateCallbacks: ((volume: VolumeStatus) => void)[] = [];
 
     private constructor() {
         if ("mediaSession" in navigator) {
@@ -29,7 +35,7 @@ export default class AudioPlayer {
         }
 
         setInterval(() => {
-            const newTime = this.status.seekTime == -1 ? this.audio?.currentTime : this.status.seekTime;
+            const newTime = this.status.seekTime == -1 ? this.audio.currentTime : this.status.seekTime;
             if (newTime != this.status.time && !(this.status.time === 0 && newTime === undefined)) {
                 if (newTime === undefined) {
                     this.status.time = 0;
@@ -61,12 +67,9 @@ export default class AudioPlayer {
         this.status.loading = true;
         this.status.duration = -1;
         this.sendCallbacks();
-        if (this.audio) {
-            this.audio.src = url;
-            this.audio.load();
-        } else {
-            this.audio = new Audio(url);
-        }
+
+        this.audio.src = url;
+        this.audio.load();
         
 
         this.audio.onplay = () => {
@@ -99,12 +102,10 @@ export default class AudioPlayer {
         };
 
         this.audio.onloadeddata = () => {
-            if (!this.audio) return;
             this.status.duration = this.audio.duration;
         }
 
         this.audio.oncanplay = () => {
-            if (!this.audio) return;
             const difference = Math.abs(this.status.seekTime - this.audio.currentTime);
             if (difference < 1 || this.status.seekTime == -1) {
                 this.status.loading = false;
@@ -122,7 +123,6 @@ export default class AudioPlayer {
         };
 
         this.audio.onseeked = () => {
-            if (!this.audio) return;
             const difference = Math.abs(this.status.seekTime - this.audio.currentTime);
             if (difference > 1) {
                 this.audio.pause();
@@ -182,13 +182,11 @@ export default class AudioPlayer {
     }
 
     public pause() {
-        if (!this.audio) return;
         this.status.paused = true;
         this.audio.pause();
     }
 
     public play() {
-        if (!this.audio) return;
         if (this.audio.duration == this.audio.currentTime) {
             this.audio.currentTime = 0;
             this.audio.play();
@@ -213,7 +211,6 @@ export default class AudioPlayer {
     }
 
     public previousTrack() {
-        if (!this.audio) return;
         if (this.audio.currentTime > 10 || 1) {
             this.setTime(0);
             this.audio.play();
@@ -223,7 +220,6 @@ export default class AudioPlayer {
     }
 
     public setTime(percent: number) {
-        if (!this.audio) return;
         const time = this.status.duration / 100 * Math.min(Math.max(percent, 0), 100);
         this.status.seekTime = time;
         this.status.time = time;
@@ -231,7 +227,7 @@ export default class AudioPlayer {
     }
 
     public addTime(seconds: number) {
-        if (!this.audio || this.status.loading) return;
+        if (this.status.loading) return;
         const time = Math.max(Math.min(this.status.time + seconds, this.status.duration), 0);
         if (time < this.status.duration) {
             this.status.seekTime = time;
@@ -272,5 +268,42 @@ export default class AudioPlayer {
 
     public clearQueue() {
         this.status.queue.splice(0, this.status.queue.length);
+    }
+
+    public setVolume(volume: number) {
+        const newVolume = Math.min(Math.max(0, volume), 100);
+        if (newVolume == this.audio.volume) return;
+        this.audio.volume = newVolume / 100;
+        this.sendVolumeCallbacks();
+    }
+
+    public getVolume(): VolumeStatus {
+        return {
+            volume: this.audio.volume * 100,
+            muted: this.audio.muted
+        };
+    }
+
+    public registerVolumeCallback(callback: (volume: VolumeStatus) => void) {
+        this.volumeUpdateCallbacks.push(callback);
+    }
+
+    public unregisterVolumeCallback(callback: (volume: VolumeStatus) => void) {
+        const index = this.volumeUpdateCallbacks.indexOf(callback);
+        if (index < 0) return;
+        this.volumeUpdateCallbacks.splice(index, 1);
+    }
+
+    private sendVolumeCallbacks() {
+        const volume = this.getVolume();
+        for (let callbackFunction of this.volumeUpdateCallbacks) {
+            callbackFunction(volume);
+        }
+    }
+
+    public setMuted(muted: boolean) {
+        if (muted == this.audio.muted) return;
+        this.audio.muted = muted;
+        this.sendVolumeCallbacks();
     }
 }
