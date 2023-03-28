@@ -173,13 +173,15 @@ export default function Playlist() {
     }
 
     function generateSuggestions() {
-        if (!suggestions || !playlist) {
+        if (!suggestions || !playlist || !trackList) {
             return <Loader text="Loading Suggestions..." />;
         }
 
         if (!suggestions.length) {
             return <Text h3>Couldn't find any suggested tracks for this playlist</Text>;
         }
+
+        const trackIDs = trackList.map(track => track.trackID);
 
         return <>
             <Grid.Container gap={2} alignItems="center">
@@ -192,7 +194,7 @@ export default function Playlist() {
             </Grid.Container>
             <div className={compactTrackStyles.group}>
                 {suggestions.map((track, index) => (
-                    <CompactTrack key={index} track={track} parentPlaylist={playlist} />
+                    <CompactTrack key={index} track={track} parentPlaylist={playlist} inverse={trackIDs.includes(track.trackID)} />
                 ))}
             </div>
         </>

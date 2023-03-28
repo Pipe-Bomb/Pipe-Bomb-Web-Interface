@@ -8,15 +8,16 @@ import Collection from "pipebomb.js/dist/collection/Collection";
 import { openAddToPlaylist } from "./AddToPlaylist";
 import { Link } from "react-router-dom";
 import PipeBombConnection from "../logic/PipeBombConnection";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaMinus } from "react-icons/fa";
 import Account, { UserDataFormat } from "../logic/Account";
 
 interface Props {
   track: Track,
   parentPlaylist?: Collection
+  inverse?: boolean
 }
 
-export default function CompactTrack({ track, parentPlaylist }: Props) {
+export default function CompactTrack({ track, parentPlaylist, inverse }: Props) {
     const [metadata, setMetadata] = useState<TrackMeta | null>(null);
     const [hasImage, setHasImage] = useState(false);
     const [currentlyAdding, setCurrentlyAdding] = useState(false);
@@ -122,10 +123,17 @@ export default function CompactTrack({ track, parentPlaylist }: Props) {
     function addToPlaylist() {
         if (!parentPlaylist) return;
         setCurrentlyAdding(true);
-        parentPlaylist.addTracks(track)
-        .finally(() => {
-            setCurrentlyAdding(false);
-        });
+        if (inverse) {
+            parentPlaylist.removeTracks(track)
+            .finally(() => {
+                setCurrentlyAdding(false);
+            })
+        } else {
+            parentPlaylist.addTracks(track)
+            .finally(() => {
+                setCurrentlyAdding(false);
+            });
+        }
     }
 
     return (
@@ -150,7 +158,11 @@ export default function CompactTrack({ track, parentPlaylist }: Props) {
                 <Button auto className={styles.addButton} light onPress={addToPlaylist} disabled={currentlyAdding}>{currentlyAdding ? (
                     <Loading type="points"></Loading>
                 ) : (
-                    <FaPlus />
+                    inverse ? (
+                        <FaMinus />
+                    ) : (
+                        <FaPlus />
+                    )
                 )}</Button>
             )}
         </div>
