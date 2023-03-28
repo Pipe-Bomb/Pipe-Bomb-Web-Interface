@@ -27,7 +27,6 @@ export default class PipeBombConnection {
         if (this.url == host) return;
         this.url = host;
         this.api.setHost(host);
-        console.log("set host");
     }
 
     public setToken(token: string) {

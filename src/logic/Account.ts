@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
 import Axios from "axios";
 import PipeBombConnection from "./PipeBombConnection";
+import { generateHash } from "./Utils";
 
 export interface UserDataFormat {
     username: string,
@@ -102,8 +103,6 @@ export default class Account {
                 email: this.email
             });
 
-            console.log("requested user data that we dont have");
-
             this.dataAwaitCallbacks.push(() => {
                 resolve({
                     username: this.username || "",
@@ -112,5 +111,11 @@ export default class Account {
                 });
             });
         });
+    }
+
+    public static getAvatarUrl(userID: string) {
+        const value = generateHash(userID)();
+        const imageID = Math.floor(value * 100001);
+        return `https://www.thiswaifudoesnotexist.net/example-${imageID}.jpg`;
     }
 }
