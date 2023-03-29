@@ -44,6 +44,7 @@
                 background: transparent;
                 cursor: pointer;
                 z-index: 1;
+                -webkit-appearance: none;
     
                 &::-webkit-slider-thumb {
                     appearance: none;

@@ -92,7 +92,6 @@ export default class AudioPlayer {
             console.log("track ended, next song");
             const nextTrack = this.status.queue.shift();
             if (nextTrack) {
-                console.log("next!");
                 this.playTrack(nextTrack, true);
             } else {
                 console.log("not next");
