@@ -6,7 +6,6 @@ export default interface AudioPlayerStatus {
     duration: number,
     loading: boolean,
     track: Track | null,
-    seekTime: number,
     queue: Track[],
     key?: number
 }

@@ -28,15 +28,12 @@ export default function Player({ showQueue }: PlayerProps) {
 
     let [audioStatus, setAudioStatus] = useState(audioPlayer.getStatus());
 
-    const [trackList, setTrackList] = useState(audioPlayer.getQueue());
-
     const callback = (newStatus: AudioPlayerStatus) => {
         if (slider.current != null && progressValue.current == -1) {
             const sliderElement: any = slider.current;
             sliderElement.value = newStatus.time / newStatus.duration * 100;
         }
         setAudioStatus(newStatus);
-        setTrackList(newStatus.queue);
     }
 
     let mouseUpHandler = () => {
@@ -140,7 +137,7 @@ export default function Player({ showQueue }: PlayerProps) {
                     </Grid.Container>
                 </div>
 
-                <span className={styles.time}>{audioStatus.track && audioStatus.duration != -1 ? formatTime(progressValue.current == -1 ? (audioStatus.seekTime == -1 ? audioStatus.time : audioStatus.seekTime) : (progressValue.current / 100 * audioStatus.duration)) : ""}</span>
+                <span className={styles.time}>{audioStatus.track && audioStatus.duration != -1 ? formatTime(progressValue.current == -1 ? audioStatus.time : (progressValue.current / 100 * audioStatus.duration)) : ""}</span>
                 <div className={styles.progressBar}>
                     {audioStatus.loading || !audioStatus.track ? null : (
                         <input ref={slider} tabIndex={-1} min={0} max={100} step={0.1} type="range" className={styles.progressRange + (progressValue.current == -1 ? "" : ` ${styles.progressActive}`)} onInput={e => progressChange(e)} onKeyDown={sliderKeyDown} />

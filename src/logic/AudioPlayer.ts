@@ -2,7 +2,6 @@ import Track from "pipebomb.js/dist/music/Track";
 import AudioPlayerStatus from "./AudioPlayerStatus";
 import PipeBombConnection from "./PipeBombConnection";
 import { convertArrayToString } from "./Utils";
-import { Howl } from "howler";
 import KeyboardShortcuts from "./KeyboardShortcuts";
 
 export interface VolumeStatus {
@@ -20,9 +19,9 @@ export default class AudioPlayer {
         duration: -1,
         loading: false,
         track: null,
-        seekTime: -1,
         queue: []
     };
+    private lastBuffer = 0;
     private updateCallbacks: ((status: AudioPlayerStatus) => void)[] = [];
     private volumeUpdateCallbacks: ((volume: VolumeStatus) => void)[] = [];
 
@@ -30,18 +29,12 @@ export default class AudioPlayer {
         if ("mediaSession" in navigator) {
 
             navigator.mediaSession.setActionHandler("previoustrack", () => this.previousTrack());
-
             navigator.mediaSession.setActionHandler("nexttrack", () => this.nextTrack());
         }
 
         setInterval(() => {
-            const newTime = this.status.seekTime == -1 ? this.audio.currentTime : this.status.seekTime;
-            if (newTime != this.status.time && !(this.status.time === 0 && newTime === undefined)) {
-                if (newTime === undefined) {
-                    this.status.time = 0;
-                } else {
-                    this.status.time = newTime;
-                }
+            if (this.audio.currentTime != this.status.time) {
+                this.status.time = this.audio.currentTime;
                 this.sendCallbacks();
             }
         }, 100);
@@ -105,34 +98,24 @@ export default class AudioPlayer {
         }
 
         this.audio.oncanplay = () => {
-            const difference = Math.abs(this.status.seekTime - this.audio.currentTime);
-            if (difference < 1 || this.status.seekTime == -1) {
-                this.status.loading = false;
-                this.sendCallbacks();
-                if (this.status.paused) {
-                    this.audio.pause();
-                } else {
-                    this.audio.play();
-                }
-            }
+            this.status.loading = false;
+            this.lastBuffer = 0;
+            this.sendCallbacks();
         }
         
         this.audio.onerror = error => {
             console.error(error);
         };
 
-        this.audio.onseeked = () => {
-            const difference = Math.abs(this.status.seekTime - this.audio.currentTime);
-            if (difference > 1) {
-                this.audio.pause();
-                if (!this.status.loading) {
+        this.audio.onwaiting = () => {
+            const timestamp = Date.now();
+            this.lastBuffer = timestamp;
+            setTimeout(() => {
+                if (this.lastBuffer == timestamp) {
                     this.status.loading = true;
                     this.sendCallbacks();
                 }
-                this.audio.currentTime = this.status.seekTime;
-            } else {
-                this.status.seekTime = -1;
-            }
+            }, 100);
         }
 
         if (!this.status.paused) {
@@ -220,7 +203,6 @@ export default class AudioPlayer {
 
     public setTime(percent: number) {
         const time = this.status.duration / 100 * Math.min(Math.max(percent, 0), 100);
-        this.status.seekTime = time;
         this.status.time = time;
         this.audio.currentTime = time;
     }
@@ -229,7 +211,6 @@ export default class AudioPlayer {
         if (this.status.loading) return;
         const time = Math.max(Math.min(this.status.time + seconds, this.status.duration), 0);
         if (time < this.status.duration) {
-            this.status.seekTime = time;
             this.status.time = time;
             this.audio.currentTime = time;
         } else {
