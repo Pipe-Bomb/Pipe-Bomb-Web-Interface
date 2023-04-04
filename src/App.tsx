@@ -14,6 +14,7 @@ import AudioPlayer from "./logic/AudioPlayer";
 import { useEffect, useState } from "react";
 import AudioPlayerStatus from "./logic/AudioPlayerStatus";
 import SuggestionsPlaylist from "./pages/SuggestionsPlaylist";
+import Chart from "./pages/Chart";
 
 function App() {
   const size = useWindowSize();
@@ -48,6 +49,11 @@ function App() {
         <Route path="/playlist">
           <Route index element={<Search />} />
           <Route path=":playlistID" element={<Playlist />}></Route>
+        </Route>
+
+        <Route path="/charts">
+          <Route index element={<Search />} />
+          <Route path=":chartID" element={<Chart />}></Route>
         </Route>
 
         <Route path="/track">

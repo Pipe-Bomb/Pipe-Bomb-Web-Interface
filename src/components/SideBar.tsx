@@ -3,7 +3,6 @@ import styles from "../styles/SideBar.module.scss";
 import logo from "../assets/Pipe Bomb logo no background.png";
 import PlaylistIndex from "../logic/PlaylistIndex";
 import { useEffect, useState } from "react";
-import Collection from "pipebomb.js/dist/collection/Collection";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import { useNavigate } from 'react-router-dom';
 import { connectToHost } from "../pages/Connect";
@@ -15,13 +14,14 @@ import { GoPlus } from "react-icons/go";
 import { MdHome, MdSearch, MdOutlinePlaylistPlay } from "react-icons/md";
 import { IoServer } from "react-icons/io5";
 import Loader from "./Loader";
+import Playlist from "pipebomb.js/dist/collection/Playlist";
 
 export default function SideBar() {
     const playlistIndex = PlaylistIndex.getInstance();
     const [playlists, setPlaylists] = useState(playlistIndex.getPlaylists());
     const navigate = useNavigate();
 
-    function playlistsUpdated(playlists: Collection[]) {
+    function playlistsUpdated(playlists: Playlist[]) {
         setPlaylists(playlists);
     }
 

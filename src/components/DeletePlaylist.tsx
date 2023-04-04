@@ -1,13 +1,13 @@
 import { Button, Grid, Loading, Modal, Text } from '@nextui-org/react';
-import Collection from 'pipebomb.js/dist/collection/Collection';
 import Track from 'pipebomb.js/dist/music/Track';
 import { useState, useEffect } from "react";
 import PlaylistIndex from '../logic/PlaylistIndex';
 import styles from "../styles/AddToPlaylist.module.scss";
 import { openCreatePlaylist } from "./CreatePlaylist";
+import Playlist from 'pipebomb.js/dist/collection/Playlist';
 
 let openModal = () => {};
-let addToPlaylist = (playlist: Collection) => {};
+let addToPlaylist = (playlist: Playlist) => {};
 let selectedTrack: Track | null = null;
 
 export function openDeletePlaylist(track: Track) {
@@ -44,7 +44,7 @@ export default function AddToPlaylist() {
         }
     }, []);
 
-    addToPlaylist = (playlist: Collection) => {
+    addToPlaylist = (playlist: Playlist) => {
         if (!selectedTrack || (lastTrackButton.playlistID == playlist.collectionID && lastTrackButton.value == "Added")) return;
         
         setLastTrackButton({

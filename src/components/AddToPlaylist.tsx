@@ -1,5 +1,4 @@
 import { Button, Grid, Loading, Text } from '@nextui-org/react';
-import Collection from 'pipebomb.js/dist/collection/Collection';
 import Track from 'pipebomb.js/dist/music/Track';
 import { useState, useEffect } from "react";
 import PlaylistIndex from '../logic/PlaylistIndex';
@@ -7,6 +6,7 @@ import styles from "../styles/AddToPlaylist.module.scss";
 import { openCreatePlaylist } from "./CreatePlaylist";
 import CustomModal from './CustomModal';
 import Loader from './Loader';
+import Playlist from 'pipebomb.js/dist/collection/Playlist';
 
 let openModal = () => {};
 let addToPlaylist = (playlistID: string) => {};
@@ -17,7 +17,7 @@ export function openAddToPlaylist(track: Track) {
     openModal();
 }
 
-export function addTrack(playlist: Collection) {
+export function addTrack(playlist: Playlist) {
     addToPlaylist(playlist.collectionID);
 }
 
@@ -68,7 +68,7 @@ export default function AddToPlaylist() {
                     playlistID: playlist.collectionID,
                     value: "Added"
                 });
-            }).catch(error => {
+            }).catch((error: any) => {
                 console.error(error);
                 setLastTrackButton({
                     playlistID: playlist.collectionID,

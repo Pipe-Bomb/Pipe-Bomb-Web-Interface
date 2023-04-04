@@ -1,0 +1,16 @@
+.playlistContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: left;
+}
+
+.playlist {
+    flex: 1 0 0;
+    flex-grow: 0;
+    min-width: min(400px, 100%);
+}
+
+.title {
+    margin-top: var(--nextui-space-15);
+}

@@ -5,20 +5,28 @@ import PipeBombUser from "../components/PipeBombUser";
 import SquarePlaylist from "../components/SquarePlaylist";
 import Account, { UserDataFormat } from "../logic/Account";
 import PlaylistIndex from "../logic/PlaylistIndex";
+import styles from "../styles/Home.module.scss";
+import TrackList from "pipebomb.js/dist/collection/TrackList";
+import PipeBombConnection from "../logic/PipeBombConnection";
+import ChartIndex from "../logic/ChartIndex";
+import SquareChart from "../components/SquareChart";
 
 export default function Home() {
     const [playlists, setPlaylists] = useState(PlaylistIndex.getInstance().getPlaylists());
+    const [charts, setCharts] = useState<TrackList[] | null>(null);
     const [userData, setUserData] = useState<UserDataFormat | null>(null);
     
 
     useEffect(() => {
         Account.getInstance().getUserData().then(setUserData);
+        ChartIndex.getInstance().getCharts().then(setCharts);
 
         PlaylistIndex.getInstance().registerUpdateCallback(setPlaylists);
 
         return () => {
             PlaylistIndex.getInstance().unregisterUpdateCallback(setPlaylists);
         }
+
     }, []);
 
     function generatePlaylistHTML() {
@@ -31,18 +39,45 @@ export default function Home() {
         if (playlists.length) {
             return (
                 <>
-                    <Text h2>Playlists</Text>
-                    {playlists.map(playlist => <SquarePlaylist key={playlist.collectionID} playlist={playlist} />)}
+                    <Text h2 className={styles.title}>Playlists</Text>
+                    <div className={styles.playlistContainer}>
+                        {playlists.map((playlist, index) => (
+                            <div key={index} className={styles.playlist}>
+                                <SquarePlaylist playlist={playlist} />
+                            </div>
+                        ))}
+                    </div>
                 </>
             )
         }
 
-        return (
-            <Text h3>No playlists?</Text>
-        )
+        return null;
     }
 
-    const playlistHTML: JSX.Element | null = generatePlaylistHTML();
+    function generateChartHTML() {
+        if (charts === null) {
+            return (
+                <Loader text="Loading playlists" />
+            )
+        }
+
+        if (charts.length) {
+            return (
+                <>
+                    <Text h2 className={styles.title}>Charts</Text>
+                    <div className={styles.playlistContainer}>
+                        {charts.map((chart, index) => (
+                            <div key={index} className={styles.playlist}>
+                                <SquareChart chart={chart} />
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )
+        }
+
+        return null;
+    }
 
 
     return <>
@@ -60,6 +95,7 @@ export default function Home() {
         </Grid.Container>
         
         
-        {playlistHTML}
+        { generatePlaylistHTML() }
+        { generateChartHTML() }
     </>
 }

@@ -4,16 +4,16 @@ import { convertArrayToString, downloadFile } from "../logic/Utils";
 import styles from "../styles/CompactTrack.module.scss";
 import { Button, Dropdown, Loading } from "@nextui-org/react";
 import AudioPlayer from "../logic/AudioPlayer";
-import Collection from "pipebomb.js/dist/collection/Collection";
 import { openAddToPlaylist } from "./AddToPlaylist";
 import { Link } from "react-router-dom";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import Account, { UserDataFormat } from "../logic/Account";
+import Playlist from "pipebomb.js/dist/collection/Playlist";
 
 interface Props {
   track: Track,
-  parentPlaylist?: Collection
+  parentPlaylist?: Playlist
   inverse?: boolean
 }
 

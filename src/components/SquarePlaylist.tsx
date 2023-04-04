@@ -1,4 +1,3 @@
-import Collection from "pipebomb.js/dist/collection/Collection";
 import styles from "../styles/SquarePlaylist.module.scss";
 import { useState, useEffect } from "react";
 import PipeBombConnection from "../logic/PipeBombConnection";
@@ -6,9 +5,10 @@ import { Link } from "react-router-dom";
 import { Text } from "@nextui-org/react";
 import { generateMeshGradient } from 'meshgrad';
 import LazyImage from "./LazyImage";
+import Playlist from "pipebomb.js/dist/collection/Playlist";
 
 interface Props {
-    playlist: Collection
+    playlist: Playlist
 }
 
 const meshes: Map<string, {[key: string]: string}> = new Map();

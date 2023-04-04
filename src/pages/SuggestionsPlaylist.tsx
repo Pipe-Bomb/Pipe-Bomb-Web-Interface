@@ -1,9 +1,7 @@
-import Collection from "pipebomb.js/dist/collection/Collection";
-import Suggestions from "pipebomb.js/dist/collection/Suggestions";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Button, Dropdown, Grid, Text } from "@nextui-org/react";
-import Track, { TrackMeta } from "pipebomb.js/dist/music/Track";
+import { Button, Grid, Text } from "@nextui-org/react";
+import { TrackMeta } from "pipebomb.js/dist/music/Track";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import Loader from "../components/Loader";
 import ListTrack from "../components/ListTrack";
@@ -11,13 +9,14 @@ import AudioPlayer from "../logic/AudioPlayer";
 import { shuffle } from "../logic/Utils";
 import styles from "../styles/Playlist.module.scss";
 import { MdPlayArrow, MdShuffle } from "react-icons/md";
+import TrackList from "pipebomb.js/dist/collection/TrackList";
 
 let lastPlaylistID = "";
 
 export default function SuggestionsPlaylist() {
     let paramID: any = useParams().ID;
     const [trackMeta, setTrackMeta] = useState<TrackMeta | null | false>(null);
-    const [suggestions, setSuggestions] = useState<Suggestions | null | false>(null);
+    const [suggestions, setSuggestions] = useState<TrackList | null | false>(null);
 
     const api = PipeBombConnection.getInstance().getApi();
     const audioPlayer = AudioPlayer.getInstance();

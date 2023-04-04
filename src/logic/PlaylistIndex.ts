@@ -1,11 +1,11 @@
+import Playlist from "pipebomb.js/dist/collection/Playlist";
 import PipeBombConnection from "./PipeBombConnection";
-import Collection from "pipebomb.js/dist/collection/Collection";
 
 export default class PlaylistIndex {
     private static instance: PlaylistIndex;
 
-    private playlists: Map<string, Collection> | null = null;
-    private callbacks: ((playlists: Collection[]) => void)[] = [];
+    private playlists: Map<string, Playlist> | null = null;
+    private callbacks: ((playlists: Playlist[]) => void)[] = [];
     
 
     private constructor() {
@@ -52,11 +52,11 @@ export default class PlaylistIndex {
         }
     }
 
-    public registerUpdateCallback(callback: (playlists: Collection[]) => void) {
+    public registerUpdateCallback(callback: (playlists: Playlist[]) => void) {
         this.callbacks.push(callback);
     }
 
-    public unregisterUpdateCallback(callback: (playlists: Collection[]) => void) {
+    public unregisterUpdateCallback(callback: (playlists: Playlist[]) => void) {
         const index = this.callbacks.indexOf(callback);
         if (index < 0) return;
         this.callbacks.splice(index, 1);

@@ -4,14 +4,14 @@ import { convertArrayToString, downloadFile } from "../logic/Utils";
 import styles from "../styles/ListTrack.module.scss";
 import { Dropdown, Loading } from "@nextui-org/react";
 import AudioPlayer from "../logic/AudioPlayer";
-import Collection from "pipebomb.js/dist/collection/Collection";
 import { openAddToPlaylist } from "./AddToPlaylist";
 import { Link } from "react-router-dom";
 import PipeBombConnection from "../logic/PipeBombConnection";
+import Playlist from "pipebomb.js/dist/collection/Playlist";
 
 interface Props {
   track: Track,
-  parentPlaylist?: Collection
+  parentPlaylist?: Playlist
 }
 
 export default function ListTrack({ track, parentPlaylist }: Props) {

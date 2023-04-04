@@ -1,0 +1,17 @@
+.container {
+    display: flex;
+    justify-content: stretch;
+    align-items: center;
+    gap: 1rem;
+}
+
+.number {
+    width: 100px;
+    text-align: center;
+    flex-grow: 0 !important;
+    flex-shrink: 0;
+}
+
+.container > * {
+    flex-grow: 1;
+}

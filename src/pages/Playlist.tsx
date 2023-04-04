@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import PipeBombConnection from "../logic/PipeBombConnection";
-import Collection from "pipebomb.js/dist/collection/Collection";
 import styles from "../styles/Playlist.module.scss";
 import compactTrackStyles from "../styles/CompactTrack.module.scss";
 import { Button, Dropdown, Grid, Text } from "@nextui-org/react";
@@ -15,13 +14,14 @@ import PlaylistIndex from "../logic/PlaylistIndex";
 import { useNavigate } from "react-router-dom";
 import Account, { UserDataFormat } from "../logic/Account";
 import CompactTrack from "../components/CompactTrack";
+import PipeBombPlaylist from "pipebomb.js/dist/collection/Playlist";
 
 let lastPlaylistID = "";
 
 export default function Playlist() {
     let paramID: any = useParams().playlistID;
     const audioPlayer = AudioPlayer.getInstance();
-    const [playlist, setPlaylist] = useState<Collection | null>(null);
+    const [playlist, setPlaylist] = useState<PipeBombPlaylist | null>(null);
     const [trackList, setTrackList] = useState<Track[] | null | false>(false);
     const [errorCode, setErrorCode] = useState(0);
     const [selfInfo, setSelfInfo] = useState<UserDataFormat | null>(null);
@@ -31,7 +31,7 @@ export default function Playlist() {
 
     const playlistID: string = paramID;
 
-    const callback = (collection: Collection) => {
+    const callback = (collection: PipeBombPlaylist) => {
         if (!collection) return;
         collection.getTrackList(PipeBombConnection.getInstance().getApi().trackCache)
         .then(tracks => {
@@ -206,7 +206,7 @@ export default function Playlist() {
             {!isOwnPlaylist && (
                 <Text h4>by {playlist.owner.username}</Text>
             )}
-            <Grid.Container gap={2} alignItems="center">
+            <Grid.Container gap={2} alignItems="center" className={styles.top}>
                 <Grid>
                     <Button size="xl" auto onPress={playPlaylist} className={styles.roundButton} color="gradient"><MdPlayArrow /></Button>
                 </Grid>
