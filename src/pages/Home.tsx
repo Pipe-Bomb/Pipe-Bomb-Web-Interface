@@ -97,5 +97,7 @@ export default function Home() {
         
         { generatePlaylistHTML() }
         { generateChartHTML() }
+        
+        <div className={styles.bottom}></div>
     </>
 }
