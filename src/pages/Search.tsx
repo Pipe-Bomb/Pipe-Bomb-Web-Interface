@@ -61,11 +61,12 @@ export default function Search() {
         if (services === null) {
             return <Loader text="Loading Services..."></Loader>;
         } else {
+            const serverUrl = PipeBombConnection.getInstance().getUrl();
             return <>
                 <div className={styles.buttonGroup}>
                     { services.map(service => (
                         <Button className={styles.serviceButton} key={service.name} disabled={currentPlatform == service.name} onPress={() => setPlatform(service.name)} light={currentPlatform != service.name} auto>
-                            <img className={styles.icon} src={`/music-services/${service.prefix}.png`} />
+                            <img className={styles.icon} src={`${serverUrl}/v1/serviceicon/${service.name}`} />
                             {service.name}
                         </Button>
                     )) }
