@@ -18,6 +18,11 @@ export default class PlaylistIndex {
                 this.checkPlaylists();
             }
         }, 10_000);
+
+        PipeBombConnection.getInstance().registerUpdateCallback(() => {
+            this.playlists = null;
+            this.checkPlaylists();
+        });
     }
 
     public static getInstance() {

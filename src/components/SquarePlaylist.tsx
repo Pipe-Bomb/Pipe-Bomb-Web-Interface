@@ -31,7 +31,7 @@ export default function SquarePlaylist({ playlist }: Props) {
                 .then(metadata => {
                     if (checked == -1 || images.length >= 4) return;
                     checked++;
-                    if (metadata.image) images.push(metadata.image);
+                    if (metadata?.image) images.push(metadata.image);
                     if (checked >= checkCount || images.length >= 4) {
                         checked = -1;
                         setImageUrls(images);

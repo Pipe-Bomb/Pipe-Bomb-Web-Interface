@@ -16,23 +16,29 @@ export default function Home() {
     const [charts, setCharts] = useState<TrackList[] | null>(null);
     const [userData, setUserData] = useState<UserDataFormat | null>(null);
     
+    function reload() {
+        ChartIndex.getInstance().getCharts().then(setCharts);
+    }
 
     useEffect(() => {
         Account.getInstance().getUserData().then(setUserData);
-        ChartIndex.getInstance().getCharts().then(setCharts);
 
+        PipeBombConnection.getInstance().registerUpdateCallback(reload);
         PlaylistIndex.getInstance().registerUpdateCallback(setPlaylists);
+        reload();
 
         return () => {
+            PipeBombConnection.getInstance().unregisterUpdateCallback(reload);
             PlaylistIndex.getInstance().unregisterUpdateCallback(setPlaylists);
         }
-
     }, []);
 
     function generatePlaylistHTML() {
         if (playlists === null) {
             return (
-                <Loader text="Loading playlists" />
+                <div className={styles.loaderContainer}>
+                    <Loader text="Loading Playlists" />
+                </div>
             )
         }
 
@@ -57,7 +63,9 @@ export default function Home() {
     function generateChartHTML() {
         if (charts === null) {
             return (
-                <Loader text="Loading playlists" />
+                <div className={styles.loaderContainer}>
+                    <Loader text="Loading Charts" />
+                </div>
             )
         }
 
