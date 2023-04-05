@@ -26,12 +26,14 @@ export default class ChartIndex {
 
     private setChart(chart: TrackList) {
         if (!this.charts) this.charts = new Map();
-        const existingChart = this.charts.get(chart.collectionID);
+        const chartID = chart.collectionID.split("/").pop();
+        if (!chartID) return chart;
+        const existingChart = this.charts.get(chartID);
         if (existingChart) {
             existingChart.copyFromOtherTrackList(chart);
             return existingChart;
         } else {
-            this.charts.set(chart.collectionID, chart);
+            this.charts.set(chartID, chart);
             return chart;
         }
     }
