@@ -104,7 +104,8 @@ export default class AudioPlayer {
         }
         
         this.audio.onerror = error => {
-            console.error(error);
+            console.error("Audio error!", this.status.track, error);
+            this.nextTrack();
         };
 
         this.audio.onwaiting = () => {
