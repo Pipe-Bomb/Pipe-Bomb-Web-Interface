@@ -59,7 +59,7 @@ export default class ChartIndex {
 
     public async getChart(chartID: string): Promise<TrackList> {
         const chart = this.charts && this.charts.get(chartID);
-        if (!chart || !chart.getTrackList().length) {
+        if (!chart || !chart.getTrackList()?.length) {
             const newChart = await PipeBombConnection.getInstance().getApi().v1.getChart(chartID);
             return this.setChart(newChart);
         }
