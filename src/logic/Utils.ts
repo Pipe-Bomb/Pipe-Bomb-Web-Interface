@@ -1,3 +1,5 @@
+import Track, { TrackMeta } from "pipebomb.js/dist/music/Track";
+
 export function convertArrayToString(items: string[]) {
     let out = "";
     for (let i = 0; i < items.length; i++) {
@@ -62,6 +64,14 @@ export async function downloadFile(url: string, filename: string) {
     window.URL.revokeObjectURL(link.href);
 }
 
+export function downloadAsFile(contents: string, filename: string) {
+    var link = document.createElement("a");
+    link.href = "data:text/plain;charset=utf-8," + encodeURIComponent(contents);
+    link.download = filename;
+    link.click();
+    window.URL.revokeObjectURL(link.href);
+}
+
 export function generateHash(seed?: string | number) {
     function nextHash(a: number) { 
         return function() {
@@ -102,4 +112,67 @@ export function generateHash(seed?: string | number) {
     }
 
     return nextHash(numberSeed);
+}
+
+export function convertTracklistToM3u(pipeBombUrl: string, tracks: Track[], m3u8: boolean, download?: boolean) {
+    return new Promise<string>(async (resolve) => {
+        const trackList = Array.from(tracks);
+        const originalTrackList = Array.from(tracks);
+        const trackListLength = trackList.length;
+        const trackMetas: TrackMeta[] = Array(tracks.length).fill(null);
+        let loadedCount = 0;
+    
+        function loadTrackMeta(index: number, track: Track) {
+            track.getMetadata()
+            .then(meta => {
+                trackMetas[index] = meta;
+            }).catch(e => {
+                console.error("failed to get meta for track", track.trackID);
+            }).finally(() => {
+                if (++loadedCount >= trackListLength) {
+    
+                    const lines: string[] = [];
+    
+                    if (m3u8) {
+                        lines.push("#EXTM3U", "#EXT-X-VERSION:3");
+                        for (let i = 0; i < trackListLength; i++) {
+                            if (trackMetas[i]) {
+                                lines.push(`#EXTINF:-1,${convertArrayToString(trackMetas[i].artists)} - ${trackMetas[i].title}`)
+                                if (trackMetas[i].image) {
+                                    lines.push(`#EXT-X-THUMBNAIL:${trackMetas[i].image}`);
+                                }
+                                lines.push(`${pipeBombUrl}/v1/audio/${originalTrackList[i].trackID}`);
+                            }
+                        }
+                        lines.push("#EXT-X-ENDLIST");
+                    } else {
+                        lines.push("#EXTM3U");
+                        for (let i = 0; i < trackListLength; i++) {
+                            if (trackMetas[i]) {
+                                lines.push(`#EXTINF:-1,${convertArrayToString(trackMetas[i].artists)} - ${trackMetas[i].title}`)
+                                lines.push(`${pipeBombUrl}/v1/audio/${originalTrackList[i].trackID}`);
+                            }
+                        }
+                    }
+                    const out = lines.join("\n");
+                    resolve(out);
+
+                    if (download) {
+                        downloadAsFile(out, "Pipe Bomb Playlist.m3u" + (m3u8 ? "8" : ""));
+                    }
+                } else {
+                    const newTrack = trackList.shift();
+                    if (newTrack) {
+                        loadTrackMeta(trackListLength - trackList.length - 1, newTrack);
+                    }
+                }
+            });
+        }
+    
+        for (let i = 0; i < 10; i++) {
+            const track = trackList.shift();
+            if (!track) break;
+            loadTrackMeta(i, track);
+        }
+    });
 }

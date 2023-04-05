@@ -8,7 +8,7 @@ import Loader from "../components/Loader";
 import Track from "pipebomb.js/dist/music/Track";
 import ListTrack from "../components/ListTrack";
 import AudioPlayer from "../logic/AudioPlayer";
-import { shuffle } from "../logic/Utils";
+import { convertTracklistToM3u, shuffle } from "../logic/Utils";
 import { MdShuffle, MdPlayArrow, MdMoreHoriz } from "react-icons/md";
 import PlaylistIndex from "../logic/PlaylistIndex";
 import { useNavigate } from "react-router-dom";
@@ -149,6 +149,11 @@ export default function Playlist() {
                     navigate("/");
                 })
                 break;
+            case "m3u":
+                if (trackList) {
+                    convertTracklistToM3u(PipeBombConnection.getInstance().getUrl(), trackList, false, true);
+                }
+                break;
         }
     }
 
@@ -159,6 +164,7 @@ export default function Playlist() {
             return (
                 <Dropdown.Menu onAction={contextMenu} disabledKeys={["rename"]}>
                     <Dropdown.Item key="rename">Rename Playlist</Dropdown.Item>
+                    <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
                     <Dropdown.Item key="delete" color="error">Delete Playlist</Dropdown.Item>
                 </Dropdown.Menu>
             );
@@ -166,6 +172,7 @@ export default function Playlist() {
             return (
                 <Dropdown.Menu onAction={contextMenu} disabledKeys={["like"]}>
                     <Dropdown.Item key="like">Like Playlist</Dropdown.Item>
+                    <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
                 </Dropdown.Menu>
             )
         }

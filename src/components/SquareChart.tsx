@@ -10,7 +10,6 @@ export interface SquareChartProps {
 }
 
 export default function SquareChart({ chart }: SquareChartProps) {
-    console.log(chart);
     return (
         <div className={styles.container}>
             <Link to={`/charts/${chart.collectionID.split("/").pop()}`} className={styles.link}>
