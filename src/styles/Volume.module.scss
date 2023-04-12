@@ -45,27 +45,40 @@
                 cursor: pointer;
                 z-index: 1;
                 -webkit-appearance: none;
-    
-                &::-webkit-slider-thumb {
-                    appearance: none;
-                    -webkit-appearance: none;
-                    width: 5px;
-                    height: 5px;
-                    background: var(--nextui-colors-primary);
-                    border: none;
-                    transform: scale(3);
-                    transition: transform 0.2s;
-                    border-radius: 50%;
+
+                &.enabled {
+                    &::-webkit-slider-thumb {
+                        appearance: none;
+                        -webkit-appearance: none;
+                        width: 5px;
+                        height: 5px;
+                        background: var(--nextui-colors-primary);
+                        border: none;
+                        transform: scale(3);
+                        transition: transform 0.2s;
+                        border-radius: 50%;
+                    }
+                      
+                    &::-moz-range-thumb {
+                        width: 5px;
+                        height: 5px;
+                        background: var(--nextui-colors-primary);
+                        border: none;
+                        transform: scale(3);
+                        transition: transform 0.2s;
+                        border-radius: 50%;
+                    }
                 }
-                  
-                &::-moz-range-thumb {
-                    width: 5px;
-                    height: 5px;
-                    background: var(--nextui-colors-primary);
-                    border: none;
-                    transform: scale(3);
-                    transition: transform 0.2s;
-                    border-radius: 50%;
+    
+                &.disabled {
+                    &::-webkit-slider-thumb {
+                        appearance: none;
+                        -webkit-appearance: none;
+                    }
+                      
+                    &::-moz-range-thumb {
+                        appearance: none;
+                    }
                 }
             }
     

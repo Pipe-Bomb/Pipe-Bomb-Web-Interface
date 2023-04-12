@@ -20,12 +20,13 @@ export default function Volume() {
 
     function volumeChange(e: React.FormEvent<HTMLInputElement>) {
         const newVolume = parseInt(e.currentTarget.value);
-        audioPlayer.setVolume(newVolume);
-        audioPlayer.setMuted(false);
+        audioPlayer.audio.activeType.setVolume(newVolume);
+        audioPlayer.audio.activeType.setMuted(false);
+        setVolume(audioPlayer.getVolume());
     }
 
     function toggleMute() {
-        audioPlayer.setMuted(!volume.muted);
+        audioPlayer.audio.activeType.setMuted(!volume.muted);
     }
 
     const css: any = {
@@ -52,7 +53,7 @@ export default function Volume() {
             </Button>
             <div className={styles.popup} style={css}>
                 <div className={styles.content}>
-                    <input ref={input} type="range" min="0" max="100" value={volume.volume} onInput={volumeChange} />
+                    <input ref={input} type="range" min="0" max="100" value={volume.volume} onInput={volumeChange} className={volume.enabled ? styles.enabled : styles.disabled} />
                 </div>
             </div>
         </div>

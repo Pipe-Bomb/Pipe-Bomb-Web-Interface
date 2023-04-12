@@ -8,6 +8,8 @@ import { convertArrayToString, formatTime } from "../logic/Utils";
 import Queue from "./Queue";
 import KeyboardShortcuts from "../logic/KeyboardShortcuts";
 import Volume from "./Volume";
+import CastButton from "./CastButton";
+import AudioType from "../logic/audio/AudioType";
 
 interface PlayerProps {
     showQueue: boolean
@@ -16,6 +18,7 @@ interface PlayerProps {
 
 export default function Player({ showQueue }: PlayerProps) {
     const audioPlayer = AudioPlayer.getInstance();
+    const [dummyReload, setDummyReload] = useState(false);;
 
     const progressValue = useRef(-1);
     const slider = useRef<HTMLInputElement>(null);
@@ -26,39 +29,18 @@ export default function Player({ showQueue }: PlayerProps) {
 
     const [hasImage, setHasImage] = useState<boolean | null>(null);
 
-    let [audioStatus, setAudioStatus] = useState(audioPlayer.getStatus());
+    let [audioStatus, setAudioStatus] = useState(audioPlayer.audio.activeType.getStatus());
 
-    const callback = (newStatus: AudioPlayerStatus) => {
+    const audioCallback = (audio: AudioType) => {
         if (slider.current != null && progressValue.current == -1) {
             const sliderElement: any = slider.current;
-            sliderElement.value = newStatus.time / newStatus.duration * 100;
+            sliderElement.value = audio.getCurrentTime() / audio.getDuration() * 100;
         }
-        setAudioStatus(newStatus);
+        setAudioStatus(audio.getStatus());
     }
 
-    let mouseUpHandler = () => {
-        if (progressValue.current != -1) {
-            audioPlayer.setTime(progressValue.current);
-        }
-        progressValue.current = -1;
-    }
-
-    useEffect(() => {
-        audioPlayer.registerCallback(callback);
-        document.addEventListener("mouseup", mouseUpHandler);
-
-        return () => {
-            audioPlayer.unregisterCallback(callback);
-            document.removeEventListener("mouseup", mouseUpHandler);
-        }
-    }, []);
-
-    function sliderKeyDown(e: React.KeyboardEvent) {
-        KeyboardShortcuts.getInstance().keypress(e.nativeEvent);
-    }
-
-    useEffect(() => {
-        audioStatus.track?.getMetadata()
+    const queueCallback = () => {
+        audioPlayer.getCurrentTrack()?.getMetadata()
         .then(data => {
 
             if (!data.image) {
@@ -94,7 +76,32 @@ export default function Player({ showQueue }: PlayerProps) {
         });
 
         return () => {}
-    }, [audioStatus.track]);
+    }
+
+    const mouseUpHandler = () => {
+        if (progressValue.current != -1) {
+            audioPlayer.setTime(progressValue.current);
+        }
+        progressValue.current = -1;
+    }
+
+
+
+    useEffect(() => {
+        audioPlayer.registerQueueCallback(queueCallback);
+        audioPlayer.audio.registerUpdateEventListener(audioCallback);
+        document.addEventListener("mouseup", mouseUpHandler);
+
+        return () => {
+            audioPlayer.unregisterQueueCallback(queueCallback);
+            audioPlayer.audio.unregisterUpdateEventListener(audioCallback);
+            document.removeEventListener("mouseup", mouseUpHandler);
+        }
+    }, []);
+
+    function sliderKeyDown(e: React.KeyboardEvent) {
+        KeyboardShortcuts.getInstance().keypress(e.nativeEvent);
+    }
 
     
 
@@ -103,11 +110,15 @@ export default function Player({ showQueue }: PlayerProps) {
     function progressChange(event: React.FormEvent) {
         const anyTarget: any = event.target;
         progressValue.current = anyTarget.valueAsNumber;
-        setAudioStatus({
-            ...audioStatus,
-            key: ((audioStatus.key || 0) + 1) % 10
-        });
+        setDummyReload(!dummyReload);
+
+        // setAudioStatus({
+        //     ...audioStatus,
+        //     key: ((audioStatus.key || 0) + 1) % 10
+        // });
     }
+
+    const track = audioPlayer.getCurrentTrack();
 
     return (
         <div className={styles.container}>
@@ -129,7 +140,7 @@ export default function Player({ showQueue }: PlayerProps) {
                             <Button tabIndex={-1} auto rounded className={styles.roundButton} light onPress={() => audioPlayer.previousTrack()}><MdSkipPrevious /></Button>
                         </Grid>
                         <Grid>
-                            {audioStatus.paused || !audioStatus.track ? (<Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.play()}><MdPlayArrow /></Button>) : (<Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.pause()}><MdPause /></Button>)}
+                            {audioStatus.paused || !track ? (<Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.play()}><MdPlayArrow /></Button>) : (<Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.pause()}><MdPause /></Button>)}
                         </Grid>
                         <Grid>
                             <Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.nextTrack()}><MdSkipNext /></Button>
@@ -137,25 +148,26 @@ export default function Player({ showQueue }: PlayerProps) {
                     </Grid.Container>
                 </div>
 
-                <span className={styles.time}>{audioStatus.track && audioStatus.duration != -1 ? formatTime(progressValue.current == -1 ? audioStatus.time : (progressValue.current / 100 * audioStatus.duration)) : ""}</span>
+                <span className={styles.time}>{track && audioStatus.duration != -1 ? formatTime(progressValue.current == -1 ? audioStatus.currentTime : (progressValue.current / 100 * audioStatus.duration)) : ""}</span>
                 <div className={styles.progressBar}>
-                    {audioStatus.loading || !audioStatus.track ? null : (
+                    {audioStatus.buffering || !track ? null : (
                         <input ref={slider} tabIndex={-1} min={0} max={100} step={0.1} type="range" className={styles.progressRange + (progressValue.current == -1 ? "" : ` ${styles.progressActive}`)} onInput={e => progressChange(e)} onKeyDown={sliderKeyDown} />
                     )}
                     <div className={styles.progress}>
                         <Progress
                             color="primary"
-                            value={progressValue.current == -1 ? (audioStatus.time / audioStatus.duration * 100) : (progressValue.current)}
+                            value={progressValue.current == -1 ? (audioStatus.currentTime / audioStatus.duration * 100) : (progressValue.current)}
                             size="xs"
-                            indeterminated={audioStatus.loading}
+                            indeterminated={audioStatus.buffering}
                             animated={false}
                             max={100}
                         />
                     </div>
                 </div>
-                <span className={styles.time}>{audioStatus.track && audioStatus.duration != -1 ? formatTime(audioStatus.duration) : ""}</span>
+                <span className={styles.time}>{track && audioStatus.duration != -1 ? formatTime(audioStatus.duration) : ""}</span>
             </div>
             <div className={styles.rightContainer}>
+                <CastButton />
                 <Volume />
                 {showQueue && (
                     <Queue />

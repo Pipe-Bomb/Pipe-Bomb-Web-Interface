@@ -1,0 +1,21 @@
+.container {
+    width: 30px;
+    height: 40px;
+    margin: 10px 30px 0 0;
+    position: relative;
+
+    google-cast-launcher {
+        --disconnected-color: var(--nextui-colors-text);
+        --connected-color: var(--nextui-colors-primary);
+    }
+
+    :before {
+        content: "";
+        position: absolute;
+        top: 5px;
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        opacity: 0.5;
+    }
+}
