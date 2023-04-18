@@ -15,9 +15,10 @@ window["__onGCastApiAvailable"] = (isAvailable: boolean) => {
                 autoJoinPolicy: window.chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
             });
         }, 1000);
-        
     }
 };
+
+console.log("Chromecast module");
 
 
 export default class ChromecastAudio extends AudioType {
