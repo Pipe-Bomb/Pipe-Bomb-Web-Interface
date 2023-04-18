@@ -8,7 +8,6 @@ export default function CastButton() {
         if (!container.current) return;
         const castButton = container.current.querySelector("google-cast-launcher");
         if (!castButton) {
-            console.log("created launcher");
             container.current.appendChild(document.createElement("google-cast-launcher"));
         }
     })

@@ -1,5 +1,6 @@
 import { TrackMeta } from "pipebomb.js/dist/music/Track";
 import AudioType from "./AudioType";
+import Axios from "axios";
 
 export default class LocalAudio extends AudioType {
     private audio = new Audio();
@@ -7,6 +8,7 @@ export default class LocalAudio extends AudioType {
     private lastBuffer = 0;
     private url = "";
     private meta: TrackMeta | null;
+    private lastPause: boolean = false;
 
     public constructor() {
         super("local");
@@ -17,6 +19,7 @@ export default class LocalAudio extends AudioType {
 
         this.audio.onplaying = () => {
             this.buffering = false;
+            this.lastPause = false;
             this.update();
         }
 
@@ -30,8 +33,19 @@ export default class LocalAudio extends AudioType {
             console.error(e);
         }
 
-        this.audio.onpause = () => this.update();
-        this.audio.onplay = () => this.update();
+        this.audio.onpause = () => {
+            if (!this.buffering && !this.lastPause) {
+                console.log("setting to paused");
+                this.lastPause = true;
+            }
+            this.update();
+        }
+
+        this.audio.onplay = () => {
+            this.lastPause = false;
+            this.update();
+        }
+
         this.audio.onloadeddata = () => this.update();
 
         this.audio.onwaiting = () => {
@@ -63,15 +77,17 @@ export default class LocalAudio extends AudioType {
     }
 
     public async setPaused(paused: boolean) {
+        this.lastPause = paused;
         if (paused) {
             this.audio.pause();
         } else {
             this.audio.play();
         }
+        this.update();
     }
 
     public isPaused() {
-        return this.audio.paused;
+        return this.lastPause;
     }
 
     public async setVolume(volume: number) {
@@ -94,11 +110,29 @@ export default class LocalAudio extends AudioType {
         return this.audio.muted;
     }
 
-    public async setMedia(url: string, meta?: TrackMeta) {
-        this.url = url;
-        this.audio.src = url;
-        this.meta = meta || null;
-        this.audio.load();
+    public async setMedia(url: string, meta?: TrackMeta): Promise<void> {
+        return new Promise(async (resolve, reject) => {
+            this.url = url;
+            this.audio.src = url;
+            this.meta = meta || null;
+            let completed = false;
+
+            this.audio.addEventListener("error", e => {
+                if (completed) return;
+                completed = true;
+                reject(e);
+            }, { once: true });
+
+            this.audio.addEventListener("loadeddata", () => {
+                if (completed) return;
+                completed = true;
+                resolve();
+            });
+
+            this.buffering = true;
+            this.audio.load();
+            this.update();
+        });   
     }
 
     public getCurrentMedia() {

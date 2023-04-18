@@ -61,15 +61,20 @@ export default class AudioWrapper {
         if (index >= 0) this.endEventListeners.splice(index, 1);
     }
 
-    public async changeAudioType(audioType: string) {
+    public async changeAudioType(audioType: string, newAudioSettings?: boolean) {
         const newAudioType = this.audioTypes.get(audioType);
         if (!newAudioType) return console.error(`Attemped to use audio type '${audioType}' but it doesn't exist!`);
+        if (newAudioType.ID == this.activeType.ID) return;
         const oldAudioType = this.activeType;
         await oldAudioType.setPaused(true);
 
-        await newAudioType.setPaused(true);
-        await newAudioType.setMedia(oldAudioType.getCurrentMedia(), oldAudioType.getCurrentMeta());
-        await newAudioType.setMuted(oldAudioType.isMuted());
+        if (!newAudioSettings) {
+            await newAudioType.setPaused(true);
+            if (oldAudioType.getCurrentMedia()) {
+                await newAudioType.setMedia(oldAudioType.getCurrentMedia(), oldAudioType.getCurrentMeta());
+            }
+            await newAudioType.setMuted(oldAudioType.isMuted());
+        }
 
         this.activeType = newAudioType;
 

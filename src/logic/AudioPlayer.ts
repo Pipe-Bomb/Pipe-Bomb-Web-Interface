@@ -65,12 +65,16 @@ export default class AudioPlayer {
             return;
         } else {
             const url = `${PipeBombConnection.getInstance().getUrl()}/v1/audio/${track.trackID}`;
-            await this.audio.activeType.setMedia(url, track.isUnknown() ? null : await track.getMetadata());
-            if (!this.paused) this.audio.activeType.setPaused(false);
+            try {
+                this.currentTrack = track;
+                this.sendQueueCallbacks();
+                await this.audio.activeType.setMedia(url, track.isUnknown() ? null : await track.getMetadata());
+                if (!this.paused) this.audio.activeType.setPaused(false);
+            } catch (e) {
+                console.error("Error while loading audio!", url, e, track);
+                this.nextTrack();
+            }
         }
-        
-        this.currentTrack = track;
-        this.sendQueueCallbacks();
 
         if ("mediaSession" in navigator && this.currentTrack) {
             this.currentTrack.getMetadata().then(metadata => {

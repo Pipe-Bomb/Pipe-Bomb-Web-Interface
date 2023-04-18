@@ -176,3 +176,9 @@ export function convertTracklistToM3u(pipeBombUrl: string, tracks: Track[], m3u8
         }
     });
 }
+
+export function wait(milliseconds: number) {
+    return new Promise(resolve => {
+        setTimeout(resolve, milliseconds);
+    });
+}
