@@ -41,6 +41,7 @@ export default class ChromecastAudio extends AudioType {
             const mediaStatus = this.castSession.getMediaSession();
             if (!mediaStatus) {
                 console.log("cancelling media info change");
+                this.end();
                 return;
             }
 
@@ -85,7 +86,9 @@ export default class ChromecastAudio extends AudioType {
                         this.update();
                     }
                     if (e.value == "IDLE") {
-                        this.end();
+                        this.buffering = false;
+                        console.log("chromecast is idle");
+                        this.update();
                     }
                     if (e.value == "BUFFERING") {
                         this.buffering = true;
@@ -114,7 +117,6 @@ export default class ChromecastAudio extends AudioType {
                     } else {
                         console.log("chromecast is inactive!");
                         this.buffering = false;
-                        this.update();
                     }
                     break;
                 case "mediaInfo":
@@ -160,6 +162,12 @@ export default class ChromecastAudio extends AudioType {
                     }, (e: any) => {
                         console.error(e);
                     });
+                    const currentSession = window.cast.framework.CastContext.getInstance().getCurrentSession();
+                    console.log("SWAPPING SESSION", currentSession == this.castSession);
+                    // if (currentSession) {
+                    //     AudioPlayer.getInstance().audio.changeAudioType("chromecast", true);
+                    //     this.setMediaSession(currentSession);
+                    // }
                 }
             }
 
