@@ -211,7 +211,10 @@ export default function Playlist() {
         <>
             <Text h1>{playlist.getName()}</Text>
             {!isOwnPlaylist && (
-                <Text h4>by {playlist.owner.username}</Text>
+                <Text h4 className={styles.playlistAuthor}>by {playlist.owner.username}</Text>
+            )}
+            {trackList && (
+                <Text h5 className={styles.trackCount}>{trackList.length} song{trackList.length == 1 ? "" : "s"}</Text>
             )}
             <Grid.Container gap={2} alignItems="center" className={styles.top}>
                 <Grid>
