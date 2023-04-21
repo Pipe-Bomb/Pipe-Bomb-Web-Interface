@@ -18,8 +18,6 @@ window["__onGCastApiAvailable"] = (isAvailable: boolean) => {
     }
 };
 
-console.log("Chromecast module");
-
 
 export default class ChromecastAudio extends AudioType {
     private player: any;
