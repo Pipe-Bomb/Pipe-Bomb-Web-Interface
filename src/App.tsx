@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import AudioPlayerStatus from "./logic/AudioPlayerStatus";
 import SuggestionsPlaylist from "./pages/SuggestionsPlaylist";
 import Chart from "./pages/Chart";
+import NotificationManager from "./components/NotificationManager";
 
 function App() {
   const size = useWindowSize();
@@ -69,6 +70,7 @@ function App() {
 
   return (
     <>
+      <NotificationManager />
       <Routes>
         <Route path="/connect" element={<Connect />} /> {/* connect route */}
         <Route path="*" element={<> {/* all other routes */}
