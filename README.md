@@ -1,4 +1,4 @@
-![oof](https://github.com/Pipe-Bomb/Pipe-Bomb-Assets/blob/main/github/Banner.png?raw=true)
+![Pipe Bomb Banner](https://raw.githubusercontent.com/Pipe-Bomb/.github/master/assets/github/Banner.jpg)
 
 &nbsp;
 
