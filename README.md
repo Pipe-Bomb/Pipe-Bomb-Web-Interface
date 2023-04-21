@@ -3,7 +3,7 @@
 &nbsp;
 
 # Pipe Bomb Web Interface
-### Official web-based interface for Pipe Bomb
+### Official web-based interface for Pipe Bomb built with desktops in mind.
 
 &nbsp;
 
