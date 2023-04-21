@@ -22,8 +22,8 @@ console.log("Chromecast module");
 
 
 export default class ChromecastAudio extends AudioType {
-    private player = new window.cast.framework.RemotePlayer();
-    private playerController = new window.cast.framework.RemotePlayerController(this.player);
+    private player: any;
+    private playerController: any;
     private url = "";
     private meta: TrackMeta | null = null;
     private buffering = false;
@@ -33,6 +33,11 @@ export default class ChromecastAudio extends AudioType {
 
     public constructor() {
         super("chromecast");
+
+        if (!window.cast) return;
+
+        this.player = new window.cast.framework.RemotePlayer();
+        this.playerController = new window.cast.framework.RemotePlayerController(this.player);
 
         this.playerController.addEventListener(window.cast.framework.RemotePlayerEventType.MEDIA_INFO_CHANGED, () => {
             console.log("media info changed");

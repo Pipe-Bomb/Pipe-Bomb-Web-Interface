@@ -3,6 +3,7 @@ import PipeBombConnection from "./PipeBombConnection";
 import { convertArrayToString } from "./Utils";
 import KeyboardShortcuts from "./KeyboardShortcuts";
 import AudioWrapper from "./audio/AudioWrapper";
+import { createNotification } from "../components/NotificationManager";
 
 export interface VolumeStatus {
     volume: number,
@@ -72,6 +73,10 @@ export default class AudioPlayer {
                 if (!this.paused) this.audio.activeType.setPaused(false);
             } catch (e) {
                 console.error("Error while loading audio!", url, e, track);
+                const trackName = track.isUnknown() ? "track" : (await track.getMetadata()).title;
+                createNotification({
+                    text: `Failed to play ${trackName}`
+                });
                 this.nextTrack();
             }
         }
