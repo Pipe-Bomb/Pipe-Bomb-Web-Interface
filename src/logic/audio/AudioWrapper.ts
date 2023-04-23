@@ -14,7 +14,7 @@ export default class AudioWrapper {
         this.addAudioType(local);
 
         setTimeout(() => {
-            this.addAudioType(new ChromecastAudio());
+            this.addAudioType(ChromecastAudio.getInstance());
         }, 1000);
         
 
@@ -62,24 +62,39 @@ export default class AudioWrapper {
     }
 
     public async changeAudioType(audioType: string, newAudioSettings?: boolean) {
-        const newAudioType = this.audioTypes.get(audioType);
-        if (!newAudioType) return console.error(`Attemped to use audio type '${audioType}' but it doesn't exist!`);
-        if (newAudioType.ID == this.activeType.ID) return;
-        const oldAudioType = this.activeType;
-        await oldAudioType.setPaused(true);
+        try {
+            const newAudioType = this.audioTypes.get(audioType);
+            if (!newAudioType) return console.error(`Attemped to use audio type '${audioType}' but it doesn't exist!`);
+            if (newAudioType.ID == this.activeType.ID) return console.log("audio type is already", this.activeType.ID);
+            const oldAudioType = this.activeType;
+            try {
+                await oldAudioType.setPaused(true);
+            } catch {}
 
-        if (!newAudioSettings) {
-            await newAudioType.setPaused(true);
-            if (oldAudioType.getCurrentMedia()) {
-                await newAudioType.setMedia(oldAudioType.getCurrentMedia(), oldAudioType.getCurrentMeta());
+            if (!newAudioSettings) {
+                try {
+                    await newAudioType.setPaused(true);
+                } catch {}
+                if (oldAudioType.getCurrentMedia()) {
+                    try {
+                        await newAudioType.setMedia(oldAudioType.getCurrentMedia(), oldAudioType.getCurrentMeta());
+                    } catch {}
+                    try {
+                        await newAudioType.seek(oldAudioType.getCurrentTime());
+                    } catch {}
+                }
+                try {
+                    await newAudioType.setMuted(oldAudioType.isMuted());
+                } catch {}
             }
-            await newAudioType.setMuted(oldAudioType.isMuted());
-        }
-
-        this.activeType = newAudioType;
-
-        for (let callback of this.updateEventListeners) {
-            callback(this.activeType);
+    
+            this.activeType = newAudioType;
+    
+            for (let callback of this.updateEventListeners) {
+                callback(this.activeType);
+            }
+        } catch (e) {
+            console.error(e);
         }
     }
 }

@@ -2,8 +2,8 @@ import { TrackMeta } from "pipebomb.js/dist/music/Track";
 import AudioPlayer from "../AudioPlayer";
 import AudioType from "./AudioType";
 import { convertArrayToString } from "../Utils";
-import PipeBombConnection from "../PipeBombConnection";
 import Axios from "axios";
+import PipeBombConnection from "../PipeBombConnection";
 
 declare const window: any;
 
@@ -20,112 +20,42 @@ window["__onGCastApiAvailable"] = (isAvailable: boolean) => {
 
 
 export default class ChromecastAudio extends AudioType {
-    private player: any;
-    private playerController: any;
+    private static instance: ChromecastAudio;
+
     private url = "";
     private meta: TrackMeta | null = null;
     private buffering = false;
     private castSession: any;
     private sessionEvents: Map<string, (e: any) => void> = new Map();
     private mediaSession: any;
+    private lastTime = 0;
+    private duration = 0;
+    private player: any;
+    private playerController: any;
+    private lastIdleReason: string | null = null;
+    private lastPlaying = false;
 
-    public constructor() {
+    private constructor() {
         super("chromecast");
-
         if (!window.cast) return;
 
         this.player = new window.cast.framework.RemotePlayer();
         this.playerController = new window.cast.framework.RemotePlayerController(this.player);
 
-        this.playerController.addEventListener(window.cast.framework.RemotePlayerEventType.MEDIA_INFO_CHANGED, () => {
-            console.log("media info changed");
-            if (!this.castSession) return;
-
-            const mediaStatus = this.castSession.getMediaSession();
-            if (!mediaStatus) {
-                console.log("cancelling media info change");
-                this.end();
-                return;
-            }
-
-            const mediaInfo = mediaStatus.media;
-            console.log(mediaInfo);
-        });
-
-        this.playerController.addEventListener(window.cast.framework.RemotePlayerEventType.IS_CONNECTED_CHANGED, () => {
-            console.log("connection change");
-            if (this.player.isConnected) {
-                console.log("Connected to chromecast!");
-                console.log("can control volume:", this.player.canControlVolume);
-                this.update();
-            } else {
-                console.log('RemotePlayerController: Player disconnected');
-                console.log(this.player.savedPlayerState);
-            }
-        });
-
         window.cast.framework.CastContext.getInstance().addEventListener(window.cast.framework.CastContextEventType.SESSION_STATE_CHANGED, (e: any) => {
-            console.log("session state changed");
             switch (e.sessionState) {
                 case "SESSION_RESUMED":
-                    console.log("Chromecast resumed!");
                     AudioPlayer.getInstance().audio.changeAudioType("chromecast", true);
+                    this.setCastSession(e.session);
+                    break;
                 case "SESSION_STARTED":
-                    console.log("Chromecast connected!");
                     AudioPlayer.getInstance().audio.changeAudioType("chromecast");
-                    console.log("changed to chromecast");
-                    this.setMediaSession(e.session);
-            }
-            console.log(e);
-        });
-
-        this.playerController.addEventListener(window.cast.framework.RemotePlayerEventType.ANY_CHANGE, (e: any) => {
-            console.log("chromecast change:", e);
-
-            switch (e.field) {
-                case "playerState":
-                    if (e.value == "PLAYING") {
-                        this.buffering = false;
-                        this.update();
-                    }
-                    if (e.value == "IDLE") {
-                        this.buffering = false;
-                        console.log("chromecast is idle");
-                        this.update();
-                    }
-                    if (e.value == "BUFFERING") {
-                        this.buffering = true;
-                        this.update();
-                    }
+                    this.setCastSession(e.session);
                     break;
-                case "currentTime":
-                    this.buffering = false;
-                    this.update();
-                    break;
-                case "duration":
-                case "volumeLevel":
-                    console.log("updating!");
-                    this.update();
-                    break;
-                case "isConnected":
-                    if (!e.value) {
-                        console.log("Chromecast stopped!");
+                case "SESSION_ENDING":
+                case "SESSION_ENDED":
+                    if (AudioPlayer.getInstance().audio.activeType.ID == "chromecast") {
                         AudioPlayer.getInstance().audio.changeAudioType("local");
-                    }
-                    break;
-                case "displayStatus":
-                    if (e.value) {
-                        this.buffering = true;
-                        this.update();
-                    } else {
-                        console.log("chromecast is inactive!");
-                        this.buffering = false;
-                    }
-                    break;
-                case "mediaInfo":
-                    if (e.value) {
-                        this.buffering = false;
-                        this.update();
                     }
                     break;
             }
@@ -135,42 +65,41 @@ export default class ChromecastAudio extends AudioType {
             const currentSession = window.cast.framework.CastContext.getInstance().getCurrentSession();
             if (currentSession) {
                 AudioPlayer.getInstance().audio.changeAudioType("chromecast", true);
-                this.setMediaSession(currentSession);
+                this.setCastSession(currentSession);
             }
         });
+
+        setInterval(() => {
+            if (this.mediaSession) {
+                const currentTime = this.mediaSession.getEstimatedTime();
+                if (currentTime != this.lastTime) {
+                    this.lastTime = currentTime;
+                    this.update();
+                }
+            }
+        }, 200);
     }
 
-    private setMediaSession(castSession: any) {
-        if (this.castSession) {
-            console.log("replacing old session");
-            for (let eventId of this.sessionEvents.keys()) {
-                console.log(eventId);
-                this.castSession.removeEventListener(eventId, this.sessionEvents.get(eventId));
-            }
+    public static getInstance(): ChromecastAudio {
+        if (!this.instance) this.instance = new ChromecastAudio();
+        return this.instance;
+    }
+
+    private setCastSession(castSession: any) {
+        for (let handler of this.sessionEvents.keys()) {
+            this.castSession.removeEventListener(handler, this.sessionEvents.get(handler));
         }
-        console.log("creating new session");
+
         this.castSession = castSession;
-
         for (let handler of Object.values(window.cast.framework.SessionEventType)) {
-
             const callback = (e: any) => {
-                console.log(handler, "event!!", e);
-                if (handler == "mediasession") {
-                    console.log("detected media session!", e.mediaSession);
-                    this.mediaSession = e.mediaSession;
-                    console.log("getting status");
-                    this.mediaSession.getStatus(new window.chrome.cast.media.GetStatusRequest(), () => {
-                        console.log("status update concluded");
+                switch (handler) {
+                    case window.cast.framework.SessionEventType.MEDIA_SESSION:
+                        this.setMediaSession(e.mediaSession);
+                        break;
+                    case window.cast.framework.SessionEventType.VOLUME_CHANGED:
                         this.update();
-                    }, (e: any) => {
-                        console.error(e);
-                    });
-                    const currentSession = window.cast.framework.CastContext.getInstance().getCurrentSession();
-                    console.log("SWAPPING SESSION", currentSession == this.castSession);
-                    // if (currentSession) {
-                    //     AudioPlayer.getInstance().audio.changeAudioType("chromecast", true);
-                    //     this.setMediaSession(currentSession);
-                    // }
+                        break;
                 }
             }
 
@@ -178,104 +107,263 @@ export default class ChromecastAudio extends AudioType {
             let anyHandler: any = handler;
             this.sessionEvents.set(anyHandler, callback);
         }
-
-        
-
-        const media = castSession.getMediaSession();
-        console.log("media:", media);
-        if (media) {
-            console.log("session already contained media!");
-            console.log("was previously playing", media.media.contentId, media.media.metadata);
-            const trackId = media.media.contentId.split("/").pop();
-            console.log(trackId);
-            PipeBombConnection.getInstance().getApi().trackCache.getTrack(trackId)
-            .then(track => {
-                AudioPlayer.getInstance().playTrack(track);
-            }).catch(e => {
-                console.error(e);
-            });
-        }
-        // console.log(session.ja);
-        // const sessionManager = new window.cast.framework.CastSession(session, window.cast.framework.SessionState.SESSION_STARTED);
-        // console.log(sessionManager);
-
-
-        // console.log(session.appId);
-        castSession.getSessionObj().addMediaListener((mediaListener: any) => {
-            console.log("received media listener", mediaListener);
-        });
+        this.setMediaSession(this.castSession.getMediaSession());
     }
 
-    public getCurrentTime(): number {
-        return this.player.currentTime;
+    private setMediaSession(mediaSession: any) {
+        if (this.mediaSession) {
+            this.mediaSession.removeUpdateListener(this.mediaListener);
+        }
+        this.mediaSession = mediaSession;
+
+        if (this.mediaSession) {
+            if (this.mediaSession.media) {
+                const url = this.mediaSession.media.contentId;
+                this.url = url;
+                this.mediaListener(true);
+                const trackId = url.split("/").pop();
+                PipeBombConnection.getInstance().getApi().trackCache.getTrack(trackId).then(track => {
+                    AudioPlayer.getInstance().playTrack(track);
+                }).catch(e => {
+                    console.error(e);
+                });
+            }
+            this.mediaSession.addUpdateListener(this.mediaListener);
+            this.mediaSession.getStatus();
+        }
+    }
+
+    private mediaListener(alive: boolean) {
+        const t = ChromecastAudio.getInstance();
+        if (!t.mediaSession) {
+            t.duration = 0;
+            this.update();
+            return;
+        }
+
+        if (t.mediaSession.media) {
+            if (t.mediaSession.media.contentId == t.url) {
+                t.duration = t.mediaSession.media.duration;
+
+                if (t.lastIdleReason != t.mediaSession.idleReason) {
+                    t.lastIdleReason = t.mediaSession.idleReason;
+        
+                    if (t.lastIdleReason == "FINISHED") {
+                        t.end();
+                    }
+                }
+
+                switch (t.mediaSession.playerState) {
+                    case "PLAYING":
+                        if (!t.lastPlaying || t.buffering) {
+                            t.lastPlaying = true;
+                            t.buffering = false;
+                            t.update();
+                        }
+                        break;
+                    case "PAUSED":
+                        if (t.lastPlaying || t.buffering) {
+                            t.lastPlaying = false;
+                            t.buffering = false;
+                            t.update();
+                        }
+                        break;
+                    case "BUFFERING":
+                        if (!t.buffering) {
+                            t.buffering = true;
+                            t.update();
+                        }
+                        break;
+                }
+            } else {
+                t.duration = 0;
+            }
+        }
+
+        t.update();
+    }
+
+    public terminate() {
+        if (this.castSession) {
+            this.castSession.endSession(true);
+        }
+    }
+
+    public getCurrentTime() {
+        if (this.mediaSession && this.mediaSession.media && this.mediaSession.media.contentId == this.url) {
+            return this.mediaSession.getEstimatedTime();
+        }
+        return 0;
     }
 
     public getDuration(): number {
-        return this.player.duration;
+        return this.duration;
     }
 
     public async seek(time: number): Promise<void> {
-        console.log("seeking to", time);
-        this.player.currentTime = time;
-        this.playerController.seek();
-        this.buffering = true;
-        this.update();
+        return new Promise((resolve, reject) => {
+            if (!this.mediaSession) return reject();
+
+            const request = new window.chrome.cast.media.SeekRequest();
+            this.buffering = true;
+            this.update();
+            request.currentTime = time;
+            this.mediaSession.seek(request, () => {
+                this.buffering = false;
+                resolve();
+            }, (e: any) => {
+                console.error(e);
+                this.buffering = false;
+                this.update();
+            });
+        });
     }
 
     public async setPaused(paused: boolean): Promise<void> {
-        console.log("paused?", paused);
-        if (paused != this.player.isPaused) {
-            console.log("playing or pausing");
-            this.playerController.playOrPause();
-        }
+        return new Promise((resolve, reject) => {
+            if (!this.mediaSession) return reject();
+            if ((this.mediaSession.playerState == "PLAYING") != paused) return resolve();
+
+            if (paused) {
+                this.mediaSession.pause(new window.chrome.cast.media.PauseRequest(), () => {
+                    this.lastPlaying = false;
+                    this.update();
+                    resolve();
+                }, (e: any) => {
+                    console.error(e);
+                    reject();
+                });
+            } else {
+                this.mediaSession.play(new window.chrome.cast.media.PlayRequest(), () => {
+                    this.lastPlaying = true;
+                    this.update();
+                    resolve();
+                }, (e: any) => {
+                    console.error(e);
+                    reject();
+                });
+            }
+        });
     }
 
     public isPaused(): boolean {
-        return this.player.isPaused;
+        return !this.lastPlaying;
     }
 
     public async setVolume(volume: number): Promise<void> {
-        // if (!this.volumeEnabled) return;
-        this.player.volumeLevel = volume / 100
-        this.playerController.setVolumeLevel();
-        this.update();
+        return new Promise(async (resolve, reject) => {
+            // if (this.mediaSession) {
+            //     const request = new window.chrome.cast.media.VolumeRequest();
+            //     request.volume = new window.chrome.cast.Volume();
+            //     request.volume.level = Math.max(Math.min(volume / 100, 1), 0);
+            //     this.mediaSession.setVolume(request, () => {
+            //         this.update();
+            //         resolve();
+            //     }, (e: any) => {
+            //         console.error(e);
+            //         reject();
+            //     })
+            // } else {
+            //     const error = await this.castSession.setVolume(Math.max(Math.min(volume / 100, 1), 0));
+            //     if (error) {
+            //         console.error(error);
+            //         reject();
+            //     } else {
+            //         this.update();
+            //         resolve();
+            //     }
+            // }
+            // const error = await this.castSession.setVolume(Math.max(Math.min(volume / 100, 1), 0));
+            // if (error) {
+            //     console.error(error);
+            //     reject();
+            // } else {
+            //     this.update();
+            //     resolve();
+            // }
+            if (this.castSession) {
+                const error = await this.castSession.setVolume(Math.max(Math.min(volume / 100, 1), 0));
+                if (error) {
+                    console.error(error);
+                    reject();
+                } else {
+                    this.update();
+                    resolve();
+                }
+            }
+
+            // this.player.volumeLevel = Math.max(Math.min(volume / 100, 1), 0);
+            // this.playerController.setVolumeLevel();
+            // this.update();
+        });
     }
 
     public getVolume(): number {
-        return this.player.volumeLevel * 100;
+        // if (this.mediaSession && this.mediaSession.volume.level !== null) {
+        //     return this.mediaSession.volume.level * 100;
+        // }
+        if (this.castSession) {
+            return this.castSession.getVolume() * 100;
+        }
+        return 100;
     }
 
     public isVolumeEnabled() {
+        if (this.mediaSession) {
+            return this.mediaSession.supportedMediaCommands.includes("stream_volume");
+        }
         return true;
     }
 
     public async setMuted(muted: boolean): Promise<void> {
-        if (muted != this.player.isMuted) {
-            this.playerController.muteOrUnmute();
+        // return new Promise((resolve, reject) => {
+        //     if (this.mediaSession) {
+        //         const request = new window.chrome.cast.media.VolumeRequest();
+        //         request.volume = new window.chrome.cast.Volume();
+        //         request.volume.muted = muted;
+        //         this.mediaSession.setVolume(request, () => {
+        //             this.update();
+        //             resolve();
+        //         }, (e: any) => {
+        //             console.error(e);
+        //             reject();
+        //         })
+        //     } else {
+        //         if (muted != this.player.isMuted) {
+        //             this.playerController.muteOrUnmute();
+        //             this.update();
+        //         }
+        //         resolve();
+        //     }
+        // });
+        if (this.castSession) {
+            this.castSession.setMute(muted);
             this.update();
         }
     }
 
     public isMuted(): boolean {
-        return this.player.isMuted;
+        // if (this.mediaSession) {
+        //     return this.mediaSession.volume.muted;
+        // }
+        if (this.castSession) {
+            return this.castSession.isMute();
+        }
+        return false;
     }
 
     public async setMedia(url: string, meta?: TrackMeta): Promise<void> {
         return new Promise(async (resolve, reject) => {
-            console.log(url);
             if (!url || url == this.url) return;
             this.url = url;
             this.buffering = true;
-            this.update();
-            console.log("checking url head");
+            this.mediaListener(true);
             try {
                 const { status } = await Axios.head(url);
-                console.log("status code", status);
                 if (!status.toString().startsWith("2")) {
                     throw `Bad status code: ${status}`;
                 }
 
-                console.log("casting to chromecast", url);
                 const mediaInfo = new window.chrome.cast.media.MediaInfo(url, "audio/mpeg");
                 mediaInfo.metadata = new window.chrome.cast.media.MusicTrackMediaMetadata();
                 if (meta) {
@@ -293,15 +381,22 @@ export default class ChromecastAudio extends AudioType {
                 }
                 
                 const request = new window.chrome.cast.media.LoadRequest(mediaInfo);
-                this.castSession.loadMedia(request).then(
-                    () => {
-                        console.log('Load succeed');
+                this.castSession.loadMedia(request).then((e: any) => {
+                    if (e) {
+                        console.error(e);
+                        this.buffering = false;
+                        this.update();
+                        reject();
+                    } else {
                         this.buffering = false;
                         this.update();
                         resolve();
-                    }, reject
-                );
+                    }
+                });
             } catch (e) {
+                this.buffering = false;
+                this.url = null;
+                this.update();
                 reject(e);
             }
         });

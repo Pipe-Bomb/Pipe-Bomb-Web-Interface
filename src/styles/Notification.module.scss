@@ -1,6 +1,6 @@
 .container {
-    background: var(--nextui-colors-backgroundContrast);
-    transition: transform 0.3s, opacity 0.5s;
+    background: var(--nextui-colors-secondaryLight);
+    transition: transform 0.3s, opacity 0.5s, background 0.5s;
     height: 70px;
     width: 350px;
     overflow: hidden;
@@ -11,18 +11,44 @@
     position: relative;
     right: 30px;
     top: 10px;
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    box-sizing: border-box;
 
     &.inactive {
         opacity: 0;
         height: 0px;
-        transition: opacity 0.3s, height 0.3s, transform 10s, margin 0.3s;
+        transition: opacity 0.3s, height 0.3s, transform 10s, margin 0.3s, background 0.2s;
         transform: translateX(-50%);
         margin-top: 0;
+
+        &.status-error {
+            background: var(--nextui-colors-errorLightContrast);
+        }
+    }
+
+    &:hover {
+        background: var(--nextui-colors-secondaryLightHover);
+    }
+
+    &.status-error {
+        background: var(--nextui-colors-errorLight);
+
+        &:hover {
+            background: var(--nextui-colors-errorLightActive);
+        }
+    }
+
+    &.status-warning {
+        background: var(--nextui-colors-warningLight);
+
+        &:hover {
+            background: var(--nextui-colors-warningLightHover);
+        }
     }
 
     .content {
-        padding: 1rem;
-
         .text {
             text-overflow: ellipsis;
             word-wrap: break-word;

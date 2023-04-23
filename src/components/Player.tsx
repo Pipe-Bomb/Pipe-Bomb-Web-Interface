@@ -23,7 +23,7 @@ export default function Player({ showQueue }: PlayerProps) {
     const progressValue = useRef(-1);
     const slider = useRef<HTMLInputElement>(null);
 
-    const thumbnail = useRef(null);
+    const thumbnail = useRef<HTMLImageElement>(null);
     const [title, setTitle] = useState("");
     const [artist, setArtist] = useState("");
 
@@ -40,42 +40,50 @@ export default function Player({ showQueue }: PlayerProps) {
     }
 
     const queueCallback = () => {
-        audioPlayer.getCurrentTrack()?.getMetadata()
-        .then(data => {
-
-            if (!data.image) {
-                const element: any = thumbnail.current;
-                if (element) {
-                    element.onload = () => {
-                        setHasImage(true);
-                    }
-                    element.src = "/no-album-art.png";
-                }
-            } else {
-                const icon = data.image || "/no-album-art.png";
-            
-                const element: any = thumbnail.current;
-                if (element) {
-                    element.onload = () => {
-                        setHasImage(true);
-                    }
-                    element.src = icon;
-                }
+        const currentTrack = audioPlayer.getCurrentTrack();
+        if (currentTrack) {
+            if (currentTrack.isUnknown()) {
+                setHasImage(false);
             }
-
-            setTitle(data.title);
-            setArtist(convertArrayToString(data.artists));
-        }).catch(error => {
-            console.error(error);
-            const element: any = thumbnail.current;
-            if (!element) return;
-            element.onload = () => {
-                setHasImage(true);
-            }
-            element.src = "/no-album-art.png";
-        });
-
-        return () => {}
+            currentTrack.getMetadata()
+            .then(data => {
+    
+                if (!data.image) {
+                    const element = thumbnail.current;
+                    if (element) {
+                        element.onload = () => {
+                            setHasImage(true);
+                        }
+                        element.src = "/no-album-art.png";
+                    }
+                } else {
+                    const icon = data.image || "/no-album-art.png";
+                
+                    const element = thumbnail.current;
+                    if (element) {
+                        element.onload = () => {
+                            setHasImage(true);
+                        }
+                        element.src = icon;
+                    }
+                }
+    
+                setTitle(data.title);
+                setArtist(convertArrayToString(data.artists));
+            }).catch(error => {
+                console.error(error);
+                const element = thumbnail.current;
+                if (!element) return;
+                element.onload = () => {
+                    setHasImage(true);
+                }
+                element.src = "/no-album-art.png";
+            });
+        } else {
+            setTitle("");
+            setArtist("");
+            setHasImage(null);
+        }
     }
 
     const mouseUpHandler = () => {
@@ -111,11 +119,6 @@ export default function Player({ showQueue }: PlayerProps) {
         const anyTarget: any = event.target;
         progressValue.current = anyTarget.valueAsNumber;
         setDummyReload(!dummyReload);
-
-        // setAudioStatus({
-        //     ...audioStatus,
-        //     key: ((audioStatus.key || 0) + 1) % 10
-        // });
     }
 
     const track = audioPlayer.getCurrentTrack();

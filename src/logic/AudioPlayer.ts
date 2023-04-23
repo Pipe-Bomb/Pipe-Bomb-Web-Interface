@@ -39,7 +39,6 @@ export default class AudioPlayer {
             const newMuted = audioType.isMuted();
             const newEnabled = audioType.isVolumeEnabled();
             if (this.volume != newVolume || this.muted != newMuted || this.volumeEnabled != newEnabled) {
-                console.log("audio shift!");
                 this.volume = newVolume;
                 this.muted = newMuted;
                 this.volumeEnabled = newEnabled;
@@ -75,7 +74,8 @@ export default class AudioPlayer {
                 console.error("Error while loading audio!", url, e, track);
                 const trackName = track.isUnknown() ? "track" : (await track.getMetadata()).title;
                 createNotification({
-                    text: `Failed to play ${trackName}`
+                    text: `Failed to play ${trackName}`,
+                    status: "error"
                 });
                 this.nextTrack();
             }
@@ -118,12 +118,13 @@ export default class AudioPlayer {
     }
 
     public async nextTrack() {
+        console.log("next track");
         const nextTrack = this.queue.shift();
         if (nextTrack) {
             await this.playTrack(nextTrack, true);
         } else {
-            await this.pause();
-            await this.setTime(0);
+            console.log("end!");
+            this.clearCurrent();
         }
     }
 
@@ -134,6 +135,12 @@ export default class AudioPlayer {
         } else {
             console.log("no functionality");
         }
+    }
+
+    public async clearCurrent() {
+        this.audio.activeType.setMedia(null);
+        this.currentTrack = null;
+        this.sendQueueCallbacks();
     }
 
     public async setTime(percent: number) {

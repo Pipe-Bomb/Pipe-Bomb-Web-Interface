@@ -51,6 +51,8 @@ export default abstract class AudioType {
         if (this.endCallback) this.endCallback();
     }
 
+    public abstract terminate(): void;
+
     public abstract getCurrentTime(): number;
     public abstract getDuration(): number;
     public abstract seek(time: number): Promise<void>;

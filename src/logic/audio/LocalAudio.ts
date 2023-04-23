@@ -30,12 +30,13 @@ export default class LocalAudio extends AudioType {
         }
 
         this.audio.onerror = e => {
-            console.error(e);
+            if (this.url) {
+                console.error(e);
+            }
         }
 
         this.audio.onpause = () => {
             if (!this.buffering && !this.lastPause) {
-                console.log("setting to paused");
                 this.lastPause = true;
             }
             this.update();
@@ -62,6 +63,9 @@ export default class LocalAudio extends AudioType {
         this.audio.onended = () => this.end();
     }
 
+    public terminate() {
+        this.audio.pause();   
+    }
 
     public getCurrentTime() {
         return this.audio.currentTime;
@@ -92,6 +96,7 @@ export default class LocalAudio extends AudioType {
 
     public async setVolume(volume: number) {
         this.audio.volume = volume / 100;
+        this.update();
     }
 
     public getVolume() {
@@ -104,6 +109,7 @@ export default class LocalAudio extends AudioType {
 
     public async setMuted(muted: boolean) {
         this.audio.muted = muted;
+        this.update();
     }
 
     public isMuted(): boolean {
@@ -120,6 +126,7 @@ export default class LocalAudio extends AudioType {
             this.audio.addEventListener("error", e => {
                 if (completed) return;
                 completed = true;
+                this.buffering = false;
                 reject(e);
             }, { once: true });
 
@@ -129,7 +136,10 @@ export default class LocalAudio extends AudioType {
                 resolve();
             });
 
-            this.buffering = true;
+            if (url) {
+                this.buffering = true;
+            }
+            
             this.audio.load();
             this.update();
         });   
