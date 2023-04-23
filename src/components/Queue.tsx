@@ -6,6 +6,7 @@ import AudioPlayer from "../logic/AudioPlayer";
 import AudioPlayerStatus from "../logic/AudioPlayerStatus";
 import styles from "../styles/Queue.module.scss";
 import QueueTrack from "./QueueTrack";
+import AudioType from "../logic/audio/AudioType";
 
 interface ItemInterface {
     id: number
@@ -17,19 +18,24 @@ interface QueueProps {
 
 export default function Queue({ sideBar }: QueueProps) {
     const audioPlayer = AudioPlayer.getInstance();
-    let [audioStatus, setAudioStatus] = useState(audioPlayer.getStatus());
+    let [audioStatus, setAudioStatus] = useState(audioPlayer.audio.activeType.getStatus());
     const [trackList, setTrackList] = useState(audioPlayer.getQueue());
 
-    const callback = (newStatus: AudioPlayerStatus) => {
-        setAudioStatus(newStatus);
-        setTrackList(newStatus.queue);
+    const audioCallback = (audio: AudioType) => {
+        setAudioStatus(audio.getStatus());
+    }
+
+    const queueCallback = () => {
+        setTrackList(audioPlayer.getQueue());
     }
 
     useEffect(() => {
-        audioPlayer.registerCallback(callback);
+        audioPlayer.audio.registerUpdateEventListener(audioCallback);
+        audioPlayer.registerQueueCallback(queueCallback);
 
         return () => {
-            audioPlayer.unregisterCallback(callback);
+            audioPlayer.audio.unregisterUpdateEventListener(audioCallback);
+            audioPlayer.unregisterQueueCallback(queueCallback);
         }
     }, []);
 
@@ -37,7 +43,7 @@ export default function Queue({ sideBar }: QueueProps) {
 
 
     const itemList: ItemInterface[] = [];
-    for (let i = 0; i < audioStatus.queue.length; i++) {
+    for (let i = 0; i < trackList.length; i++) {
         itemList.push({
             id: i
         });
@@ -55,13 +61,15 @@ export default function Queue({ sideBar }: QueueProps) {
         audioPlayer.setQueueOrder(event.map(item => item.id));
     }
 
+    const track = audioPlayer.getCurrentTrack();
+
     if (sideBar) {
         return (
             <div className={styles.rightSideContainer}>
-                {audioStatus.track ? (
+                {track ? (
                     <>
                         <Text h3 className={styles.queueTitle}>Now Playing</Text>
-                        <QueueTrack key={-1} track={audioStatus.track} index={-1} />
+                        <QueueTrack track={track} index={-1} />
                     </>
                 ) : null}
                 
@@ -83,10 +91,10 @@ export default function Queue({ sideBar }: QueueProps) {
                     <Button auto rounded className={styles.roundButton + " " + styles.queueButton} light><MdQueueMusic /></Button>
                 </Popover.Trigger>
                 <Popover.Content className={styles.queuePopover}>
-                    {audioStatus.track ? (
+                    {track ? (
                         <>
                             <Text h3 className={styles.queueTitle}>Now Playing</Text>
-                            <QueueTrack key={-1} track={audioStatus.track} index={-1} />
+                            <QueueTrack key={-1} track={track} index={-1} />
                         </>
                     ) : null}
                     

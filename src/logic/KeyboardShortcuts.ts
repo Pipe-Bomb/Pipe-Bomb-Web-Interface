@@ -15,7 +15,7 @@ export default class KeyboardShortcuts {
 
         switch (e.key) {
             case " ":
-                if (player.getStatus().paused) {
+                if (player.audio.activeType.isPaused()) {
                     player.play();
                 } else {
                     player.pause();

@@ -8,7 +8,8 @@ let notificationDupeCount = 0;
 let mouseInTime: number;
 
 export interface NotificationInfo {
-    text: string
+    text: string,
+    status?: "normal" | "warning" | "error"
 }
 
 interface NotificationInfoWrapper {

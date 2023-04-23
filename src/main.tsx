@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import "./styles/App.scss";
-import { NextUIProvider, createTheme, Text } from '@nextui-org/react';
+import { NextUIProvider, createTheme } from '@nextui-org/react';
 import { BrowserRouter } from "react-router-dom";
 
 const dark = createTheme({
@@ -107,9 +107,9 @@ const dark = createTheme({
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
-    <NextUIProvider theme={dark}>
-      <App />
-    </NextUIProvider>
+      <NextUIProvider theme={dark}>
+        <App />
+      </NextUIProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

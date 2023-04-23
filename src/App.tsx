@@ -12,7 +12,6 @@ import useWindowSize from "./logic/WindowSizeHook";
 import Queue from "./components/Queue";
 import AudioPlayer from "./logic/AudioPlayer";
 import { useEffect, useState } from "react";
-import AudioPlayerStatus from "./logic/AudioPlayerStatus";
 import SuggestionsPlaylist from "./pages/SuggestionsPlaylist";
 import Chart from "./pages/Chart";
 import NotificationManager from "./components/NotificationManager";
@@ -20,18 +19,17 @@ import NotificationManager from "./components/NotificationManager";
 function App() {
   const size = useWindowSize();
   const [playerActive, setPlayerActive] = useState(false);
+  const audioPlayer = AudioPlayer.getInstance();
 
-  const callback = (newStatus: AudioPlayerStatus) => {
-    const newPlayerActive = !!newStatus.track || !!newStatus.queue.length;
+  const callback = () => {
+    const newPlayerActive = !!audioPlayer.getCurrentTrack() || !!audioPlayer.getQueue().length;
     if (newPlayerActive != playerActive) setPlayerActive(newPlayerActive);
   }
-
-  const audioPlayer = AudioPlayer.getInstance();
   useEffect(() => {
-    audioPlayer.registerCallback(callback);
+    audioPlayer.registerQueueCallback(callback);
 
     return () => {
-        audioPlayer.unregisterCallback(callback);
+        audioPlayer.unregisterQueueCallback(callback);
     }
 }, []);
 
