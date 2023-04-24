@@ -6,15 +6,14 @@
     bottom: 100px;
     overflow-x: auto;
     display: flex;
-    gap: 1rem;
 }
 
 .main {
     flex-grow: 1;
     padding: 1rem 1rem 0 1rem;
     overflow-y: scroll;
+    overflow-x: hidden;
     position: relative;
-    // max-width: 1400px;
 }
 
 .rightSpace {
@@ -22,7 +21,9 @@
     flex-shrink: 0;
     width: 800px;
     overflow-y: scroll;
+    overflow-x: hidden;
     position: relative;
+    padding-left: 1rem;
 }
 
 @media only screen and (max-width: 2300px) {

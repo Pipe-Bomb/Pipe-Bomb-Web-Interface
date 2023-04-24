@@ -7,6 +7,7 @@ import AudioPlayer from "../logic/AudioPlayer";
 import { openAddToPlaylist } from "./AddToPlaylist";
 import { Link } from "react-router-dom";
 import PipeBombConnection from "../logic/PipeBombConnection";
+import GlowEffect from "./GlowEffect";
 
 interface Props {
   track: Track,
@@ -109,20 +110,24 @@ export default function QueueTrack({ track, index }: Props) {
 
     return (
         <div className={styles.container}>
-            <div className={styles.image} onClick={() => contextMenu("play")}>
-                <img ref={thumbnail} className={styles.thumbnail} style={{display: hasImage ? "block" : "none"}} />
-                {!hasImage && (<Loading loadingCss={{ $$loadingSize: "30px", $$loadingBorder: "3px" }} css={{margin: "8px"}} />)}
-            </div>
-            <div className={styles.info}>
-                <span className={styles.trackName}>{metadata?.title || track.trackID}</span>
-                {metadata && (
-                    <span className={styles.artists}>{convertArrayToString(metadata.artists)}</span>
-                )}
-            </div>
-            <Dropdown>
-                <Dropdown.Button light className={styles.contextButton}></Dropdown.Button>
-                    {dropdownItems}
-            </Dropdown>
+            <GlowEffect active={index == -1} spread={100}>
+                <div className={styles.box}>
+                    <div className={styles.image} onClick={() => contextMenu("play")}>
+                        <img ref={thumbnail} className={styles.thumbnail} style={{display: hasImage ? "block" : "none"}} />
+                        {!hasImage && (<Loading loadingCss={{ $$loadingSize: "30px", $$loadingBorder: "3px" }} css={{margin: "8px"}} />)}
+                    </div>
+                    <div className={styles.info}>
+                        <span className={styles.trackName}>{metadata?.title || track.trackID}</span>
+                        {metadata && (
+                            <span className={styles.artists}>{convertArrayToString(metadata.artists)}</span>
+                        )}
+                    </div>
+                    <Dropdown>
+                        <Dropdown.Button light className={styles.contextButton}></Dropdown.Button>
+                            {dropdownItems}
+                    </Dropdown>
+                </div>
+            </GlowEffect>
         </div>
     );
 }

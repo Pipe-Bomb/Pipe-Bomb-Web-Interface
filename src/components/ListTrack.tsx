@@ -8,6 +8,7 @@ import { openAddToPlaylist } from "./AddToPlaylist";
 import { Link } from "react-router-dom";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import Playlist from "pipebomb.js/dist/collection/Playlist";
+import GlowEffect from "./GlowEffect";
 
 interface Props {
   track: Track,
@@ -17,10 +18,25 @@ interface Props {
 export default function ListTrack({ track, parentPlaylist }: Props) {
     const [metadata, setMetadata] = useState<TrackMeta | null>(null);
     const [hasImage, setHasImage] = useState(false);
+    const [active, setActive] = useState(false);
 
     const thumbnail = useRef(null);
 
+    function queueCallback() {
+        const newActive = AudioPlayer.getInstance().getCurrentTrack()?.trackID == track.trackID;
+        if (newActive != active) setActive(newActive);
+    }
+
     useEffect(() => {
+        AudioPlayer.getInstance().registerQueueCallback(queueCallback);
+
+        return () => {
+            AudioPlayer.getInstance().unregisterQueueCallback(queueCallback);
+        }
+    });
+
+    useEffect(() => {
+        queueCallback();
         track.getMetadata()
         .then(data => {
             if (!data) {
@@ -113,22 +129,26 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
 
     return (
         <div className={styles.container} key={track.trackID}>
-            <div className={styles.image} onClick={playTrack}>
-                <img ref={thumbnail} className={styles.thumbnail} style={{display: hasImage ? "block" : "none"}} />
-                {!hasImage && (<Loading loadingCss={{ $$loadingSize: "80px", $$loadingBorder: "10px" }} css={{margin: "10px"}} />)}
-            </div>
-            <div className={styles.info}>
-                <div>
-                    <span className={styles.trackName} onClick={playTrack}>{metadata?.title || track.trackID}</span>
+            <GlowEffect active={active} image={hasImage ? thumbnail.current.src : null} spread={30}>
+                <div className={styles.box}>
+                    <div className={styles.image} onClick={playTrack}>
+                        <img ref={thumbnail} className={styles.thumbnail} style={{display: hasImage ? "block" : "none"}} />
+                        {!hasImage && (<Loading loadingCss={{ $$loadingSize: "80px", $$loadingBorder: "10px" }} css={{margin: "10px"}} />)}
+                    </div>
+                    <div className={styles.info}>
+                        <div>
+                            <span className={styles.trackName} onClick={playTrack}>{metadata?.title || track.trackID}</span>
+                        </div>
+                        {metadata && (
+                            <span className={styles.artists}>{convertArrayToString(metadata.artists)}</span>
+                        )}
+                    </div>
+                    <Dropdown>
+                        <Dropdown.Button light className={styles.contextButton}></Dropdown.Button>
+                        {dropdown()}
+                    </Dropdown>
                 </div>
-                {metadata && (
-                    <span className={styles.artists}>{convertArrayToString(metadata.artists)}</span>
-                )}
-            </div>
-            <Dropdown>
-                <Dropdown.Button light className={styles.contextButton}></Dropdown.Button>
-                {dropdown()}
-            </Dropdown>
+            </GlowEffect>
         </div>
     );
 }
