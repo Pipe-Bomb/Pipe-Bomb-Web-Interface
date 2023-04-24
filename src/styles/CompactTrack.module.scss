@@ -11,17 +11,19 @@
     min-width: min(400px, 100%);
     margin: auto;
     flex-grow: 1;
-    display: flex;
-    align-items: center;
+    
     background: var(--nextui-colors-backgroundSecondary);
     border-radius: var(--nextui-radii-base);
     color: var(--nextui-colors-text);
-    transition: background 0.2s;
-    overflow: hidden;
-    padding-right: 5px;
 
     &:hover {
         background: var(--nextui-colors-secondaryLightHover);
+    }
+
+    .box {
+        display: flex;
+        align-items: center;
+        padding-right: 5px;
     }
 }
 

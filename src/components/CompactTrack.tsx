@@ -10,6 +10,7 @@ import PipeBombConnection from "../logic/PipeBombConnection";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import Account, { UserDataFormat } from "../logic/Account";
 import Playlist from "pipebomb.js/dist/collection/Playlist";
+import GlowEffect from "./GlowEffect";
 
 interface Props {
   track: Track,
@@ -22,8 +23,22 @@ export default function CompactTrack({ track, parentPlaylist, inverse }: Props) 
     const [hasImage, setHasImage] = useState(false);
     const [currentlyAdding, setCurrentlyAdding] = useState(false);
     const [selfInfo, setSelfInfo] = useState<UserDataFormat | null>(null);
+    const [active, setActive] = useState(false);
 
     const thumbnail = useRef(null);
+
+    function queueCallback() {
+        const newActive = AudioPlayer.getInstance().getCurrentTrack()?.trackID == track.trackID;
+        if (newActive != active) setActive(newActive);
+    }
+
+    useEffect(() => {
+        AudioPlayer.getInstance().registerQueueCallback(queueCallback);
+
+        return () => {
+            AudioPlayer.getInstance().unregisterQueueCallback(queueCallback);
+        }
+    });
 
     useEffect(() => {
         if (!selfInfo) {
@@ -137,34 +152,38 @@ export default function CompactTrack({ track, parentPlaylist, inverse }: Props) 
     }
 
     return (
-        <div className={styles.container} key={track.trackID}>
-            <div className={styles.image} onClick={playTrack}>
-                <img ref={thumbnail} className={styles.thumbnail} style={{display: hasImage ? "block" : "none"}} />
-                {!hasImage && (<Loading loadingCss={{ $$loadingSize: "40px", $$loadingBorder: "5px" }} css={{margin: "10px"}} />)}
-            </div>
-            <div className={styles.info}>
-                <div>
-                    <span className={styles.trackName} onClick={playTrack}>{metadata?.title || track.trackID}</span>
+        <div className={styles.container}>
+            <GlowEffect active={active} image={hasImage ? thumbnail.current.src : null} spread={10}>
+                <div className={styles.box}>
+                    <div className={styles.image} onClick={playTrack}>
+                        <img ref={thumbnail} className={styles.thumbnail} style={{display: hasImage ? "block" : "none"}} />
+                        {!hasImage && (<Loading loadingCss={{ $$loadingSize: "40px", $$loadingBorder: "5px" }} css={{margin: "10px"}} />)}
+                    </div>
+                    <div className={styles.info}>
+                        <div>
+                            <span className={styles.trackName} onClick={playTrack}>{metadata?.title || track.trackID}</span>
+                        </div>
+                        {metadata && (
+                            <span className={styles.artists}>{convertArrayToString(metadata.artists)}</span>
+                        )}
+                    </div>
+                    <Dropdown>
+                        <Dropdown.Button light className={styles.contextButton}></Dropdown.Button>
+                        {dropdown()}
+                    </Dropdown>
+                    {parentPlaylist && selfInfo?.userID == parentPlaylist.owner.userID && (
+                        <Button auto className={styles.addButton} light onPress={addToPlaylist} disabled={currentlyAdding}>{currentlyAdding ? (
+                            <Loading type="points"></Loading>
+                        ) : (
+                            inverse ? (
+                                <FaMinus />
+                            ) : (
+                                <FaPlus />
+                            )
+                        )}</Button>
+                    )}
                 </div>
-                {metadata && (
-                    <span className={styles.artists}>{convertArrayToString(metadata.artists)}</span>
-                )}
-            </div>
-            <Dropdown>
-                <Dropdown.Button light className={styles.contextButton}></Dropdown.Button>
-                {dropdown()}
-            </Dropdown>
-            {parentPlaylist && selfInfo?.userID == parentPlaylist.owner.userID && (
-                <Button auto className={styles.addButton} light onPress={addToPlaylist} disabled={currentlyAdding}>{currentlyAdding ? (
-                    <Loading type="points"></Loading>
-                ) : (
-                    inverse ? (
-                        <FaMinus />
-                    ) : (
-                        <FaPlus />
-                    )
-                )}</Button>
-            )}
+            </GlowEffect>
         </div>
     );
 }

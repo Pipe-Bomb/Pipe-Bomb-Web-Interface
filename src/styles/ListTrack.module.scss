@@ -6,34 +6,13 @@
     background: var(--nextui-colors-backgroundSecondary);
     transition: background 0.2s;
 
-    &::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: var(--nextui-colors-backgroundSecondary);
-        border-radius: inherit;
-        transition: background 0.2s, opacity 0.2s;
-        opacity: 0.7;
-        z-index: 2;
-    }
-
     &:hover {
-        &::after {
-            background: var(--nextui-colors-secondaryLightHover);
-            opacity: 0.8;
-        }
+        background: var(--nextui-colors-secondaryLightHover);
     }
 
     .box {
-        color: var(--nextui-colors-text);
         display: flex;
-        border-radius: inherit;
         color: var(--nextui-colors-text);
-        position: relative;
-        z-index: 3;
     }
 }
 

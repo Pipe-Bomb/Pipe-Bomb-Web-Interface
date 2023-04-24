@@ -1,15 +1,18 @@
 .container {
     margin: var(--nextui-space-4) 0;
-    display: flex;
-    align-items: center;
+    
     background: var(--nextui-colors-backgroundSecondary);
     border-radius: var(--nextui-radii-base);
-    color: var(--nextui-colors-text);
-    overflow: hidden;
-    transition: background 0.2s;
 
     &:hover {
         background: var(--nextui-colors-secondaryLightHover);
+    }
+
+    .box {
+        display: flex;
+        align-items: center;
+        color: var(--nextui-colors-text);
+        overflow: hidden;
     }
 }
 
