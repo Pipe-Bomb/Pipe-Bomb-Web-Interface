@@ -78,7 +78,7 @@ function App() {
           <AddToPlaylist></AddToPlaylist>
           <CreatePlaylist></CreatePlaylist>
             {doRightSide ? (
-              <div className={styles.content}>
+              <div className={styles.content + " " + styles.rightSideEnabled}>
                 <div className={styles.main}>
                   { getRoutes() }
                 </div>
