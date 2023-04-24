@@ -182,3 +182,9 @@ export function wait(milliseconds: number) {
         setTimeout(resolve, milliseconds);
     });
 }
+
+declare global {
+    interface Window {
+        handleImage: (json: { url: string }) => void;
+    }
+}

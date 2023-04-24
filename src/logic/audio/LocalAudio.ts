@@ -1,6 +1,5 @@
 import { TrackMeta } from "pipebomb.js/dist/music/Track";
 import AudioType from "./AudioType";
-import Axios from "axios";
 
 export default class LocalAudio extends AudioType {
     private audio = new Audio();

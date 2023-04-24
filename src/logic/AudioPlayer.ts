@@ -25,6 +25,7 @@ export default class AudioPlayer {
 
     private queueUpdateCallbacks: (() => void)[] = [];
     private volumeUpdateCallbacks: ((volume: VolumeStatus) => void)[] = [];
+    private loudnessUpdateCallbacks: ((loudness: number) => void)[] = [];
 
     private constructor() {
         if ("mediaSession" in navigator) {
@@ -47,6 +48,13 @@ export default class AudioPlayer {
         });
 
         this.audio.registerEndEventListener(() => this.nextTrack());
+
+        // setInterval(() => {
+        //     const volume = (Date.now() % 1000) / 1000;
+        //     for (let callback of this.loudnessUpdateCallbacks) {
+        //         callback(volume);
+        //     }
+        // }, 50);
     }
 
     public static getInstance() {
@@ -224,6 +232,16 @@ export default class AudioPlayer {
         const index = this.queueUpdateCallbacks.indexOf(callback);
         if (index < 0) return;
         this.queueUpdateCallbacks.splice(index, 1);
+    }
+
+    public registerLoudnessCallback(callback: (loudness: number) => void) {
+        this.loudnessUpdateCallbacks.push(callback);
+    }
+
+    public unregisterLoudnessCallback(callback: (loudness: number) => void) {
+        const index = this.loudnessUpdateCallbacks.indexOf(callback);
+        if (index < 0) return;
+        this.loudnessUpdateCallbacks.splice(index, 1);
     }
 
     private sendQueueCallbacks() {

@@ -1,0 +1,21 @@
+.container {
+    position: absolute;
+    top: -40px;
+    bottom: -40px;
+    left: -40px;
+    right: -40px;
+    border-radius: inherit;
+    z-index: 1;
+    filter: blur(40px);
+}
+
+.animationContainer {
+    border-radius: inherit;
+    height: 100%;
+    overflow: hidden;
+
+    .svg {
+        height: 100%;
+        width: 100%;
+    }
+}
