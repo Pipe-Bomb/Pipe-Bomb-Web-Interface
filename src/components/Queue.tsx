@@ -18,23 +18,16 @@ interface QueueProps {
 
 export default function Queue({ sideBar }: QueueProps) {
     const audioPlayer = AudioPlayer.getInstance();
-    let [audioStatus, setAudioStatus] = useState(audioPlayer.audio.activeType.getStatus());
     const [trackList, setTrackList] = useState(audioPlayer.getQueue());
-
-    const audioCallback = (audio: AudioType) => {
-        setAudioStatus(audio.getStatus());
-    }
 
     const queueCallback = () => {
         setTrackList(audioPlayer.getQueue());
     }
 
     useEffect(() => {
-        audioPlayer.audio.registerUpdateEventListener(audioCallback);
         audioPlayer.registerQueueCallback(queueCallback);
 
         return () => {
-            audioPlayer.audio.unregisterUpdateEventListener(audioCallback);
             audioPlayer.unregisterQueueCallback(queueCallback);
         }
     }, []);

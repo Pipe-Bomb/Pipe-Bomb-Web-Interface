@@ -51,9 +51,11 @@ export default function Volume() {
             <Button auto rounded className={styles.roundButton} light onPress={toggleMute}>
                 { generateButton() }
             </Button>
-            <div className={styles.popup} style={css}>
-                <div className={styles.content}>
-                    <input ref={input} type="range" min="0" max="100" value={volume.volume} onInput={volumeChange} className={volume.enabled ? styles.enabled : styles.disabled} />
+            <div className={styles.mouseEvents}>
+                <div className={styles.popup} style={css}>
+                    <div className={styles.content}>
+                        <input ref={input} type="range" min="0" max="100" value={volume.volume} onInput={volumeChange} className={volume.enabled ? styles.enabled : styles.disabled} />
+                    </div>
                 </div>
             </div>
         </div>
