@@ -86,6 +86,8 @@ export function loadColorsForImage(url: string) {
         loadCallbacks.set(url, newCallbacks);
 
         function pushToCallbacks(colorObject: ImageColor) {
+            setColorsForImage(colorObject);
+            loadCallbacks.delete(colorObject.url);
             const colors = colorObject.getColors();
             resolve(colors);
             for (let callback of newCallbacks) {
@@ -132,21 +134,16 @@ export function loadColorsForImage(url: string) {
                 });
 
                 const colorObject = new ImageColor(url, colorWrappers.map(color => color.strings));
-                setColorsForImage(colorObject);
                 pushToCallbacks(colorObject);
 
             }).catch(() => {
                 console.error("failed to load colors for image", url);
-                const colorObject = new ImageColor(url);
-                setColorsForImage(colorObject);
-                pushToCallbacks(colorObject);
+                pushToCallbacks(new ImageColor(url));
             });
         }
 
         img.onerror = () => {
-            const colorObject = new ImageColor(url);
-            setColorsForImage(colorObject);
-            pushToCallbacks(colorObject);
+            pushToCallbacks(new ImageColor(url));
         }
 
         img.crossOrigin = "anonymous";

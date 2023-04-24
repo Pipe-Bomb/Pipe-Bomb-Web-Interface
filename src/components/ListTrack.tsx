@@ -37,6 +37,7 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
 
     useEffect(() => {
         queueCallback();
+        setHasImage(false);
         track.getMetadata()
         .then(data => {
             if (!data) {

@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "../styles/GlowEffect.module.scss"
-import { extractColors } from "extract-colors";
 import AudioPlayer from "../logic/AudioPlayer";
 import { getColorsForImage, getDefaultColors, loadColorsForImage } from "../logic/ImageColorIndex";
 
@@ -14,19 +13,25 @@ export interface GlowEffectProps {
 export default function GlowEffect(props: GlowEffectProps) {
     const [colorList, setColorList] = useState<string[][] | null>(props.image ? getColorsForImage(props.image) : null);
     const [brightness, setBrightness] = useState(1);
+    const container = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setColorList(null);
         loadColorsForImage(props.image).then(setColorList);
-        
     }, [props.image]);
+
+    function loudnessCallback(loudness: number) {
+        if (props.active) {
+            setBrightness(loudness);
+        }
+    }
 
     useEffect(() => {
         if (props.active) {
-            AudioPlayer.getInstance().registerLoudnessCallback(setBrightness);
+            AudioPlayer.getInstance().registerLoudnessCallback(loudnessCallback);
 
             return () => {
-                AudioPlayer.getInstance().unregisterLoudnessCallback(setBrightness);
+                AudioPlayer.getInstance().unregisterLoudnessCallback(loudnessCallback);
             }
         }
     });
@@ -51,13 +56,13 @@ export default function GlowEffect(props: GlowEffectProps) {
     }
 
     return (
-        <div className={styles.container} style={style}>
+        <div className={styles.container} style={style} ref={container}>
             <div className={styles.background}>
                 <div className={styles.children}>
                     { props.children }
                 </div>
             </div>
-            <div className={styles.glow}>
+            <div className={styles.glow} style={{opacity: brightness}}>
                 <svg viewBox="0 0 100 100" preserveAspectRatio="none" className={styles.svg}>
                     <defs>
                         <radialGradient id="Gradient1" cx="50%" cy="50%" fx="0.441602%" fy="50%" r=".5"><animate attributeName="fx" dur="34s" values="0%;3%;0%" repeatCount="indefinite"></animate><stop offset="0%" stopColor={colors[0 % colors.length][0]}></stop><stop offset="100%" stopColor={colors[0 % colors.length][1]}></stop></radialGradient>

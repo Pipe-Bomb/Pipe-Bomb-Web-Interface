@@ -110,7 +110,7 @@ export default function QueueTrack({ track, index }: Props) {
 
     return (
         <div className={styles.container}>
-            <GlowEffect active={index == -1} spread={100}>
+            <GlowEffect active={index == -1} spread={100} image={hasImage ? thumbnail.current.src : null}>
                 <div className={styles.box}>
                     <div className={styles.image} onClick={() => contextMenu("play")}>
                         <img ref={thumbnail} className={styles.thumbnail} style={{display: hasImage ? "block" : "none"}} />

@@ -45,6 +45,7 @@ export default function CompactTrack({ track, parentPlaylist, inverse }: Props) 
             Account.getInstance().getUserData().then(setSelfInfo);
         }
         
+        setHasImage(false);
         track.getMetadata()
         .then(data => {
             if (!data) {
