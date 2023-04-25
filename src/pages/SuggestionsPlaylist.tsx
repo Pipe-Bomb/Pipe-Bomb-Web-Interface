@@ -122,7 +122,6 @@ export default function SuggestionsPlaylist() {
     return (
         <>
             <Text h1>Suggestions</Text>
-            
             { generateListHTML() }
         </>
     )

@@ -29,8 +29,6 @@ export default function Chart() {
                 const newTrackList = chart.getTrackList();
                 if (newTrackList) {
                     setTrackList(newTrackList);
-                } else {
-                    console.log("NOT TRACK LSIT!!!");
                 }
             }
         });
@@ -61,6 +59,11 @@ export default function Chart() {
                     convertTracklistToM3u(PipeBombConnection.getInstance().getUrl(), trackList, false, true);
                 }
                 break;
+            case "queue":
+                if (trackList) {
+                    audioPlayer.addToQueue(trackList);
+                }
+                break;
         }
     }
 
@@ -82,6 +85,7 @@ export default function Chart() {
                             </Button>
                         </Dropdown.Trigger>
                         <Dropdown.Menu onAction={contextMenu}>
+                            <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
                             <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>

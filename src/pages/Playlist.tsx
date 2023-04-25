@@ -157,6 +157,11 @@ export default function Playlist() {
                     convertTracklistToM3u(PipeBombConnection.getInstance().getUrl(), trackList, false, true);
                 }
                 break;
+            case "queue":
+                if (trackList) {
+                    audioPlayer.addToQueue(trackList);
+                }
+                break;
         }
     }
 
@@ -166,6 +171,7 @@ export default function Playlist() {
         if (isOwnPlaylist) {
             return (
                 <Dropdown.Menu onAction={contextMenu} disabledKeys={["rename"]}>
+                    <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
                     <Dropdown.Item key="rename">Rename Playlist</Dropdown.Item>
                     <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
                     <Dropdown.Item key="delete" color="error">Delete Playlist</Dropdown.Item>
@@ -174,6 +180,7 @@ export default function Playlist() {
         } else {
             return (
                 <Dropdown.Menu onAction={contextMenu} disabledKeys={["like"]}>
+                    <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
                     <Dropdown.Item key="like">Like Playlist</Dropdown.Item>
                     <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
                 </Dropdown.Menu>
