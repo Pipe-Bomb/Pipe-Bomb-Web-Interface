@@ -8,7 +8,7 @@ import Loader from "../components/Loader";
 import Track from "pipebomb.js/dist/music/Track";
 import ListTrack from "../components/ListTrack";
 import AudioPlayer from "../logic/AudioPlayer";
-import { convertTracklistToM3u, shuffle } from "../logic/Utils";
+import { convertTracklistToM3u } from "../logic/Utils";
 import { MdShuffle, MdPlayArrow, MdMoreHoriz } from "react-icons/md";
 import PlaylistIndex from "../logic/PlaylistIndex";
 import { useNavigate } from "react-router-dom";
@@ -124,18 +124,21 @@ export default function Playlist() {
 
     function playPlaylist() {
         if (!trackList) return;
+        audioPlayer.clearQueue();
         audioPlayer.addToQueue(trackList, false, 0);
         audioPlayer.nextTrack();
     }
 
     function shufflePlaylist() {
         if (!trackList) return;
+        audioPlayer.clearQueue();
         audioPlayer.addToQueue(trackList, true, 0);
         audioPlayer.nextTrack();
     }
 
     function playSuggestions() {
         if (!suggestions) return;
+        audioPlayer.clearQueue();
         audioPlayer.addToQueue(suggestions, false, 0);
         audioPlayer.nextTrack();
     }

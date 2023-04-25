@@ -6,7 +6,6 @@ import PipeBombConnection from "../logic/PipeBombConnection";
 import Loader from "../components/Loader";
 import ListTrack from "../components/ListTrack";
 import AudioPlayer from "../logic/AudioPlayer";
-import { shuffle } from "../logic/Utils";
 import styles from "../styles/Playlist.module.scss";
 import { MdPlayArrow, MdShuffle } from "react-icons/md";
 import TrackList from "pipebomb.js/dist/collection/TrackList";
@@ -108,12 +107,14 @@ export default function SuggestionsPlaylist() {
 
     function playPlaylist() {
         if (!suggestions) return;
+        audioPlayer.clearQueue();
         audioPlayer.addToQueue(suggestions.getTrackList(), false, 0);
         audioPlayer.nextTrack();
     }
 
     function shufflePlaylist() {
         if (!suggestions) return;
+        audioPlayer.clearQueue();
         audioPlayer.addToQueue(suggestions.getTrackList(), true, 0);
         audioPlayer.nextTrack();
     }

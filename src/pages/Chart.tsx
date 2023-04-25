@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import ChartIndex from "../logic/ChartIndex";
 import Loader from "../components/Loader";
 import { Button, Dropdown, Grid, Text } from "@nextui-org/react";
-import { convertTracklistToM3u, shuffle } from "../logic/Utils";
+import { convertTracklistToM3u } from "../logic/Utils";
 import styles from "../styles/Chart.module.scss";
 import { MdMoreHoriz, MdPlayArrow, MdShuffle } from "react-icons/md";
 import ListTrack from "../components/ListTrack";
@@ -42,12 +42,14 @@ export default function Chart() {
 
     function playChart() {
         if (!trackList) return;
+        audioPlayer.clearQueue();
         audioPlayer.addToQueue(trackList, false, 0);
         audioPlayer.nextTrack();
     }
 
     function shuffleChart() {
         if (!trackList) return;
+        audioPlayer.clearQueue();
         audioPlayer.addToQueue(trackList, true, 0);
         audioPlayer.nextTrack();
     }
