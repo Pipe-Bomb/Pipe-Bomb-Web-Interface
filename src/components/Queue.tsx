@@ -28,7 +28,7 @@ export default function Queue({ sideBar }: QueueProps) {
             if (currentTrack.current) {
                 const offset = currentTrack.current.offsetTop;
                 const scroll = currentTrack.current.parentElement.scrollTop;
-                if (Math.abs(offset - scroll - 200) < window.innerHeight / 2) {
+                if (Math.abs(offset - scroll - 200) < currentTrack.current.parentElement.parentElement.clientHeight / 2) {
                     currentTrack.current.parentElement.scrollTo({
                         top: offset - 200,
                         behavior: "smooth"
