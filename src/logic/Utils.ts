@@ -183,8 +183,23 @@ export function wait(milliseconds: number) {
     });
 }
 
-declare global {
-    interface Window {
-        handleImage: (json: { url: string }) => void;
+export function generateNumberHash(input: string) {
+    let hash = 0;
+    if (!input.length) return 0;
+
+    for (let i = 0; i < input.length; i++) {
+        let chr = input.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
     }
+    return hash;
+};
+
+export function generateRandomString(length: number) {
+    let result = "";
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
 }

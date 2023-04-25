@@ -1,6 +1,6 @@
 import Track from "pipebomb.js/dist/music/Track";
 import PipeBombConnection from "./PipeBombConnection";
-import { convertArrayToString } from "./Utils";
+import { convertArrayToString, generateNumberHash, generateRandomString } from "./Utils";
 import KeyboardShortcuts from "./KeyboardShortcuts";
 import AudioWrapper from "./audio/AudioWrapper";
 import { createNotification } from "../components/NotificationManager";
@@ -11,17 +11,24 @@ export interface VolumeStatus {
     enabled: boolean
 }
 
+export interface TrackWrapper {
+    track: Track,
+    queueID: number
+}
+
 export default class AudioPlayer {
     private static instance: AudioPlayer;
     public readonly audio = new AudioWrapper();
     private keyboardShortcuts = KeyboardShortcuts.getInstance();
 
-    private currentTrack: Track | null = null;
-    private queue: Track[] = [];
+    private currentTrack: TrackWrapper | null = null;
+    private queue: TrackWrapper[] = [];
+    private history: TrackWrapper[] = [];
     private paused = false;
     private volume = 100;
     private muted = false;
     private volumeEnabled = true;
+    private takenQueueIds: number[] = [];
 
     private queueUpdateCallbacks: (() => void)[] = [];
     private volumeUpdateCallbacks: ((volume: VolumeStatus) => void)[] = [];
@@ -66,21 +73,38 @@ export default class AudioPlayer {
         return this.currentTrack;
     }
 
-    public async playTrack(track: Track, forcePlay?: boolean) {
+    public async playTrack(track: Track | TrackWrapper, forcePlay?: boolean, ignoreHistory?: boolean) {
+        let trackWrapper: TrackWrapper;
+        if (track instanceof Track) {
+            trackWrapper = {
+                track,
+                queueID: this.generateQueueID(track)
+            };
+        } else {
+            trackWrapper = track;
+        }
+
         this.paused = false;
-        if (this.currentTrack?.trackID == track.trackID && !forcePlay) {
+        if (this.currentTrack?.track.trackID == trackWrapper.track.trackID && !forcePlay) {
             if (!this.audio.activeType.isPaused()) this.audio.activeType.setPaused(false);
             return;
         } else {
-            const url = `${PipeBombConnection.getInstance().getUrl()}/v1/audio/${track.trackID}`;
+            const url = `${PipeBombConnection.getInstance().getUrl()}/v1/audio/${trackWrapper.track.trackID}`;
             try {
-                this.currentTrack = track;
+                if (!ignoreHistory && this.currentTrack) {
+                    this.history.push(this.currentTrack);
+                    while (this.history.length > 1000) { // max 1000 songs in history
+                        this.removeQueueID(this.history.shift().queueID);
+                    }
+                }
+                this.currentTrack = trackWrapper;
+                this.registerQueueID(trackWrapper);
                 this.sendQueueCallbacks();
-                await this.audio.activeType.setMedia(url, track.isUnknown() ? null : await track.getMetadata());
+                await this.audio.activeType.setMedia(url, trackWrapper.track.isUnknown() ? null : await trackWrapper.track.getMetadata());
                 if (!this.paused) this.audio.activeType.setPaused(false);
             } catch (e) {
-                console.error("Error while loading audio!", url, e, track);
-                const trackName = track.isUnknown() ? "track" : (await track.getMetadata()).title;
+                console.error("Error while loading audio!", url, e, trackWrapper.track);
+                const trackName = trackWrapper.track.isUnknown() ? "track" : (await trackWrapper.track.getMetadata()).title;
                 createNotification({
                     text: `Failed to play ${trackName}`,
                     status: "error"
@@ -90,7 +114,7 @@ export default class AudioPlayer {
         }
 
         if ("mediaSession" in navigator && this.currentTrack) {
-            this.currentTrack.getMetadata().then(metadata => {
+            this.currentTrack.track.getMetadata().then(metadata => {
                 const mediaMeta = new MediaMetadata({
                     title: metadata.title,
                     artist: convertArrayToString(metadata.artists),
@@ -125,11 +149,11 @@ export default class AudioPlayer {
         await this.audio.activeType.setPaused(false);
     }
 
-    public async nextTrack() {
+    public async nextTrack(ignoreHistory?: boolean) {
         console.log("next track");
         const nextTrack = this.queue.shift();
         if (nextTrack) {
-            await this.playTrack(nextTrack, true);
+            await this.playTrack(nextTrack, true, ignoreHistory);
         } else {
             console.log("end!");
             this.clearCurrent();
@@ -137,12 +161,29 @@ export default class AudioPlayer {
     }
 
     public async previousTrack() {
-        if (this.audio.activeType.getCurrentTime() > 10) {
+        if (this.audio.activeType.getCurrentTime() > 10 || !this.history.length) {
             await this.setTime(0);
             await this.audio.activeType.setPaused(false);
         } else {
-            console.log("no functionality");
+            await this.playFromHistory(this.history[this.history.length - 1]);
         }
+    }
+
+    public async playFromHistory(trackWrapper: TrackWrapper) {
+        const index = this.history.indexOf(trackWrapper);
+        if (index < 0) return;
+        const section = this.history.splice(index, this.history.length - index);
+        if (this.currentTrack) section.push(this.currentTrack);
+        this.queue.splice(0, 0, ...section);
+        await this.nextTrack(true);
+    }
+
+    private removeQueueID(id: number) {
+        setTimeout(() => {
+            const index = this.takenQueueIds.indexOf(id);
+            if (index < 0) return;
+            this.takenQueueIds.splice(index, 1);
+        }, 60_000);
     }
 
     public async clearCurrent() {
@@ -166,11 +207,39 @@ export default class AudioPlayer {
         }
     }
 
+    private generateQueueID(track: Track) {
+        let trackId = track.trackID;
+        let hash: number = 0;
+        do {
+            if (hash) trackId += generateRandomString(1);
+            hash = generateNumberHash(trackId);
+        } while (this.takenQueueIds.includes(hash));
+        
+        console.log("unique hash for track:", hash);
+        return hash;
+    }
+
+    private registerQueueID(trackWrapper: TrackWrapper) {
+        if (!this.takenQueueIds.includes(trackWrapper.queueID)) {
+            this.takenQueueIds.push(trackWrapper.queueID);
+        }
+    }
+
     public addToQueue(tracks: Track[], position?: number) {
+        const trackWrappers: TrackWrapper[] = [];
+        for (let track of tracks) {
+            const trackWrapper: TrackWrapper = {
+                track,
+                queueID: this.generateQueueID(track)
+            }
+            trackWrappers.push(trackWrapper);
+            this.registerQueueID(trackWrapper);
+        }
+
         if (position !== undefined) {
-            this.queue.splice(position, 0, ...tracks);
+            this.queue.splice(position, 0, ...trackWrappers);
         } else {
-            this.queue.push(...tracks);
+            this.queue.push(...trackWrappers);
         }
         this.sendQueueCallbacks();
     }
@@ -179,8 +248,12 @@ export default class AudioPlayer {
         return Array.from(this.queue);
     }
 
+    public getHistory() {
+        return Array.from(this.history);
+    }
+
     public setQueueOrder(order: number[]) {
-        let newOrder: Track[] = [];
+        let newOrder: TrackWrapper[] = [];
 
         for (let index of order) {
             newOrder.push(this.queue[index]);

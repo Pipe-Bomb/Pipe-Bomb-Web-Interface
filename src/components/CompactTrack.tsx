@@ -28,7 +28,7 @@ export default function CompactTrack({ track, parentPlaylist, inverse }: Props) 
     const thumbnail = useRef(null);
 
     function queueCallback() {
-        const newActive = AudioPlayer.getInstance().getCurrentTrack()?.trackID == track.trackID;
+        const newActive = AudioPlayer.getInstance().getCurrentTrack()?.track.trackID == track.trackID;
         if (newActive != active) setActive(newActive);
     }
 

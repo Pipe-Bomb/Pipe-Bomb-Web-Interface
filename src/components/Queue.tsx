@@ -1,12 +1,10 @@
 import { Button, Popover, Text } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdQueueMusic } from "react-icons/md";
 import { ReactSortable } from "react-sortablejs";
 import AudioPlayer from "../logic/AudioPlayer";
-import AudioPlayerStatus from "../logic/AudioPlayerStatus";
 import styles from "../styles/Queue.module.scss";
 import QueueTrack from "./QueueTrack";
-import AudioType from "../logic/audio/AudioType";
 
 interface ItemInterface {
     id: number
@@ -19,9 +17,24 @@ interface QueueProps {
 export default function Queue({ sideBar }: QueueProps) {
     const audioPlayer = AudioPlayer.getInstance();
     const [trackList, setTrackList] = useState(audioPlayer.getQueue());
+    const [history, setHistory] = useState(audioPlayer.getHistory());
+    const currentTrack = useRef<HTMLDivElement>(null);
 
     const queueCallback = () => {
         setTrackList(audioPlayer.getQueue());
+        setHistory(audioPlayer.getHistory());
+        setTimeout(() => {
+            if (currentTrack.current) {
+                const offset = currentTrack.current.offsetTop;
+                const scroll = currentTrack.current.parentElement.parentElement.scrollTop;
+                if (Math.abs(offset - scroll - 200) < window.innerHeight / 2) {
+                    currentTrack.current.parentElement.parentElement.scrollTo({
+                        top: offset - 200,
+                        behavior: "smooth"
+                    });
+                }
+            }
+        }, 50);
     }
 
     useEffect(() => {
@@ -59,17 +72,24 @@ export default function Queue({ sideBar }: QueueProps) {
     if (sideBar) {
         return (
             <div className={styles.rightSideContainer}>
+                <Text h3 className={styles.queueTitle}>History</Text>
+                <div>
+                    {history.map(track => (
+                        <QueueTrack key={track.queueID} track={track} index={-2} />
+                    ))}
+                </div>
+
                 {track ? (
-                    <>
+                    <div ref={currentTrack}>
                         <Text h3 className={styles.queueTitle}>Now Playing</Text>
-                        <QueueTrack track={track} index={-1} />
-                    </>
+                        <QueueTrack key={track.queueID} track={track} index={-1} />
+                    </div>
                 ) : null}
                 
                 <Text h3 className={styles.queueTitle}>Queue</Text>
                 <ReactSortable list={itemList} setList={event => reArrangeQueue(event)} animation={100}>
                     {trackList.map((track, index) => (
-                        <QueueTrack key={index} track={track} index={index} />
+                        <QueueTrack key={track.queueID} track={track} index={index} />
                     ))}
                 </ReactSortable>
             </div>
@@ -87,14 +107,14 @@ export default function Queue({ sideBar }: QueueProps) {
                     {track ? (
                         <>
                             <Text h3 className={styles.queueTitle}>Now Playing</Text>
-                            <QueueTrack key={-1} track={track} index={-1} />
+                            <QueueTrack track={track} index={-1} />
                         </>
                     ) : null}
                     
                     <Text h3 className={styles.queueTitle}>Queue</Text>
                     <ReactSortable list={itemList} setList={event => reArrangeQueue(event)} animation={100}>
                         {trackList.map((track, index) => (
-                            <QueueTrack key={index} track={track} index={index} />
+                            <QueueTrack key={track.queueID} track={track} index={index} />
                         ))}
                     </ReactSortable>
                 </Popover.Content>

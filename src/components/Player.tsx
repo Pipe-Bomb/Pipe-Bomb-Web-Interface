@@ -42,10 +42,10 @@ export default function Player({ showQueue }: PlayerProps) {
     const queueCallback = () => {
         const currentTrack = audioPlayer.getCurrentTrack();
         if (currentTrack) {
-            if (currentTrack.isUnknown()) {
+            if (currentTrack.track.isUnknown()) {
                 setHasImage(false);
             }
-            currentTrack.getMetadata()
+            currentTrack.track.getMetadata()
             .then(data => {
     
                 if (!data.image) {
