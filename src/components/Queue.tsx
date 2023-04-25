@@ -1,10 +1,11 @@
-import { Button, Popover, Text } from "@nextui-org/react";
+import { Button, Grid, Popover, Text } from "@nextui-org/react";
 import { useEffect, useRef, useState } from "react";
-import { MdQueueMusic } from "react-icons/md";
+import { MdQueueMusic, MdRepeat, MdRepeatOne } from "react-icons/md";
 import { ReactSortable } from "react-sortablejs";
 import AudioPlayer from "../logic/AudioPlayer";
 import styles from "../styles/Queue.module.scss";
 import QueueTrack from "./QueueTrack";
+import { IoMdShuffle } from "react-icons/io";
 
 interface ItemInterface {
     id: number
@@ -71,27 +72,46 @@ export default function Queue({ sideBar }: QueueProps) {
 
     if (sideBar) {
         return (
-            <div className={styles.rightSideContainer}>
-                <Text h3 className={styles.queueTitle}>History</Text>
-                <div>
-                    {history.map(track => (
-                        <QueueTrack key={track.queueID} track={track} index={-2} />
-                    ))}
-                </div>
-
-                {track ? (
-                    <div ref={currentTrack}>
-                        <Text h3 className={styles.queueTitle}>Now Playing</Text>
-                        <QueueTrack key={track.queueID} track={track} index={-1} />
+            <div className={styles.container}>
+                <Grid.Container className={styles.topButtons} gap={1}>
+                    <Grid>
+                        <Button className={styles.roundButton} auto light={!audioPlayer.isShuffled()} onPress={() => audioPlayer.setShuffled(!audioPlayer.isShuffled())}><IoMdShuffle /></Button>
+                    </Grid>
+                    <Grid>
+                        <Button className={styles.roundButton} auto light={audioPlayer.getLoopStatus() == "none"} onPress={() => audioPlayer.cycleLoopStatus()}>
+                            {audioPlayer.getLoopStatus() == "one" ? (
+                                <MdRepeatOne />
+                            ) : (
+                                <MdRepeat />
+                            )}
+                        </Button>
+                    </Grid>
+                </Grid.Container>
+                <div className={styles.scroll}>
+                    {history.length ? (
+                        <Text h3 className={styles.queueTitle}>History</Text>
+                    ) : null}
+                    
+                    <div>
+                        {history.map(track => (
+                            <QueueTrack key={track.queueID} track={track} index={-2} />
+                        ))}
                     </div>
-                ) : null}
-                
-                <Text h3 className={styles.queueTitle}>Queue</Text>
-                <ReactSortable list={itemList} setList={event => reArrangeQueue(event)} animation={100}>
-                    {trackList.map((track, index) => (
-                        <QueueTrack key={track.queueID} track={track} index={index} />
-                    ))}
-                </ReactSortable>
+
+                    {track ? (
+                        <div ref={currentTrack}>
+                            <Text h3 className={styles.queueTitle}>Now Playing</Text>
+                            <QueueTrack key={track.queueID} track={track} index={-1} />
+                        </div>
+                    ) : null}
+                    
+                    <Text h3 className={styles.queueTitle}>Queue</Text>
+                    <ReactSortable list={itemList} setList={event => reArrangeQueue(event)} animation={100}>
+                        {trackList.map((track, index) => (
+                            <QueueTrack key={track.queueID} track={track} index={index} />
+                        ))}
+                    </ReactSortable>
+                </div>
             </div>
         )
     }

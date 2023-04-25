@@ -108,13 +108,13 @@ export default function SuggestionsPlaylist() {
 
     function playPlaylist() {
         if (!suggestions) return;
-        audioPlayer.addToQueue(suggestions.getTrackList(), 0);
+        audioPlayer.addToQueue(suggestions.getTrackList(), false, 0);
         audioPlayer.nextTrack();
     }
 
     function shufflePlaylist() {
         if (!suggestions) return;
-        audioPlayer.addToQueue(shuffle(suggestions.getTrackList()), 0);
+        audioPlayer.addToQueue(suggestions.getTrackList(), true, 0);
         audioPlayer.nextTrack();
     }
 

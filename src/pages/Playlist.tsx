@@ -124,19 +124,19 @@ export default function Playlist() {
 
     function playPlaylist() {
         if (!trackList) return;
-        audioPlayer.addToQueue(trackList, 0);
+        audioPlayer.addToQueue(trackList, false, 0);
         audioPlayer.nextTrack();
     }
 
     function shufflePlaylist() {
         if (!trackList) return;
-        audioPlayer.addToQueue(shuffle(trackList), 0);
+        audioPlayer.addToQueue(trackList, true, 0);
         audioPlayer.nextTrack();
     }
 
     function playSuggestions() {
         if (!suggestions) return;
-        audioPlayer.addToQueue(suggestions, 0);
+        audioPlayer.addToQueue(suggestions, false, 0);
         audioPlayer.nextTrack();
     }
 

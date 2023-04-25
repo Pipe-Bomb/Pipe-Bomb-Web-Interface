@@ -71,31 +71,27 @@ function App() {
       <NotificationManager />
       <Routes>
         <Route path="/connect" element={<Connect />} /> {/* connect route */}
-        <Route path="*" element={<> {/* all other routes */}
+        <Route path="*" element={
+          <>
+            <SideBar></SideBar>
+            <Player showQueue={!doRightSide}></Player>
+            <AddToPlaylist></AddToPlaylist>
+            <CreatePlaylist></CreatePlaylist>
 
-          <SideBar></SideBar>
-          <Player showQueue={!doRightSide}></Player>
-          <AddToPlaylist></AddToPlaylist>
-          <CreatePlaylist></CreatePlaylist>
-            {doRightSide ? (
-              <div className={styles.content + " " + styles.rightSideEnabled}>
-                <div className={styles.main}>
-                  { getRoutes() }
-                </div>
-                {playerActive && (
-                  <div className={styles.rightSpace}>
-                    <Queue sideBar />
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className={styles.content}>
-                <div className={styles.main}>
+            <div className={styles.content}>
+              <div className={styles.main}>
+                <div className={styles.page}>
                   { getRoutes() }
                 </div>
               </div>
-            )}
-        </>} />
+              {doRightSide && playerActive && (
+                <div className={styles.rightSpace}>
+                  <Queue sideBar />
+                </div>
+              )}
+            </div>
+          </>
+        } />
       </Routes>
     </>
   );

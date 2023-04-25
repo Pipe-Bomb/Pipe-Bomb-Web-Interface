@@ -1,6 +1,6 @@
 import Track from "pipebomb.js/dist/music/Track";
 import PipeBombConnection from "./PipeBombConnection";
-import { convertArrayToString, generateNumberHash, generateRandomString } from "./Utils";
+import { convertArrayToString, generateNumberHash, generateRandomString, shuffle } from "./Utils";
 import KeyboardShortcuts from "./KeyboardShortcuts";
 import AudioWrapper from "./audio/AudioWrapper";
 import { createNotification } from "../components/NotificationManager";
@@ -23,12 +23,16 @@ export default class AudioPlayer {
 
     private currentTrack: TrackWrapper | null = null;
     private queue: TrackWrapper[] = [];
+    private realQueue: TrackWrapper[] = [];
     private history: TrackWrapper[] = [];
     private paused = false;
     private volume = 100;
     private muted = false;
     private volumeEnabled = true;
     private takenQueueIds: number[] = [];
+    private shuffled = false;
+    private loopStatus: "none" | "all" | "one" = "none";
+    private loopTrackPoint: TrackWrapper;
 
     private queueUpdateCallbacks: (() => void)[] = [];
     private volumeUpdateCallbacks: ((volume: VolumeStatus) => void)[] = [];
@@ -54,7 +58,20 @@ export default class AudioPlayer {
             }
         });
 
-        this.audio.registerEndEventListener(() => this.nextTrack());
+        this.audio.registerEndEventListener(async () => {
+            switch (this.loopStatus) {
+                case "all":
+                    if (!this.queue.length && this.loopTrackPoint && await this.playFromHistory(this.loopTrackPoint)) {
+                        break;
+                    }
+                case "none":
+                    this.nextTrack();
+                    break;
+                case "one":
+                    this.playTrack(this.currentTrack, true, true);
+                    break;
+            }
+        });
 
         // setInterval(() => {
         //     const volume = (Date.now() % 1000) / 1000;
@@ -94,11 +111,19 @@ export default class AudioPlayer {
                 if (!ignoreHistory && this.currentTrack) {
                     this.history.push(this.currentTrack);
                     while (this.history.length > 1000) { // max 1000 songs in history
-                        this.removeQueueID(this.history.shift().queueID);
+                        const track = this.history.shift();
+                        const index = this.realQueue.indexOf(track);
+                        if (index >= 0) this.realQueue.splice(index, 1);
+                        this.removeQueueID(track.queueID);
                     }
                 }
                 this.currentTrack = trackWrapper;
                 this.registerQueueID(trackWrapper);
+
+                if (this.loopStatus == "all" && !this.loopTrackPoint) {
+                    this.loopTrackPoint = this.currentTrack;
+                }
+
                 this.sendQueueCallbacks();
                 await this.audio.activeType.setMedia(url, trackWrapper.track.isUnknown() ? null : await trackWrapper.track.getMetadata());
                 if (!this.paused) this.audio.activeType.setPaused(false);
@@ -130,8 +155,51 @@ export default class AudioPlayer {
         }
     }
 
+    public isShuffled() {
+        return this.shuffled;
+    }
+
+    public getLoopStatus() {
+        return this.loopStatus;
+    }
+
+    public setLoopStatus(status: "none" | "all" | "one") {
+        this.loopStatus = status;
+        if (status == "all") {
+            if (this.currentTrack) {
+                this.loopTrackPoint = this.currentTrack;
+            } else {
+                this.loopTrackPoint = null;
+            }
+            
+        }
+        this.sendQueueCallbacks();
+    }
+
+    public cycleLoopStatus() {
+        const statuses: ("none" | "all" | "one")[] = ["none", "all", "one"];
+        this.setLoopStatus(statuses[(statuses.indexOf(this.loopStatus) + 1) % statuses.length]);
+    }
+
+    public setShuffled(shuffled: boolean) {
+        if (shuffled == this.shuffled) return;
+        this.shuffled = shuffled;
+        if (shuffled) {
+            const shuffledQueue = shuffle(this.queue);
+            this.queue.splice(0, this.queue.length, ...shuffledQueue);
+        } else {
+            const newQueue: TrackWrapper[] = [];
+            for (let track of this.realQueue) {
+                if (this.queue.includes(track)) {
+                    newQueue.push(track);
+                }
+            }
+            this.queue.splice(0, this.queue.length, ...newQueue);
+        }
+        this.sendQueueCallbacks();
+    }
+
     public async pause() {
-        console.log("pausing!");
         await this.audio.activeType.setPaused(true);
     }
 
@@ -145,17 +213,14 @@ export default class AudioPlayer {
             await this.nextTrack();
             return;
         }
-        console.log("resuming!");
         await this.audio.activeType.setPaused(false);
     }
 
     public async nextTrack(ignoreHistory?: boolean) {
-        console.log("next track");
         const nextTrack = this.queue.shift();
         if (nextTrack) {
             await this.playTrack(nextTrack, true, ignoreHistory);
         } else {
-            console.log("end!");
             this.clearCurrent();
         }
     }
@@ -169,13 +234,14 @@ export default class AudioPlayer {
         }
     }
 
-    public async playFromHistory(trackWrapper: TrackWrapper) {
+    public async playFromHistory(trackWrapper: TrackWrapper): Promise<boolean> {
         const index = this.history.indexOf(trackWrapper);
-        if (index < 0) return;
+        if (index < 0) return false;
         const section = this.history.splice(index, this.history.length - index);
         if (this.currentTrack) section.push(this.currentTrack);
         this.queue.splice(0, 0, ...section);
         await this.nextTrack(true);
+        return true;
     }
 
     private removeQueueID(id: number) {
@@ -188,6 +254,8 @@ export default class AudioPlayer {
 
     public async clearCurrent() {
         this.audio.activeType.setMedia(null);
+        if (!this.currentTrack) return;
+        this.history.push(this.currentTrack);
         this.currentTrack = null;
         this.sendQueueCallbacks();
     }
@@ -215,7 +283,6 @@ export default class AudioPlayer {
             hash = generateNumberHash(trackId);
         } while (this.takenQueueIds.includes(hash));
         
-        console.log("unique hash for track:", hash);
         return hash;
     }
 
@@ -225,7 +292,7 @@ export default class AudioPlayer {
         }
     }
 
-    public addToQueue(tracks: Track[], position?: number) {
+    public addToQueue(tracks: Track[], shouldShuffle?: boolean, position?: number) {
         const trackWrappers: TrackWrapper[] = [];
         for (let track of tracks) {
             const trackWrapper: TrackWrapper = {
@@ -236,10 +303,16 @@ export default class AudioPlayer {
             this.registerQueueID(trackWrapper);
         }
 
+        const shuffledQueue = shouldShuffle ? shuffle(trackWrappers) : trackWrappers;
+
+        if (shouldShuffle) this.shuffled = true;
+
         if (position !== undefined) {
-            this.queue.splice(position, 0, ...trackWrappers);
+            this.queue.splice(position, 0, ...shuffledQueue);
+            this.realQueue.splice(position, 0, ...trackWrappers);
         } else {
-            this.queue.push(...trackWrappers);
+            this.queue.push(...shuffledQueue);
+            this.realQueue.push(...trackWrappers);
         }
         this.sendQueueCallbacks();
     }
@@ -263,12 +336,18 @@ export default class AudioPlayer {
     }
 
     public removeFromQueue(index: number) {
-        this.queue.splice(index, 1);
+        const track = this.queue.splice(index, 1)[0];
+        if (!track) return;
+        const realIndex = this.realQueue.indexOf(track);
+        if (realIndex <= 0) {
+            this.realQueue.splice(realIndex, 1);
+        }
         this.sendQueueCallbacks();
     }
 
     public clearQueue() {
         this.queue.splice(0, this.queue.length);
+        this.realQueue.splice(0, this.queue.length);
         this.sendQueueCallbacks();
     }
 

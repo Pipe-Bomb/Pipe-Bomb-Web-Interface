@@ -93,7 +93,7 @@ export default function CompactTrack({ track, parentPlaylist, inverse }: Props) 
                 AudioPlayer.getInstance().addToQueue([track]);
                 break;
             case "next-up":
-                audioPlayer.addToQueue([track], 0);
+                audioPlayer.addToQueue([track], false, 0);
                 break;
             case "playlist":
                 openAddToPlaylist(track);

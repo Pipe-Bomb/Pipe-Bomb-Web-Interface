@@ -74,7 +74,7 @@ export default function QueueTrack({ track, index }: Props) {
                 break;
             case "next-up":
                 audioPlayer.removeFromQueue(index);
-                audioPlayer.addToQueue([track.track], 0);
+                audioPlayer.addToQueue([track.track], false, 0);
                 break;
             case "remove":
                 audioPlayer.removeFromQueue(index);

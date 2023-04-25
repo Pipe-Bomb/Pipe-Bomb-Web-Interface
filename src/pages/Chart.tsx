@@ -42,13 +42,13 @@ export default function Chart() {
 
     function playChart() {
         if (!trackList) return;
-        audioPlayer.addToQueue(trackList, 0);
+        audioPlayer.addToQueue(trackList, false, 0);
         audioPlayer.nextTrack();
     }
 
     function shuffleChart() {
         if (!trackList) return;
-        audioPlayer.addToQueue(shuffle(trackList), 0);
+        audioPlayer.addToQueue(trackList, true, 0);
         audioPlayer.nextTrack();
     }
 
