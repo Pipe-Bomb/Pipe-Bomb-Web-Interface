@@ -1,4 +1,4 @@
-import Track, { TrackMeta } from "pipebomb.js/dist/music/Track";
+import Track from "pipebomb.js/dist/music/Track";
 
 export interface AudioTypeStatus {
     currentTime: number,

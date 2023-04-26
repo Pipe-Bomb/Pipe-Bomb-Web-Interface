@@ -6,6 +6,7 @@ export default class LocalAudio extends AudioType {
     private buffering = false;
     private lastBuffer = 0;
     private track: Track = null;
+    private meta: TrackMeta | null;
     private lastPause: boolean = false;
 
     public constructor() {
@@ -51,7 +52,7 @@ export default class LocalAudio extends AudioType {
             const timestamp = Date.now();
             this.lastBuffer = timestamp;
             setTimeout(() => {
-                if (this.lastBuffer == timestamp && this.url) {
+                if (this.lastBuffer == timestamp && this.track) {
                     this.buffering = true;
                     this.update();
                 }
@@ -59,7 +60,7 @@ export default class LocalAudio extends AudioType {
         }
 
         this.audio.onended = () => {
-            this.url = null;
+            this.track = null;
             this.end();
         }
     }
@@ -148,6 +149,10 @@ export default class LocalAudio extends AudioType {
 
     public getCurrentTrack() {
         return this.track;
+    }
+
+    public getCurrentMeta() {
+        return this.meta;
     }
 
     public isBuffering() {

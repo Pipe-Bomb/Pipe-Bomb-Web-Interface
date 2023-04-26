@@ -125,7 +125,7 @@ export default class AudioPlayer {
                 }
 
                 this.sendQueueCallbacks();
-                await this.audio.activeType.setTrack(track);
+                await this.audio.activeType.setTrack(trackWrapper.track);
                 if (!this.paused) this.audio.activeType.setPaused(false);
             } catch (e) {
                 console.error("Error while loading audio!", url, e, trackWrapper.track);
