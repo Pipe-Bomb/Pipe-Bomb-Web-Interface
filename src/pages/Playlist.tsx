@@ -8,7 +8,7 @@ import Loader from "../components/Loader";
 import Track from "pipebomb.js/dist/music/Track";
 import ListTrack from "../components/ListTrack";
 import AudioPlayer from "../logic/AudioPlayer";
-import { convertTracklistToM3u, shuffle } from "../logic/Utils";
+import { convertTracklistToM3u } from "../logic/Utils";
 import { MdShuffle, MdPlayArrow, MdMoreHoriz } from "react-icons/md";
 import PlaylistIndex from "../logic/PlaylistIndex";
 import { useNavigate } from "react-router-dom";
@@ -124,19 +124,22 @@ export default function Playlist() {
 
     function playPlaylist() {
         if (!trackList) return;
-        audioPlayer.addToQueue(trackList, 0);
+        audioPlayer.clearQueue();
+        audioPlayer.addToQueue(trackList, false, 0);
         audioPlayer.nextTrack();
     }
 
     function shufflePlaylist() {
         if (!trackList) return;
-        audioPlayer.addToQueue(shuffle(trackList), 0);
+        audioPlayer.clearQueue();
+        audioPlayer.addToQueue(trackList, true, 0);
         audioPlayer.nextTrack();
     }
 
     function playSuggestions() {
         if (!suggestions) return;
-        audioPlayer.addToQueue(suggestions, 0);
+        audioPlayer.clearQueue();
+        audioPlayer.addToQueue(suggestions, false, 0);
         audioPlayer.nextTrack();
     }
 
@@ -154,6 +157,11 @@ export default function Playlist() {
                     convertTracklistToM3u(PipeBombConnection.getInstance().getUrl(), trackList, false, true);
                 }
                 break;
+            case "queue":
+                if (trackList) {
+                    audioPlayer.addToQueue(trackList);
+                }
+                break;
         }
     }
 
@@ -163,6 +171,7 @@ export default function Playlist() {
         if (isOwnPlaylist) {
             return (
                 <Dropdown.Menu onAction={contextMenu} disabledKeys={["rename"]}>
+                    <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
                     <Dropdown.Item key="rename">Rename Playlist</Dropdown.Item>
                     <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
                     <Dropdown.Item key="delete" color="error">Delete Playlist</Dropdown.Item>
@@ -171,6 +180,7 @@ export default function Playlist() {
         } else {
             return (
                 <Dropdown.Menu onAction={contextMenu} disabledKeys={["like"]}>
+                    <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
                     <Dropdown.Item key="like">Like Playlist</Dropdown.Item>
                     <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
                 </Dropdown.Menu>

@@ -1,38 +1,55 @@
 .content {
     position: fixed;
     left: 250px;
-    right: 0px;
+    right: 1rem;
     top: 0;
     bottom: 100px;
-    overflow-x: auto;
     display: flex;
-    gap: 1rem;
+    margin-top: 1rem;
 }
 
 .main {
     flex-grow: 1;
-    padding: 1rem 1rem 0 1rem;
-    overflow-y: scroll;
+    overflow: hidden;
+    background: var(--nextui-colors-backgroundSecondary);
+    border-radius: 50px;
     position: relative;
-    // max-width: 1400px;
+
+    ::-webkit-scrollbar-track {
+        margin: 50px 0;
+    }
+
+    .page {
+        padding: 2rem 2rem 1rem 2rem;
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: 100%;
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: inherit;
+        box-shadow: var(--nextui-shadows-center) inset;
+        pointer-events: none;
+        z-index: 10;
+    }
 }
 
 .rightSpace {
     flex-grow: 0;
     flex-shrink: 0;
-    width: 800px;
-    overflow-y: scroll;
+    width: 600px;
     position: relative;
-}
-
-@media only screen and (max-width: 2300px) {
-    .rightSpace {
-        width: 700px;
-    }
+    margin-left: 1rem;
 }
 
 @media only screen and (max-width: 2000px) {
     .rightSpace {
-        width: 600px;
+        width: 500px;
     }
 }

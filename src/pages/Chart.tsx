@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import ChartIndex from "../logic/ChartIndex";
 import Loader from "../components/Loader";
 import { Button, Dropdown, Grid, Text } from "@nextui-org/react";
-import { convertTracklistToM3u, shuffle } from "../logic/Utils";
+import { convertTracklistToM3u } from "../logic/Utils";
 import styles from "../styles/Chart.module.scss";
 import { MdMoreHoriz, MdPlayArrow, MdShuffle } from "react-icons/md";
 import ListTrack from "../components/ListTrack";
@@ -29,8 +29,6 @@ export default function Chart() {
                 const newTrackList = chart.getTrackList();
                 if (newTrackList) {
                     setTrackList(newTrackList);
-                } else {
-                    console.log("NOT TRACK LSIT!!!");
                 }
             }
         });
@@ -42,13 +40,15 @@ export default function Chart() {
 
     function playChart() {
         if (!trackList) return;
-        audioPlayer.addToQueue(trackList, 0);
+        audioPlayer.clearQueue();
+        audioPlayer.addToQueue(trackList, false, 0);
         audioPlayer.nextTrack();
     }
 
     function shuffleChart() {
         if (!trackList) return;
-        audioPlayer.addToQueue(shuffle(trackList), 0);
+        audioPlayer.clearQueue();
+        audioPlayer.addToQueue(trackList, true, 0);
         audioPlayer.nextTrack();
     }
 
@@ -57,6 +57,11 @@ export default function Chart() {
             case "m3u":
                 if (trackList) {
                     convertTracklistToM3u(PipeBombConnection.getInstance().getUrl(), trackList, false, true);
+                }
+                break;
+            case "queue":
+                if (trackList) {
+                    audioPlayer.addToQueue(trackList);
                 }
                 break;
         }
@@ -80,6 +85,7 @@ export default function Chart() {
                             </Button>
                         </Dropdown.Trigger>
                         <Dropdown.Menu onAction={contextMenu}>
+                            <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
                             <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
