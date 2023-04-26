@@ -1,13 +1,11 @@
-import { TrackMeta } from "pipebomb.js/dist/music/Track";
+import Track, { TrackMeta } from "pipebomb.js/dist/music/Track";
 import AudioType from "./AudioType";
-import Axios from "axios";
 
 export default class LocalAudio extends AudioType {
     private audio = new Audio();
     private buffering = false;
     private lastBuffer = 0;
-    private url = "";
-    private meta: TrackMeta | null;
+    private track: Track = null;
     private lastPause: boolean = false;
 
     public constructor() {
@@ -30,7 +28,7 @@ export default class LocalAudio extends AudioType {
         }
 
         this.audio.onerror = e => {
-            if (this.url) {
+            if (this.track) {
                 console.error(e);
             }
         }
@@ -116,11 +114,10 @@ export default class LocalAudio extends AudioType {
         return this.audio.muted;
     }
 
-    public async setMedia(url: string, meta?: TrackMeta): Promise<void> {
+    public async setTrack(track: Track): Promise<void> {
         return new Promise(async (resolve, reject) => {
-            this.url = url;
-            this.audio.src = url;
-            this.meta = meta || null;
+            this.track = track;
+            this.audio.src = track.getAudioUrl();
             let completed = false;
 
             this.audio.addEventListener("error", e => {
@@ -136,7 +133,7 @@ export default class LocalAudio extends AudioType {
                 resolve();
             });
 
-            if (url) {
+            if (track) {
                 this.buffering = true;
             }
             
@@ -145,12 +142,8 @@ export default class LocalAudio extends AudioType {
         });   
     }
 
-    public getCurrentMedia() {
-        return this.url;
-    }
-
-    public getCurrentMeta() {
-        return this.meta;
+    public getCurrentTrack() {
+        return this.track;
     }
 
     public isBuffering() {

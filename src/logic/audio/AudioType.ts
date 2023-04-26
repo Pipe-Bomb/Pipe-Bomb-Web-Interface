@@ -1,4 +1,4 @@
-import { TrackMeta } from "pipebomb.js/dist/music/Track";
+import Track, { TrackMeta } from "pipebomb.js/dist/music/Track";
 
 export interface AudioTypeStatus {
     currentTime: number,
@@ -67,8 +67,7 @@ export default abstract class AudioType {
     public abstract setMuted(muted: boolean): Promise<void>;
     public abstract isMuted(): boolean;
 
-    public abstract setMedia(url: string, meta?: TrackMeta): Promise<void>;
-    public abstract getCurrentMedia(): string;
-    public abstract getCurrentMeta(): TrackMeta | null;
+    public abstract setTrack(track: Track): Promise<void>;
+    public abstract getCurrentTrack(): Track;
     public abstract isBuffering(): boolean;
 }

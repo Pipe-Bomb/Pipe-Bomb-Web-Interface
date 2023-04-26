@@ -68,7 +68,7 @@ export default class AudioPlayer {
             try {
                 this.currentTrack = track;
                 this.sendQueueCallbacks();
-                await this.audio.activeType.setMedia(url, track.isUnknown() ? null : await track.getMetadata());
+                await this.audio.activeType.setTrack(track);
                 if (!this.paused) this.audio.activeType.setPaused(false);
             } catch (e) {
                 console.error("Error while loading audio!", url, e, track);
@@ -138,7 +138,7 @@ export default class AudioPlayer {
     }
 
     public async clearCurrent() {
-        this.audio.activeType.setMedia(null);
+        this.audio.activeType.setTrack(null);
         this.currentTrack = null;
         this.sendQueueCallbacks();
     }
