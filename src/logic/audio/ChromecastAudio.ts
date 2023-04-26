@@ -1,4 +1,4 @@
-import { TrackMeta } from "pipebomb.js/dist/music/Track";
+import Track, { TrackMeta } from "pipebomb.js/dist/music/Track";
 import AudioPlayer from "../AudioPlayer";
 import AudioType from "./AudioType";
 import { convertArrayToString } from "../Utils";
@@ -22,8 +22,7 @@ window["__onGCastApiAvailable"] = (isAvailable: boolean) => {
 export default class ChromecastAudio extends AudioType {
     private static instance: ChromecastAudio;
 
-    private url = "";
-    private meta: TrackMeta | null = null;
+    private track: Track = null;
     private buffering = false;
     private castSession: any;
     private sessionEvents: Map<string, (e: any) => void> = new Map();
@@ -119,10 +118,10 @@ export default class ChromecastAudio extends AudioType {
         if (this.mediaSession) {
             if (this.mediaSession.media) {
                 const url = this.mediaSession.media.contentId;
-                this.url = url;
                 this.mediaListener(true);
                 const trackId = url.split("/").pop();
                 PipeBombConnection.getInstance().getApi().trackCache.getTrack(trackId).then(track => {
+                    this.track = track;
                     AudioPlayer.getInstance().playTrack(track);
                 }).catch(e => {
                     console.error(e);
@@ -142,7 +141,7 @@ export default class ChromecastAudio extends AudioType {
         }
 
         if (t.mediaSession.media) {
-            if (t.mediaSession.media.contentId == t.url) {
+            if (t.mediaSession.media.contentId == t.track.getAudioUrl()) {
                 t.duration = t.mediaSession.media.duration;
 
                 if (t.lastIdleReason != t.mediaSession.idleReason) {
@@ -190,7 +189,7 @@ export default class ChromecastAudio extends AudioType {
     }
 
     public getCurrentTime() {
-        if (this.mediaSession && this.mediaSession.media && this.mediaSession.media.contentId == this.url) {
+        if (this.mediaSession && this.mediaSession.media && this.mediaSession.media.contentId == this.track.getAudioUrl()) {
             return this.mediaSession.getEstimatedTime();
         }
         return 0;
@@ -252,35 +251,6 @@ export default class ChromecastAudio extends AudioType {
 
     public async setVolume(volume: number): Promise<void> {
         return new Promise(async (resolve, reject) => {
-            // if (this.mediaSession) {
-            //     const request = new window.chrome.cast.media.VolumeRequest();
-            //     request.volume = new window.chrome.cast.Volume();
-            //     request.volume.level = Math.max(Math.min(volume / 100, 1), 0);
-            //     this.mediaSession.setVolume(request, () => {
-            //         this.update();
-            //         resolve();
-            //     }, (e: any) => {
-            //         console.error(e);
-            //         reject();
-            //     })
-            // } else {
-            //     const error = await this.castSession.setVolume(Math.max(Math.min(volume / 100, 1), 0));
-            //     if (error) {
-            //         console.error(error);
-            //         reject();
-            //     } else {
-            //         this.update();
-            //         resolve();
-            //     }
-            // }
-            // const error = await this.castSession.setVolume(Math.max(Math.min(volume / 100, 1), 0));
-            // if (error) {
-            //     console.error(error);
-            //     reject();
-            // } else {
-            //     this.update();
-            //     resolve();
-            // }
             if (this.castSession) {
                 const error = await this.castSession.setVolume(Math.max(Math.min(volume / 100, 1), 0));
                 if (error) {
@@ -291,17 +261,10 @@ export default class ChromecastAudio extends AudioType {
                     resolve();
                 }
             }
-
-            // this.player.volumeLevel = Math.max(Math.min(volume / 100, 1), 0);
-            // this.playerController.setVolumeLevel();
-            // this.update();
         });
     }
 
     public getVolume(): number {
-        // if (this.mediaSession && this.mediaSession.volume.level !== null) {
-        //     return this.mediaSession.volume.level * 100;
-        // }
         if (this.castSession) {
             return this.castSession.getVolume() * 100;
         }
@@ -316,26 +279,6 @@ export default class ChromecastAudio extends AudioType {
     }
 
     public async setMuted(muted: boolean): Promise<void> {
-        // return new Promise((resolve, reject) => {
-        //     if (this.mediaSession) {
-        //         const request = new window.chrome.cast.media.VolumeRequest();
-        //         request.volume = new window.chrome.cast.Volume();
-        //         request.volume.muted = muted;
-        //         this.mediaSession.setVolume(request, () => {
-        //             this.update();
-        //             resolve();
-        //         }, (e: any) => {
-        //             console.error(e);
-        //             reject();
-        //         })
-        //     } else {
-        //         if (muted != this.player.isMuted) {
-        //             this.playerController.muteOrUnmute();
-        //             this.update();
-        //         }
-        //         resolve();
-        //     }
-        // });
         if (this.castSession) {
             this.castSession.setMute(muted);
             this.update();
@@ -343,31 +286,28 @@ export default class ChromecastAudio extends AudioType {
     }
 
     public isMuted(): boolean {
-        // if (this.mediaSession) {
-        //     return this.mediaSession.volume.muted;
-        // }
         if (this.castSession) {
             return this.castSession.isMute();
         }
         return false;
     }
 
-    public async setMedia(url: string, meta?: TrackMeta): Promise<void> {
+    public async setTrack(track: Track): Promise<void> {
         return new Promise(async (resolve, reject) => {
-            if (!url || url == this.url) return;
-            this.url = url;
+            if (!track || track.trackID == this.track.trackID) return;
+            this.track = track;
             this.buffering = true;
             this.mediaListener(true);
             try {
-                const { status } = await Axios.head(url);
+                const { status } = await Axios.head(track.getAudioUrl());
                 if (!status.toString().startsWith("2")) {
                     throw `Bad status code: ${status}`;
                 }
 
-                const mediaInfo = new window.chrome.cast.media.MediaInfo(url, "audio/mpeg");
+                const mediaInfo = new window.chrome.cast.media.MediaInfo(track.getAudioUrl(), "audio/mpeg");
                 mediaInfo.metadata = new window.chrome.cast.media.MusicTrackMediaMetadata();
+                const meta = await track.getMetadata();
                 if (meta) {
-                    this.meta = meta;
                     mediaInfo.metadata.artist = convertArrayToString(meta.artists);
                     mediaInfo.metadata.title = meta.title;
                     if (meta.image) {
@@ -376,7 +316,6 @@ export default class ChromecastAudio extends AudioType {
                         ];
                     }
                 } else {
-                    this.meta = null;
                     mediaInfo.metadata.title = "Pipe Bomb";
                 }
                 
@@ -395,19 +334,15 @@ export default class ChromecastAudio extends AudioType {
                 });
             } catch (e) {
                 this.buffering = false;
-                this.url = null;
+                this.track = null;
                 this.update();
                 reject(e);
             }
         });
     }
 
-    public getCurrentMedia(): string {
-        return this.url;
-    }
-
-    public getCurrentMeta() {
-        return this.meta;
+    public getCurrentTrack(): Track {
+        return this.track;
     }
 
     public isBuffering(): boolean {
