@@ -23,6 +23,7 @@ export default class ChromecastAudio extends AudioType {
     private static instance: ChromecastAudio;
 
     private track: Track = null;
+    private meta: TrackMeta | null = null;
     private buffering = false;
     private castSession: any;
     private sessionEvents: Map<string, (e: any) => void> = new Map();
@@ -141,7 +142,7 @@ export default class ChromecastAudio extends AudioType {
         }
 
         if (t.mediaSession.media) {
-            if (t.mediaSession.media.contentId == t.track.getAudioUrl()) {
+            if (t.mediaSession.media.contentId == t.track?.getAudioUrl()) {
                 t.duration = t.mediaSession.media.duration;
 
                 if (t.lastIdleReason != t.mediaSession.idleReason) {
@@ -189,7 +190,7 @@ export default class ChromecastAudio extends AudioType {
     }
 
     public getCurrentTime() {
-        if (this.mediaSession && this.mediaSession.media && this.mediaSession.media.contentId == this.track.getAudioUrl()) {
+        if (this.mediaSession && this.mediaSession.media && this.mediaSession.media.contentId == this.track?.getAudioUrl()) {
             return this.mediaSession.getEstimatedTime();
         }
         return 0;
@@ -265,6 +266,9 @@ export default class ChromecastAudio extends AudioType {
     }
 
     public getVolume(): number {
+        // if (this.mediaSession && this.mediaSession.volume.level !== null) {
+        //     return this.mediaSession.volume.level * 100;
+        // }
         if (this.castSession) {
             return this.castSession.getVolume() * 100;
         }
@@ -294,7 +298,7 @@ export default class ChromecastAudio extends AudioType {
 
     public async setTrack(track: Track): Promise<void> {
         return new Promise(async (resolve, reject) => {
-            if (!track || track.trackID == this.track.trackID) return;
+            if (track.trackID == this.track?.trackID) return;
             this.track = track;
             this.buffering = true;
             this.mediaListener(true);
@@ -306,8 +310,11 @@ export default class ChromecastAudio extends AudioType {
 
                 const mediaInfo = new window.chrome.cast.media.MediaInfo(track.getAudioUrl(), "audio/mpeg");
                 mediaInfo.metadata = new window.chrome.cast.media.MusicTrackMediaMetadata();
+                
                 const meta = await track.getMetadata();
+
                 if (meta) {
+                    this.meta = meta;
                     mediaInfo.metadata.artist = convertArrayToString(meta.artists);
                     mediaInfo.metadata.title = meta.title;
                     if (meta.image) {
@@ -316,6 +323,7 @@ export default class ChromecastAudio extends AudioType {
                         ];
                     }
                 } else {
+                    this.meta = null;
                     mediaInfo.metadata.title = "Pipe Bomb";
                 }
                 
@@ -341,7 +349,7 @@ export default class ChromecastAudio extends AudioType {
         });
     }
 
-    public getCurrentTrack(): Track {
+    public getCurrentTrack() {
         return this.track;
     }
 

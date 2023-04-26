@@ -51,9 +51,9 @@ export default function Playlist() {
         setTrackList(false);
         setPlaylist(null);
         setSuggestions(null);
-        let alive = true;
 
-        PipeBombConnection.getInstance().getApi().v1.getPlaylist(playlistID)
+        let alive = true;
+        PlaylistIndex.getInstance().getPlaylist(playlistID)
         .then(collection => {
             if (!alive) return;
             setPlaylist(collection);
