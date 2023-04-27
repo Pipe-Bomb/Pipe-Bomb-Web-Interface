@@ -135,58 +135,56 @@ export default function Queue({ sideBar }: QueueProps) {
 
 
     return (
-        <div className={styles.queueContainer}>
-            <Popover placement={"top-right"} onOpenChange={popoverOpen}>
-                <Popover.Trigger>
-                    <Button auto rounded className={styles.roundButton + " " + styles.queueButton} light><MdQueueMusic /></Button>
-                </Popover.Trigger>
-                <Popover.Content className={styles.queuePopover}>
-                    <div className={styles.container + " " + styles.queue}>
-                        <Grid.Container className={styles.topButtons} gap={1}>
-                            <Grid>
-                                <Button className={styles.roundButton} auto light={!audioPlayer.isShuffled()} onPress={() => audioPlayer.setShuffled(!audioPlayer.isShuffled())}><IoMdShuffle /></Button>
-                            </Grid>
-                            <Grid>
-                                <Button className={styles.roundButton} auto light={audioPlayer.getLoopStatus() == "none"} onPress={() => audioPlayer.cycleLoopStatus()}>
-                                    {audioPlayer.getLoopStatus() == "one" ? (
-                                        <MdRepeatOne />
-                                    ) : (
-                                        <MdRepeat />
-                                    )}
-                                </Button>
-                            </Grid>
-                            <Grid>
-                                <Button className={styles.roundButton} auto light onPress={() => audioPlayer.clearQueue()} disabled={!audioPlayer.getQueue().length}><MdOutlineDeleteOutline /></Button>
-                            </Grid>
-                        </Grid.Container>
-                        <div className={styles.scroll}>
-                            {history.length ? (
-                                <Text h3 className={styles.queueTitle}>History</Text>
-                            ) : null}
-                            
-                            <div>
-                                {history.map(track => (
-                                    <QueueTrack key={track.queueID} track={track} index={-2} />
-                                ))}
-                            </div>
-
-                            {track ? (
-                                <div ref={currentTrack}>
-                                    <Text h3 className={styles.queueTitle}>Now Playing</Text>
-                                    <QueueTrack key={track.queueID} track={track} index={-1} />
-                                </div>
-                            ) : null}
-                            
-                            <Text h3 className={styles.queueTitle}>Queue</Text>
-                            <ReactSortable list={itemList} setList={event => reArrangeQueue(event)} animation={100}>
-                                {trackList.map((track, index) => (
-                                    <QueueTrack key={track.queueID} track={track} index={index} />
-                                ))}
-                            </ReactSortable>
+        <Popover placement={"top-right"} onOpenChange={popoverOpen}>
+            <Popover.Trigger>
+                <Button auto light rounded className={styles.roundButton + " " + styles.queueButton}><MdQueueMusic /></Button>
+            </Popover.Trigger>
+            <Popover.Content className={styles.queuePopover}>
+                <div className={styles.container + " " + styles.queue}>
+                    <Grid.Container className={styles.topButtons} gap={1}>
+                        <Grid>
+                            <Button className={styles.roundButton} auto light={!audioPlayer.isShuffled()} onPress={() => audioPlayer.setShuffled(!audioPlayer.isShuffled())}><IoMdShuffle /></Button>
+                        </Grid>
+                        <Grid>
+                            <Button className={styles.roundButton} auto light={audioPlayer.getLoopStatus() == "none"} onPress={() => audioPlayer.cycleLoopStatus()}>
+                                {audioPlayer.getLoopStatus() == "one" ? (
+                                    <MdRepeatOne />
+                                ) : (
+                                    <MdRepeat />
+                                )}
+                            </Button>
+                        </Grid>
+                        <Grid>
+                            <Button className={styles.roundButton} auto light onPress={() => audioPlayer.clearQueue()} disabled={!audioPlayer.getQueue().length}><MdOutlineDeleteOutline /></Button>
+                        </Grid>
+                    </Grid.Container>
+                    <div className={styles.scroll}>
+                        {history.length ? (
+                            <Text h3 className={styles.queueTitle}>History</Text>
+                        ) : null}
+                        
+                        <div>
+                            {history.map(track => (
+                                <QueueTrack key={track.queueID} track={track} index={-2} />
+                            ))}
                         </div>
+
+                        {track ? (
+                            <div ref={currentTrack}>
+                                <Text h3 className={styles.queueTitle}>Now Playing</Text>
+                                <QueueTrack key={track.queueID} track={track} index={-1} />
+                            </div>
+                        ) : null}
+                        
+                        <Text h3 className={styles.queueTitle}>Queue</Text>
+                        <ReactSortable list={itemList} setList={event => reArrangeQueue(event)} animation={100}>
+                            {trackList.map((track, index) => (
+                                <QueueTrack key={track.queueID} track={track} index={index} />
+                            ))}
+                        </ReactSortable>
                     </div>
-                </Popover.Content>
-            </Popover>
-        </div>
+                </div>
+            </Popover.Content>
+        </Popover>
     )
 }

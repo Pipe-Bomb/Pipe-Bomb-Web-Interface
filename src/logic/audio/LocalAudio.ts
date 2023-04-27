@@ -121,29 +121,35 @@ export default class LocalAudio extends AudioType {
     public async setTrack(track: Track): Promise<void> {
         return new Promise(async (resolve, reject) => {
             this.track = track;
-            this.audio.src = track.getAudioUrl();
-            let completed = false;
-
-            this.audio.addEventListener("error", e => {
-                if (completed) return;
-                completed = true;
-                this.buffering = false;
-                reject(e);
-            }, { once: true });
-
-            this.audio.addEventListener("loadeddata", () => {
-                if (completed) return;
-                completed = true;
-                resolve();
-            });
-
-            if (track) {
-                this.buffering = true;
+            if (this.track) {
+                this.audio.src = track.getAudioUrl();
+                let completed = false;
+    
+                this.audio.addEventListener("error", e => {
+                    if (completed) return;
+                    completed = true;
+                    this.buffering = false;
+                    reject(e);
+                }, { once: true });
+    
+                this.audio.addEventListener("loadeddata", () => {
+                    if (completed) return;
+                    completed = true;
+                    resolve();
+                });
+    
+                if (track) {
+                    this.buffering = true;
+                }
+                
+                this.audio.load();
+                this.setPaused(false);
+                this.update();
+            } else {
+                this.audio.src = "";
+                this.setPaused(true);
+                this.update();
             }
-            
-            this.audio.load();
-            this.setPaused(false);
-            this.update();
         });   
     }
 

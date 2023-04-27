@@ -98,6 +98,7 @@
 }
 
 .roundButton {
+    background: red;
     svg {
         height: 30px;
         width: 30px;
@@ -143,5 +144,6 @@
 .rightContainer {
     display: flex;
     justify-content: right;
+    align-items: center;
     padding: 1rem;
 }

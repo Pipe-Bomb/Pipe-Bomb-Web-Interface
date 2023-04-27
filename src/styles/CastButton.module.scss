@@ -1,8 +1,8 @@
 .container {
-    width: 30px;
+    width: 70px;
     height: 40px;
-    margin: 10px 30px 0 0;
     position: relative;
+    
 
     google-cast-launcher {
         --disconnected-color: var(--nextui-colors-text);
@@ -17,5 +17,12 @@
         width: 30px;
         height: 30px;
         opacity: 0.5;
+    }
+
+    .sizer {
+        width: 30px;
+        display: flex;
+        align-items: center;
+        height: 100%;
     }
 }

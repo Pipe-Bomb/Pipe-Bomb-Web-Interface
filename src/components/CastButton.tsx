@@ -13,8 +13,8 @@ export default function CastButton() {
     })
 
     return (
-        <div ref={container} className={styles.container}>
-        
+        <div className={styles.container}>
+            <div ref={container} className={styles.sizer}></div>
         </div>
     )
 }

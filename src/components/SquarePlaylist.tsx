@@ -6,6 +6,7 @@ import { Text } from "@nextui-org/react";
 import { generateMeshGradient } from 'meshgrad';
 import LazyImage from "./LazyImage";
 import Playlist from "pipebomb.js/dist/collection/Playlist";
+import Axios from "axios";
 
 interface Props {
     playlist: Playlist
@@ -27,12 +28,18 @@ export default function SquarePlaylist({ playlist }: Props) {
             let checked = 0;
             const images: string[] = [];
             for (let i = 0; i < checkCount; i++) {
-                tracks[i].getMetadata()
-                .then(metadata => {
+                Axios.head(tracks[i].getThumbnailUrl()).then(response => {
                     if (checked == -1 || images.length >= 4) return;
-                    checked++;
-                    if (metadata?.image) images.push(metadata.image);
-                    if (checked >= checkCount || images.length >= 4) {
+                    
+                    if (response.status == 200) {
+                        images.push(tracks[i].getThumbnailUrl());
+                    }
+                    if (++checked >= checkCount || images.length >= 4) {
+                        checked = -1;
+                        setImageUrls(images);
+                    }
+                }, () => {
+                    if (++checked >= checkCount || images.length >= 4) {
                         checked = -1;
                         setImageUrls(images);
                     }

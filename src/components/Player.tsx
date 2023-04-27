@@ -1,89 +1,48 @@
-import { Button, Grid, Progress, Loading, Text, Popover } from "@nextui-org/react";
+import { Button, Grid, Progress, Text } from "@nextui-org/react";
 import styles from "../styles/Player.module.scss";
-import { MdSkipNext, MdSkipPrevious, MdPlayArrow, MdPause } from "react-icons/md";
+import { MdSkipNext, MdSkipPrevious, MdPlayArrow, MdPause, MdOutlineLyrics } from "react-icons/md";
 import { useEffect, useRef, useState } from "react";
 import AudioPlayer from "../logic/AudioPlayer";
-import AudioPlayerStatus from "../logic/AudioPlayerStatus";
 import { convertArrayToString, formatTime } from "../logic/Utils";
 import Queue from "./Queue";
 import KeyboardShortcuts from "../logic/KeyboardShortcuts";
 import Volume from "./Volume";
 import CastButton from "./CastButton";
-import AudioType from "../logic/audio/AudioType";
+import ImageWrapper from "./ImageWrapper";
+import { getSidebarState, setSidebar } from "../App";
+import useTrackMeta from "../hooks/TrackMetaHook";
+import usePlayerUpdate from "../hooks/PlayerUpdateHook";
 
 interface PlayerProps {
     showQueue: boolean
 }
 
-
 export default function Player({ showQueue }: PlayerProps) {
     const audioPlayer = AudioPlayer.getInstance();
-    const [dummyReload, setDummyReload] = useState(false);;
+    const [currentlyPlaying, setCurrentlyPlaying] = useState(audioPlayer.getCurrentTrack()?.track);
+    const [dummyReload, setDummyReload] = useState(false);
 
     const progressValue = useRef(-1);
     const slider = useRef<HTMLInputElement>(null);
 
-    const thumbnail = useRef<HTMLImageElement>(null);
-    const [title, setTitle] = useState("");
-    const [artist, setArtist] = useState("");
+    const status = usePlayerUpdate({
+        currentTime: true,
+        duration: true,
+        paused: true,
+        buffering: true
+    });
 
-    const [hasImage, setHasImage] = useState<boolean | null>(null);
-
-    let [audioStatus, setAudioStatus] = useState(audioPlayer.audio.activeType.getStatus());
-
-    const audioCallback = (audio: AudioType) => {
+    useEffect(() => {
         if (slider.current != null && progressValue.current == -1) {
             const sliderElement: any = slider.current;
-            sliderElement.value = audio.getCurrentTime() / audio.getDuration() * 100;
+            sliderElement.value = status.currentTime / status.duration * 100;
         }
-        setAudioStatus(audio.getStatus());
-    }
+    }, [status]);
+
+    const metadata = useTrackMeta(currentlyPlaying);
 
     const queueCallback = () => {
-        const currentTrack = audioPlayer.getCurrentTrack();
-        if (currentTrack) {
-            if (currentTrack.track.isUnknown()) {
-                setHasImage(false);
-            }
-            currentTrack.track.getMetadata()
-            .then(data => {
-    
-                if (!data.image) {
-                    const element = thumbnail.current;
-                    if (element) {
-                        element.onload = () => {
-                            setHasImage(true);
-                        }
-                        element.src = "/no-album-art.png";
-                    }
-                } else {
-                    const icon = data.image || "/no-album-art.png";
-                
-                    const element = thumbnail.current;
-                    if (element) {
-                        element.onload = () => {
-                            setHasImage(true);
-                        }
-                        element.src = icon;
-                    }
-                }
-    
-                setTitle(data.title);
-                setArtist(convertArrayToString(data.artists));
-            }).catch(error => {
-                console.error(error);
-                const element = thumbnail.current;
-                if (!element) return;
-                element.onload = () => {
-                    setHasImage(true);
-                }
-                element.src = "/no-album-art.png";
-            });
-        } else {
-            setTitle("");
-            setArtist("");
-            setHasImage(null);
-        }
+        setCurrentlyPlaying(audioPlayer.getCurrentTrack()?.track);
     }
 
     const mouseUpHandler = () => {
@@ -97,12 +56,10 @@ export default function Player({ showQueue }: PlayerProps) {
 
     useEffect(() => {
         audioPlayer.registerQueueCallback(queueCallback);
-        audioPlayer.audio.registerUpdateEventListener(audioCallback);
         document.addEventListener("mouseup", mouseUpHandler);
 
         return () => {
             audioPlayer.unregisterQueueCallback(queueCallback);
-            audioPlayer.audio.unregisterUpdateEventListener(audioCallback);
             document.removeEventListener("mouseup", mouseUpHandler);
         }
     }, []);
@@ -121,18 +78,17 @@ export default function Player({ showQueue }: PlayerProps) {
         setDummyReload(!dummyReload);
     }
 
-    const track = audioPlayer.getCurrentTrack();
-
     return (
         <div className={styles.container}>
             <div className={styles.currentTrackContainer}>
                 <div className={styles.image}>
-                    <img ref={thumbnail} className={styles.thumbnail} style={{display: hasImage ? "block" : "none"}} />
-                    {hasImage === false && (<Loading loadingCss={{ $$loadingSize: "80px", $$loadingBorder: "10px" }} css={{margin: "10px"}} />)}
+                    {currentlyPlaying && (
+                        <ImageWrapper src={currentlyPlaying.getThumbnailUrl()} />
+                    )}
                 </div>
                 <div className={styles.content}>
-                    <Text className={styles.title}>{title}</Text>
-                    <Text className={styles.artist}>{artist}</Text>
+                    <Text className={styles.title}>{metadata?.title}</Text>
+                    <Text className={styles.artist}>{convertArrayToString(metadata?.artists || [])}</Text>
                 </div>
             </div>
 
@@ -143,7 +99,7 @@ export default function Player({ showQueue }: PlayerProps) {
                             <Button tabIndex={-1} auto rounded className={styles.roundButton} light onPress={() => audioPlayer.previousTrack()}><MdSkipPrevious /></Button>
                         </Grid>
                         <Grid>
-                            {audioStatus.paused || !track ? (<Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.play()}><MdPlayArrow /></Button>) : (<Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.pause()}><MdPause /></Button>)}
+                            {status.paused || !currentlyPlaying ? (<Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.play()}><MdPlayArrow /></Button>) : (<Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.pause()}><MdPause /></Button>)}
                         </Grid>
                         <Grid>
                             <Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.nextTrack()}><MdSkipNext /></Button>
@@ -151,26 +107,27 @@ export default function Player({ showQueue }: PlayerProps) {
                     </Grid.Container>
                 </div>
 
-                <span className={styles.time}>{track && audioStatus.duration != -1 ? formatTime(progressValue.current == -1 ? audioStatus.currentTime : (progressValue.current / 100 * audioStatus.duration)) : ""}</span>
+                <span className={styles.time}>{currentlyPlaying && status.duration != -1 ? formatTime(progressValue.current == -1 ? status.currentTime : (progressValue.current / 100 * status.duration)) : ""}</span>
                 <div className={styles.progressBar}>
-                    {audioStatus.buffering || !track ? null : (
+                    {status.buffering || !currentlyPlaying ? null : (
                         <input ref={slider} tabIndex={-1} min={0} max={100} step={0.1} type="range" className={styles.progressRange + (progressValue.current == -1 ? "" : ` ${styles.progressActive}`)} onInput={e => progressChange(e)} onKeyDown={sliderKeyDown} />
                     )}
                     <div className={styles.progress}>
                         <Progress
                             color="primary"
-                            value={progressValue.current == -1 ? (audioStatus.currentTime / audioStatus.duration * 100) : (progressValue.current)}
+                            value={progressValue.current == -1 ? (status.currentTime / status.duration * 100) : (progressValue.current)}
                             size="xs"
-                            indeterminated={audioStatus.buffering}
+                            indeterminated={status.buffering}
                             animated={false}
                             max={100}
                         />
                     </div>
                 </div>
-                <span className={styles.time}>{track && audioStatus.duration != -1 ? formatTime(audioStatus.duration) : ""}</span>
+                <span className={styles.time}>{currentlyPlaying && status.duration != -1 ? formatTime(status.duration) : ""}</span>
             </div>
             <div className={styles.rightContainer}>
                 <CastButton />
+                <Button className={styles.roundButton} light={getSidebarState() != "lyrics"} auto rounded onPress={() => setSidebar(getSidebarState() == "lyrics" ? "queue" : "lyrics") }><MdOutlineLyrics /></Button>
                 <Volume />
                 {showQueue && (
                     <Queue />

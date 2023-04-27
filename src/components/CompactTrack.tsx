@@ -6,11 +6,14 @@ import { Button, Dropdown, Loading } from "@nextui-org/react";
 import AudioPlayer from "../logic/AudioPlayer";
 import { openAddToPlaylist } from "./AddToPlaylist";
 import { Link } from "react-router-dom";
-import PipeBombConnection from "../logic/PipeBombConnection";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import Account, { UserDataFormat } from "../logic/Account";
 import Playlist from "pipebomb.js/dist/collection/Playlist";
 import GlowEffect from "./GlowEffect";
+import ImageWrapper from "./ImageWrapper";
+import useTrackMeta from "../hooks/TrackMetaHook";
+import useIsSelf from "../hooks/IsSelfHook";
+import useCurrentTrack from "../hooks/CurrentTrackHook";
 
 interface Props {
   track: Track,
@@ -19,71 +22,13 @@ interface Props {
 }
 
 export default function CompactTrack({ track, parentPlaylist, inverse }: Props) {
-    const [metadata, setMetadata] = useState<TrackMeta | null>(null);
-    const [hasImage, setHasImage] = useState(false);
+    const metadata = useTrackMeta(track);
     const [currentlyAdding, setCurrentlyAdding] = useState(false);
-    const [selfInfo, setSelfInfo] = useState<UserDataFormat | null>(null);
-    const [active, setActive] = useState(false);
-
-    const thumbnail = useRef(null);
-
-    function queueCallback() {
-        const newActive = AudioPlayer.getInstance().getCurrentTrack()?.track.trackID == track.trackID;
-        if (newActive != active) setActive(newActive);
-    }
-
-    useEffect(() => {
-        AudioPlayer.getInstance().registerQueueCallback(queueCallback);
-
-        return () => {
-            AudioPlayer.getInstance().unregisterQueueCallback(queueCallback);
-        }
-    });
-
-    useEffect(() => {
-        if (!selfInfo) {
-            Account.getInstance().getUserData().then(setSelfInfo);
-        }
-        
-        // setHasImage(false);
-        track.getMetadata()
-        .then(data => {
-            if (!data) {
-                const element: any = thumbnail.current;
-                if (!element) return;
-                element.onload = () => {
-                    setHasImage(true);
-                }
-                element.src = "/no-album-art.png";
-                return;
-            }
-            setMetadata(data);
-            const icon = data.image || "/no-album-art.png";
-            
-            const element: any = thumbnail.current;
-            if (!element) return;
-            element.onload = () => {
-                setHasImage(true);
-            }
-            element.src = icon;
-        }).catch(error => {
-            console.error(error);
-            const element: any = thumbnail.current;
-            if (!element) return;
-            element.onload = () => {
-                setHasImage(true);
-            }
-            element.src = "/no-album-art.png";
-        });
-    }, [track]);
+    const isSelfOwned = useIsSelf(parentPlaylist.owner);
+    const currentTrack = useCurrentTrack();
 
     function playTrack() {
         AudioPlayer.getInstance().playTrack(track);
-    }
-
-    if (thumbnail.current) {
-        const element: any = thumbnail.current;
-        element.referrerPolicy = "no-referrer";
     }
 
     function contextMenu(button: React.Key) {
@@ -105,7 +50,7 @@ export default function CompactTrack({ track, parentPlaylist, inverse }: Props) 
                 break;
             case "download":
                 const filename = (metadata?.title || track.trackID) + ".mp3";
-                downloadFile(`${PipeBombConnection.getInstance().getUrl()}/v1/audio/${track.trackID}`, filename);
+                downloadFile(track.getAudioUrl(), filename);
                 break;
         }
     }
@@ -154,11 +99,10 @@ export default function CompactTrack({ track, parentPlaylist, inverse }: Props) 
 
     return (
         <div className={styles.container}>
-            <GlowEffect active={active} image={hasImage ? thumbnail.current.src : null} spread={10}>
+            <GlowEffect active={currentTrack?.trackID == track.trackID} image={track.getThumbnailUrl()} spread={10}>
                 <div className={styles.box}>
                     <div className={styles.image} onClick={playTrack}>
-                        <img ref={thumbnail} className={styles.thumbnail} style={{display: hasImage ? "block" : "none"}} />
-                        {!hasImage && (<Loading loadingCss={{ $$loadingSize: "40px", $$loadingBorder: "5px" }} css={{margin: "10px"}} />)}
+                        <ImageWrapper src={track.getThumbnailUrl()} loadingSize="lg" />
                     </div>
                     <div className={styles.info}>
                         <div>
@@ -172,7 +116,7 @@ export default function CompactTrack({ track, parentPlaylist, inverse }: Props) 
                         <Dropdown.Button light className={styles.contextButton}></Dropdown.Button>
                         {dropdown()}
                     </Dropdown>
-                    {parentPlaylist && selfInfo?.userID == parentPlaylist.owner.userID && (
+                    {isSelfOwned && (
                         <Button auto className={styles.addButton} light onPress={addToPlaylist} disabled={currentlyAdding}>{currentlyAdding ? (
                             <Loading type="points"></Loading>
                         ) : (

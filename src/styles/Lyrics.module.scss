@@ -1,0 +1,63 @@
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.fadeContainer {
+    flex-grow: 0;
+    display: block;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100px;
+        background: linear-gradient(0deg, transparent 0%, var(--nextui-colors-background) 100%);
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 100px;
+        background: linear-gradient(180deg, transparent 0%, var(--nextui-colors-background) 100%);
+        z-index: 1;
+        pointer-events: none;
+    }
+}
+
+.mainContainer {
+    height: 100%;
+    position: relative;
+    overflow-y: hidden;
+}
+
+.scrollContainer {
+    padding: 50vh 0;
+}
+
+.lyric {
+    transform: scale(0.8);
+    font-weight: var(--nextui-fontWeights-semibold);
+    transition: color 0.2s, transform 0.2s, opacity 0.2s;
+    transform-origin: left;
+    opacity: 0.8;
+    font-size: 1.5rem;
+    margin: 1rem 0;
+    cursor: pointer;
+}
+
+.activeLyric {
+    transform: scale(1);
+    opacity: 1;
+}

@@ -106,7 +106,7 @@ export default class AudioPlayer {
             if (!this.audio.activeType.isPaused()) this.audio.activeType.setPaused(false);
             return;
         } else {
-            const url = `${PipeBombConnection.getInstance().getUrl()}/v1/audio/${trackWrapper.track.trackID}`;
+            const url = trackWrapper.track.getAudioUrl();
             try {
                 if (!ignoreHistory && this.currentTrack) {
                     this.history.push(this.currentTrack);
@@ -143,9 +143,9 @@ export default class AudioPlayer {
                 const mediaMeta = new MediaMetadata({
                     title: metadata.title,
                     artist: convertArrayToString(metadata.artists),
-                    artwork: metadata.image ? [{
-                        src: metadata.image
-                    }] : undefined
+                    artwork: [{
+                        src: this.currentTrack.track.getThumbnailUrl()
+                    }]
                 });
                 document.title = metadata.title;
                 navigator.mediaSession.metadata = mediaMeta;

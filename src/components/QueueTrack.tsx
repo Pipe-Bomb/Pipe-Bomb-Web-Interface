@@ -1,13 +1,12 @@
-import { useState, useEffect, useRef } from "react";
-import Track from "pipebomb.js/dist/music/Track";
 import { convertArrayToString, downloadFile } from "../logic/Utils";
 import styles from "../styles/QueueTrack.module.scss";
-import { Loading, Dropdown } from "@nextui-org/react";
+import { Dropdown } from "@nextui-org/react";
 import AudioPlayer, { TrackWrapper } from "../logic/AudioPlayer";
 import { openAddToPlaylist } from "./AddToPlaylist";
 import { Link } from "react-router-dom";
-import PipeBombConnection from "../logic/PipeBombConnection";
 import GlowEffect from "./GlowEffect";
+import ImageWrapper from "./ImageWrapper";
+import useTrackMeta from "../hooks/TrackMetaHook";
 
 interface Props {
   track: TrackWrapper,
@@ -15,49 +14,9 @@ interface Props {
 }
 
 export default function QueueTrack({ track, index }: Props) {
-    const [metadata, setMetadata] = useState<any>(null);
-    const [hasImage, setHasImage] = useState(false);
-
-    const thumbnail = useRef(null);
-
-    useEffect(() => {
-        track.track.getMetadata()
-        .then(data => {
-            setMetadata(data);
-            if (!data.image) {
-                const element: any = thumbnail.current;
-                if (!element) return;
-                element.onload = () => {
-                    setHasImage(true);
-                }
-                element.src = "/no-album-art.png";
-                return;
-            }
-            const icon = data.image || "/no-album-art.png";
-            
-            const element: any = thumbnail.current;
-            if (!element) return;
-            element.onload = () => {
-                setHasImage(true);
-            }
-            element.src = icon;
-        }).catch(error => {
-            console.error(error);
-            const element: any = thumbnail.current;
-            if (!element) return;
-            element.onload = () => {
-                setHasImage(true);
-            }
-            element.src = "/no-album-art.png";
-        });
-    }, [track]);
+    const metadata = useTrackMeta(track.track);
 
     let dropdownItems = null;
-
-    if (thumbnail.current) {
-        const element: any = thumbnail.current;
-        element.referrerPolicy = "no-referrer";
-    }
 
     
 
@@ -84,7 +43,7 @@ export default function QueueTrack({ track, index }: Props) {
                 break;
             case "download":
                 const filename = (metadata?.title || track.track.trackID) + ".mp3";
-                downloadFile(`${PipeBombConnection.getInstance().getUrl()}/v1/audio/${track.track.trackID}`, filename);
+                downloadFile(track.track.getAudioUrl(), filename);
                 break;
         }
     }
@@ -122,11 +81,10 @@ export default function QueueTrack({ track, index }: Props) {
 
     return (
         <div className={styles.container + (index == -2 ? ` ${styles.history}` : "")}>
-            <GlowEffect active={index == -1 && false} spread={100} image={hasImage ? thumbnail.current.src : null}>
+            <GlowEffect active={index == -1 && false} spread={100} image={track.track.getThumbnailUrl()}>
                 <div className={styles.box}>
                     <div className={styles.image} onClick={() => contextMenu("play")}>
-                        <img ref={thumbnail} className={styles.thumbnail} style={{display: hasImage ? "block" : "none"}} />
-                        {!hasImage && (<Loading loadingCss={{ $$loadingSize: "30px", $$loadingBorder: "3px" }} css={{margin: "8px"}} />)}
+                        <ImageWrapper src={track.track.getThumbnailUrl()} loadingSize="lg" />
                     </div>
                     <div className={styles.info}>
                         <span className={styles.trackName}>{metadata?.title || track.track.trackID}</span>

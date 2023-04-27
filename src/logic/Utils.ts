@@ -138,10 +138,8 @@ export function convertTracklistToM3u(pipeBombUrl: string, tracks: Track[], m3u8
                         for (let i = 0; i < trackListLength; i++) {
                             if (trackMetas[i]) {
                                 lines.push(`#EXTINF:-1,${convertArrayToString(trackMetas[i].artists)} - ${trackMetas[i].title}`)
-                                if (trackMetas[i].image) {
-                                    lines.push(`#EXT-X-THUMBNAIL:${trackMetas[i].image}`);
-                                }
-                                lines.push(`${pipeBombUrl}/v1/audio/${originalTrackList[i].trackID}`);
+                                lines.push(`#EXT-X-THUMBNAIL:${originalTrackList[i].getThumbnailUrl()}`);
+                                lines.push(originalTrackList[i].getAudioUrl());
                             }
                         }
                         lines.push("#EXT-X-ENDLIST");
@@ -150,7 +148,7 @@ export function convertTracklistToM3u(pipeBombUrl: string, tracks: Track[], m3u8
                         for (let i = 0; i < trackListLength; i++) {
                             if (trackMetas[i]) {
                                 lines.push(`#EXTINF:-1,${convertArrayToString(trackMetas[i].artists)} - ${trackMetas[i].title}`)
-                                lines.push(`${pipeBombUrl}/v1/audio/${originalTrackList[i].trackID}`);
+                                lines.push(originalTrackList[i].getAudioUrl());
                             }
                         }
                     }

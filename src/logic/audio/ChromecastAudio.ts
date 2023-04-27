@@ -317,11 +317,9 @@ export default class ChromecastAudio extends AudioType {
                     this.meta = meta;
                     mediaInfo.metadata.artist = convertArrayToString(meta.artists);
                     mediaInfo.metadata.title = meta.title;
-                    if (meta.image) {
-                        mediaInfo.metadata.images = [
-                            new window.chrome.cast.Image(meta.image)
-                        ];
-                    }
+                    mediaInfo.metadata.images = [
+                        new window.chrome.cast.Image(track.getThumbnailUrl())
+                    ];
                 } else {
                     this.meta = null;
                     mediaInfo.metadata.title = "Pipe Bomb";

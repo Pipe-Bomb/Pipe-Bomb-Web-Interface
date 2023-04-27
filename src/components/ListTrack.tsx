@@ -6,9 +6,11 @@ import { Dropdown, Loading } from "@nextui-org/react";
 import AudioPlayer from "../logic/AudioPlayer";
 import { openAddToPlaylist } from "./AddToPlaylist";
 import { Link } from "react-router-dom";
-import PipeBombConnection from "../logic/PipeBombConnection";
 import Playlist from "pipebomb.js/dist/collection/Playlist";
 import GlowEffect from "./GlowEffect";
+import ImageWrapper from "./ImageWrapper";
+import useTrackMeta from "../hooks/TrackMetaHook";
+import useCurrentTrack from "../hooks/CurrentTrackHook";
 
 interface Props {
   track: Track,
@@ -16,66 +18,11 @@ interface Props {
 }
 
 export default function ListTrack({ track, parentPlaylist }: Props) {
-    const [metadata, setMetadata] = useState<TrackMeta | null>(null);
-    const [hasImage, setHasImage] = useState(false);
-    const [active, setActive] = useState(false);
-
-    const thumbnail = useRef(null);
-
-    function queueCallback() {
-        const newActive = AudioPlayer.getInstance().getCurrentTrack()?.track.trackID == track.trackID;
-        if (newActive != active) setActive(newActive);
-    }
-
-    useEffect(() => {
-        AudioPlayer.getInstance().registerQueueCallback(queueCallback);
-
-        return () => {
-            AudioPlayer.getInstance().unregisterQueueCallback(queueCallback);
-        }
-    });
-
-    useEffect(() => {
-        queueCallback();
-        // setHasImage(false);
-        track.getMetadata()
-        .then(data => {
-            if (!data) {
-                const element: any = thumbnail.current;
-                if (!element) return;
-                element.onload = () => {
-                    setHasImage(true);
-                }
-                element.src = "/no-album-art.png";
-                return;
-            }
-            setMetadata(data);
-            const icon = data.image || "/no-album-art.png";
-            
-            const element: any = thumbnail.current;
-            if (!element) return;
-            element.onload = () => {
-                setHasImage(true);
-            }
-            element.src = icon;
-        }).catch(error => {
-            console.error(error);
-            const element: any = thumbnail.current;
-            if (!element) return;
-            element.onload = () => {
-                setHasImage(true);
-            }
-            element.src = "/no-album-art.png";
-        });
-    }, [track]);
+    const metadata = useTrackMeta(track);
+    const currentTrack = useCurrentTrack();
 
     function playTrack() {
         AudioPlayer.getInstance().playTrack(track);
-    }
-
-    if (thumbnail.current) {
-        const element: any = thumbnail.current;
-        element.referrerPolicy = "no-referrer";
     }
 
     function contextMenu(button: React.Key) {
@@ -97,13 +44,12 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
                 break;
             case "download":
                 const filename = (metadata?.title || track.trackID) + ".mp3";
-                downloadFile(`${PipeBombConnection.getInstance().getUrl()}/v1/audio/${track.trackID}`, filename);
+                downloadFile(track.getAudioUrl(), filename);
                 break;
         }
     }
 
     function dropdown() {
-
         if (parentPlaylist) {
             return (
                 <Dropdown.Menu disabledKeys={[]} onAction={contextMenu}>
@@ -130,11 +76,10 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
 
     return (
         <div className={styles.container} key={track.trackID}>
-            <GlowEffect active={active} image={hasImage ? thumbnail.current.src : null} spread={30}>
+            <GlowEffect active={currentTrack?.trackID == track.trackID} image={track.getThumbnailUrl()} spread={30}>
                 <div className={styles.box}>
                     <div className={styles.image} onClick={playTrack}>
-                        <img ref={thumbnail} className={styles.thumbnail} style={{display: hasImage ? "block" : "none"}} />
-                        {!hasImage && (<Loading loadingCss={{ $$loadingSize: "80px", $$loadingBorder: "10px" }} css={{margin: "10px"}} />)}
+                        <ImageWrapper src={track.getThumbnailUrl()} />
                     </div>
                     <div className={styles.info}>
                         <div>

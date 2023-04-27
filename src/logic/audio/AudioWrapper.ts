@@ -75,9 +75,9 @@ export default class AudioWrapper {
                 try {
                     await newAudioType.setPaused(true);
                 } catch {}
-                if (oldAudioType.getCurrentMedia()) {
+                if (oldAudioType.getCurrentTrack()) {
                     try {
-                        await newAudioType.setMedia(oldAudioType.getCurrentMedia(), oldAudioType.getCurrentMeta());
+                        await newAudioType.setTrack(oldAudioType.getCurrentTrack());
                     } catch {}
                     try {
                         await newAudioType.seek(oldAudioType.getCurrentTime());
