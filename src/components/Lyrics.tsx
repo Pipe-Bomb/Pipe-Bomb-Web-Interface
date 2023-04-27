@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import useCurrentTrack from "../hooks/CurrentTrackHook"
-import { Lyric } from "pipebomb.js/dist/music/Track";
+import { Lyrics as PipeBombLyrics } from "pipebomb.js/dist/music/Track";
 import usePlayerUpdate from "../hooks/PlayerUpdateHook";
 import styles from "../styles/Lyrics.module.scss"
 import AudioPlayer from "../logic/AudioPlayer";
@@ -8,7 +8,7 @@ import Loader from "./Loader";
 
 export default function Lyrics() {
     const track = useCurrentTrack();
-    const [lyrics, setLyrics] = useState<Lyric[] | null | false>(null);
+    const [lyrics, setLyrics] = useState<PipeBombLyrics | null | false>(null);
     const [activeLyric, setActiveLyric] = useState(-1);
     const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -24,7 +24,7 @@ export default function Lyrics() {
                     return setLyrics(false);
                 }
 
-                newLyrics.unshift({
+                newLyrics.lyrics.unshift({
                     time: 0,
                     words: ""
                 });
@@ -34,16 +34,16 @@ export default function Lyrics() {
     }, [track]);
 
     useEffect(() => {
-        if (!lyrics) return setActiveLyric(-1);
+        if (!lyrics || !lyrics.synced) return setActiveLyric(-1);
         
-        for (let i = 0; i < lyrics.length; i++) {
-            const checkingLyric = lyrics[i];
+        for (let i = 0; i < lyrics.lyrics.length; i++) {
+            const checkingLyric = lyrics.lyrics[i];
             if (audioStatus.currentTime < checkingLyric.time - 1) {
                 setActiveLyric(i - 1);
                 return;
             }
         }
-        setActiveLyric(lyrics.length - 1);
+        setActiveLyric(lyrics.lyrics.length - 1);
     }, [audioStatus]);
 
     useEffect(() => {
@@ -101,15 +101,31 @@ export default function Lyrics() {
         AudioPlayer.getInstance().audio.activeType.seek(time);
     }
 
+    function generateLyrics() {
+        if (!lyrics) return null;
+
+        if (lyrics.synced) {
+            return lyrics.lyrics.map((lyric, index) => (
+                <p key={index} className={styles.lyric + (index == activeLyric ? ` ${styles.activeLyric}` : "")} data-index={index} onClick={() => lyricScroll(lyric.time)}>{ lyric.words }</p>
+            ));
+        }
+
+        return lyrics.lyrics.map((lyric, index) => (
+            <p key={index} className={styles.lyric} data-index={index}>{ lyric.words }</p>
+        ))
+    }
+
     return (
         <div className={styles.container}>
             <h1>Lyrics</h1>
-            <div className={styles.fadeContainer}>
+            {!lyrics.synced && (
+                <h4>These lyrics aren't synced with the track.</h4>
+            )}
+            
+            <div className={styles.fadeContainer + (lyrics.synced ? ` ${styles.synced}` : "")}>
                 <div className={styles.mainContainer}>
                     <div className={styles.scrollContainer} ref={scrollRef}>
-                        { lyrics.map((lyric, index) => (
-                            <p key={index} className={styles.lyric + (index == activeLyric ? ` ${styles.activeLyric}` : "")} data-index={index} onClick={() => lyricScroll(lyric.time)}>{ lyric.words }</p>
-                        ))}
+                        { generateLyrics() }
                     </div>
                 </div>
             </div>

@@ -34,30 +34,48 @@
         z-index: 1;
         pointer-events: none;
     }
+
+    ::-webkit-scrollbar-track {
+        margin: 100px 0;
+    }
 }
 
 .mainContainer {
     height: 100%;
     position: relative;
-    overflow-y: hidden;
+    overflow-y: auto;
 }
 
 .scrollContainer {
-    padding: 150vh 0 50vh 0;
+    padding: 100px 0;
 }
 
 .lyric {
-    transform: scale(0.7);
     font-weight: var(--nextui-fontWeights-semibold);
-    transition: color 0.2s, transform 0.2s, opacity 0.2s;
-    transform-origin: left;
-    opacity: 0.8;
     font-size: 2rem;
     margin: 1rem 0;
-    cursor: pointer;
 }
 
-.activeLyric {
-    transform: scale(1);
-    opacity: 1;
+
+.synced {
+    .mainContainer {
+        overflow-y: hidden;
+    }
+
+    .scrollContainer {
+        padding: 150vh 0 50vh 0;
+    }
+
+    .lyric {
+        transform: scale(0.7);
+        transition: color 0.2s, transform 0.2s, opacity 0.2s;
+        opacity: 0.8;
+        transform-origin: left;
+        cursor: pointer;
+    }
+
+    .activeLyric {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
