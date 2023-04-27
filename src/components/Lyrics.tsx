@@ -34,15 +34,16 @@ export default function Lyrics() {
     }, [track]);
 
     useEffect(() => {
-        if (!lyrics) return setActiveLyric(0);
+        if (!lyrics) return setActiveLyric(-1);
         
         for (let i = 0; i < lyrics.length; i++) {
             const checkingLyric = lyrics[i];
             if (audioStatus.currentTime < checkingLyric.time - 1) {
                 setActiveLyric(i - 1);
-                break;
+                return;
             }
         }
+        setActiveLyric(lyrics.length - 1);
     }, [audioStatus]);
 
     useEffect(() => {
