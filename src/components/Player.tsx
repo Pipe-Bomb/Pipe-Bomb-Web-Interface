@@ -127,7 +127,10 @@ export default function Player({ showQueue }: PlayerProps) {
             </div>
             <div className={styles.rightContainer}>
                 <CastButton />
-                <Button className={styles.roundButton} light={getSidebarState() != "lyrics"} auto rounded onPress={() => setSidebar(getSidebarState() == "lyrics" ? "queue" : "lyrics") }><MdOutlineLyrics /></Button>
+                {!showQueue && (
+                    <Button className={styles.roundButton} light={getSidebarState() != "lyrics"} auto rounded onPress={() => setSidebar(getSidebarState() == "lyrics" ? "queue" : "lyrics") }><MdOutlineLyrics /></Button>
+                )}
+                
                 <Volume />
                 {showQueue && (
                     <Queue />

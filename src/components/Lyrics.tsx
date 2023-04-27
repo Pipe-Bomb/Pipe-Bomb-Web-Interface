@@ -9,7 +9,7 @@ import Loader from "./Loader";
 export default function Lyrics() {
     const track = useCurrentTrack();
     const [lyrics, setLyrics] = useState<Lyric[] | null | false>(null);
-    const [activeLyric, setActiveLyric] = useState(0);
+    const [activeLyric, setActiveLyric] = useState(-1);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const audioStatus = usePlayerUpdate({
@@ -50,12 +50,33 @@ export default function Lyrics() {
 
         const activeElement: HTMLParagraphElement = scrollRef.current.querySelector(`[data-index="${activeLyric}"]`);
         if (activeElement) {
+            const currentScroll = scrollRef.current.parentElement.scrollTop;
+            const scrollTarget = activeElement.offsetTop - scrollRef.current.parentElement.clientHeight / 2;
+
             scrollRef.current.parentElement.scrollTo({
-                top: activeElement.offsetTop - scrollRef.current.parentElement.clientHeight / 2,
-                behavior: "smooth"
+                top: scrollTarget,
+                behavior: currentScroll ? "smooth" : undefined
             });
         }
     }, [activeLyric]);
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (!scrollRef.current) return;
+            scrollRef.current.parentElement.scrollTo({
+                top: 0
+            });
+        });
+    }, []);
+
+    if (!track) {
+        return (
+            <>
+                <h1>Lyrics</h1>
+                <h3>Play a track to view its lyrics.</h3>
+            </>
+        )
+    }
 
     if (lyrics === null) {
         return (

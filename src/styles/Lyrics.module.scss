@@ -43,16 +43,16 @@
 }
 
 .scrollContainer {
-    padding: 50vh 0;
+    padding: 150vh 0 50vh 0;
 }
 
 .lyric {
-    transform: scale(0.8);
+    transform: scale(0.7);
     font-weight: var(--nextui-fontWeights-semibold);
     transition: color 0.2s, transform 0.2s, opacity 0.2s;
     transform-origin: left;
     opacity: 0.8;
-    font-size: 1.5rem;
+    font-size: 2rem;
     margin: 1rem 0;
     cursor: pointer;
 }
