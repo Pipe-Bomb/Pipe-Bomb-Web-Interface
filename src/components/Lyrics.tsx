@@ -38,7 +38,7 @@ export default function Lyrics() {
         
         for (let i = 0; i < lyrics.lyrics.length; i++) {
             const checkingLyric = lyrics.lyrics[i];
-            if (audioStatus.currentTime < checkingLyric.time - 1) {
+            if (audioStatus.currentTime < checkingLyric.time - 0.5) {
                 setActiveLyric(i - 1);
                 return;
             }
@@ -121,6 +121,7 @@ export default function Lyrics() {
             {!lyrics.synced && (
                 <h4>These lyrics aren't synced with the track.</h4>
             )}
+            <h5>Lyrics by { lyrics.provider }</h5>
             
             <div className={styles.fadeContainer + (lyrics.synced ? ` ${styles.synced}` : "")}>
                 <div className={styles.mainContainer}>
