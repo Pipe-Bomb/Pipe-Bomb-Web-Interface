@@ -49,7 +49,7 @@ export default function CompactTrack({ track, parentPlaylist, inverse }: Props) 
                 }
                 break;
             case "download":
-                const filename = (metadata?.title || track.trackID) + ".mp3";
+                const filename = (metadata ? metadata.title : track.trackID) + ".mp3";
                 downloadFile(track.getAudioUrl(), filename);
                 break;
         }
@@ -106,7 +106,7 @@ export default function CompactTrack({ track, parentPlaylist, inverse }: Props) 
                     </div>
                     <div className={styles.info}>
                         <div>
-                            <span className={styles.trackName} onClick={playTrack}>{metadata?.title || track.trackID}</span>
+                            <span className={styles.trackName} onClick={playTrack}>{metadata ? metadata.title : track.trackID}</span>
                         </div>
                         {metadata && (
                             <span className={styles.artists}>{convertArrayToString(metadata.artists)}</span>

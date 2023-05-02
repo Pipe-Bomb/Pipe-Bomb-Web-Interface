@@ -1,0 +1,38 @@
+.top {
+    display: flex;
+    gap: 1rem;
+    height: 200px;
+
+    .topImage {
+        width: 200px;
+        height: 200px;
+        flex-shrink: 0;
+        border-radius: 20px;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .topInfo {
+        flex-grow: 1;
+        overflow: hidden;
+
+        .title {
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .artist {
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .waveform {
+            height: 90px;
+            cursor: pointer;
+        }
+    }
+}

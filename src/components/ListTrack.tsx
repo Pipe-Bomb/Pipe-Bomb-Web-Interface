@@ -43,7 +43,7 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
                 }
                 break;
             case "download":
-                const filename = (metadata?.title || track.trackID) + ".mp3";
+                const filename = (metadata ? metadata.title : track.trackID) + ".mp3";
                 downloadFile(track.getAudioUrl(), filename);
                 break;
         }
@@ -55,6 +55,7 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
                 <Dropdown.Menu disabledKeys={[]} onAction={contextMenu}>
                     <Dropdown.Item key="next-up">Play Next</Dropdown.Item>
                     <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
+                    <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${track.trackID}`}>See Track Page</Link></Dropdown.Item>
                     <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
                     <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${track.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
                     <Dropdown.Item key="download">Download as MP3</Dropdown.Item>
@@ -66,6 +67,7 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
                 <Dropdown.Menu disabledKeys={[]} onAction={contextMenu}>
                     <Dropdown.Item key="next-up">Play Next</Dropdown.Item>
                     <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
+                    <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${track.trackID}`}>See Track Page</Link></Dropdown.Item>
                     <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
                     <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${track.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
                     <Dropdown.Item key="download">Download as MP3</Dropdown.Item>
@@ -83,7 +85,7 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
                     </div>
                     <div className={styles.info}>
                         <div>
-                            <span className={styles.trackName} onClick={playTrack}>{metadata?.title || track.trackID}</span>
+                            <span className={styles.trackName} onClick={playTrack}>{metadata ? metadata.title : track.trackID}</span>
                         </div>
                         {metadata && (
                             <span className={styles.artists}>{convertArrayToString(metadata.artists)}</span>

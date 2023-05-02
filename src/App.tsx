@@ -14,6 +14,7 @@ import Chart from "./pages/Chart";
 import NotificationManager from "./components/NotificationManager";
 import SidebarState from "./components/SidebarState";
 import { useState } from "react";
+import TrackPage from "./pages/TrackPage";
 
 export let setSidebar: (state: "queue" | "lyrics") => void = null;
 let currentSidebarState: "queue" | "lyrics" = "queue";
@@ -47,6 +48,7 @@ function App() {
                 </Route>
 
                 <Route path="/track">
+                    <Route path=":ID" element={<TrackPage />} />
                     <Route path=":ID/suggestions" element={<SuggestionsPlaylist />}></Route>
                 </Route>
           </Routes>

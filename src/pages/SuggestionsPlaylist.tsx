@@ -9,55 +9,36 @@ import AudioPlayer from "../logic/AudioPlayer";
 import styles from "../styles/Playlist.module.scss";
 import { MdPlayArrow, MdShuffle } from "react-icons/md";
 import TrackList from "pipebomb.js/dist/collection/TrackList";
+import useTrack from "../hooks/TrackHook";
+import useTrackMeta from "../hooks/TrackMetaHook";
 
 let lastPlaylistID = "";
 
 export default function SuggestionsPlaylist() {
     let paramID: any = useParams().ID;
-    const [trackMeta, setTrackMeta] = useState<TrackMeta | null | false>(null);
+    const track = useTrack(paramID);
+    const trackMeta = useTrackMeta(track);
+
+
+    // const [trackMeta, setTrackMeta] = useState<TrackMeta | null | false>(null);
     const [suggestions, setSuggestions] = useState<TrackList | null | false>(null);
 
     const api = PipeBombConnection.getInstance().getApi();
     const audioPlayer = AudioPlayer.getInstance();
 
     useEffect(() => {
-        setTrackMeta(null);
-        setSuggestions(null);
-        lastPlaylistID = paramID;
-
-        api.trackCache.getTrack(paramID)
-        .then(track => {
-            if (lastPlaylistID != paramID) return;
-            track.getMetadata()
-            .then(meta => {
-                if (lastPlaylistID != paramID) return;
-                setTrackMeta(meta);
-
-                track.getSuggestedTracks(api.collectionCache, api.trackCache)
-                .then(suggestions => {
-                    if (lastPlaylistID != paramID) return;
-                    if (!suggestions) {
-                        setSuggestions(false);
-                    } else {
-                        setSuggestions(suggestions);
-                    }
-                }).catch(e => {
-                    console.error(e);
-                    if (lastPlaylistID != paramID) return;
-                    setSuggestions(false); 
-                });
-            }).catch(e => {
-                console.error(e);
-                if (lastPlaylistID != paramID) return;
-                setTrackMeta(false);
-            })
-        }).catch(e => {
-            console.error(e);
-            if (lastPlaylistID != paramID) return;
-            setTrackMeta(false);
-        });
+        if (track) {
+            setSuggestions(null);
+            track.getSuggestedTracks(api.collectionCache, api.trackCache)
+            .then(setSuggestions)
+            .catch(() => {
+                setSuggestions(false);
+            });
+        } else {
+            setSuggestions(false);
+        }
         
-    }, [paramID]);
+    }, [track]);
 
     if (trackMeta === null) {
         return <Loader text="Loading..." />

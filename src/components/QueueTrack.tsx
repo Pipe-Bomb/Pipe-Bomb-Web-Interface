@@ -42,7 +42,7 @@ export default function QueueTrack({ track, index }: Props) {
                 openAddToPlaylist(track.track);
                 break;
             case "download":
-                const filename = (metadata?.title || track.track.trackID) + ".mp3";
+                const filename = (metadata ? metadata.title : track.track.trackID) + ".mp3";
                 downloadFile(track.track.getAudioUrl(), filename);
                 break;
         }
@@ -51,6 +51,7 @@ export default function QueueTrack({ track, index }: Props) {
     if (index == -1) {
         dropdownItems = (
             <Dropdown.Menu onAction={contextMenu}>
+                <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${track.track.trackID}`}>See Track Page</Link></Dropdown.Item>
                 <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
                 <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${track.track.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
                 <Dropdown.Item key="download">Download as MP3</Dropdown.Item>
@@ -61,6 +62,7 @@ export default function QueueTrack({ track, index }: Props) {
             <Dropdown.Menu onAction={contextMenu}>
                 <Dropdown.Item key="play">Play Now</Dropdown.Item>
                 <Dropdown.Item key="next-up">Play Next</Dropdown.Item>
+                <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${track.track.trackID}`}>See Track Page</Link></Dropdown.Item>
                 <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
                 <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${track.track.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
                 <Dropdown.Item key="download">Download as MP3</Dropdown.Item>
@@ -71,6 +73,7 @@ export default function QueueTrack({ track, index }: Props) {
             <Dropdown.Menu disabledKeys={index == 0 ? ["next-up"] : []} onAction={contextMenu}>
                 <Dropdown.Item key="play">Play Now</Dropdown.Item>
                 <Dropdown.Item key="next-up">Play Next</Dropdown.Item>
+                <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${track.track.trackID}`}>See Track Page</Link></Dropdown.Item>
                 <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
                 <Dropdown.Item key="remove">Remove from Queue</Dropdown.Item>
                 <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${track.track.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
@@ -87,7 +90,7 @@ export default function QueueTrack({ track, index }: Props) {
                         <ImageWrapper src={track.track.getThumbnailUrl()} loadingSize="lg" />
                     </div>
                     <div className={styles.info}>
-                        <span className={styles.trackName}>{metadata?.title || track.track.trackID}</span>
+                        <span className={styles.trackName}>{metadata ? metadata.title : track.track.trackID}</span>
                         {metadata && (
                             <span className={styles.artists}>{convertArrayToString(metadata.artists)}</span>
                         )}

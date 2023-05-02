@@ -87,8 +87,8 @@ export default function Player({ showQueue }: PlayerProps) {
                     )}
                 </div>
                 <div className={styles.content}>
-                    <Text className={styles.title}>{metadata?.title}</Text>
-                    <Text className={styles.artist}>{convertArrayToString(metadata?.artists || [])}</Text>
+                    <Text className={styles.title}>{metadata ? metadata.title : currentlyPlaying?.trackID}</Text>
+                    <Text className={styles.artist}>{convertArrayToString(metadata ? metadata.artists : [])}</Text>
                 </div>
             </div>
 
