@@ -30,7 +30,7 @@
     height: 50px;
     background: var(--nextui-colors-waitingBackground);
     flex-shrink: 0;
-    margin-right: var(--nextui-space-8);
+    margin-right: var(--nextui-space-4);
     position: relative;
     overflow: hidden;
     border-radius: var(--nextui-radii-base);
@@ -54,23 +54,31 @@
 .info {
     width: calc(100% - 50px - var(--nextui-space-8));
     display: block;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .trackName {
-    display: block;
     font-size: var(--nextui-fontSizes-md);
     margin-top: -2px;
     font-weight: var(--nextui-fontWeights-semibold);
-    word-wrap: break-word;
-    width: 90%;
-    min-width: auto;
+    white-space: nowrap;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .artists {
-    display: block;
     font-size: var(--nextui-fontSizes-sm);
     color: var(--nextui-colors-text);
-    word-wrap: break-word;
+    white-space: nowrap;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .contextButton {

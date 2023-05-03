@@ -16,6 +16,11 @@
     flex-grow: 1;
 }
 
+.children {
+    flex-grow: 1;
+    width: 0;
+}
+
 @media only screen and (max-width: 1500px) {
     .number {
         width: 50px;

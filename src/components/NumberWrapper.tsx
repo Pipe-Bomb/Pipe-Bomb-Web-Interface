@@ -10,7 +10,9 @@ export default function NumberWrapper({ children, number }: NumberWrapperProps) 
     return (
         <div className={styles.container}>
             <Text h1 className={styles.number}>{ number }</Text>
-            { children }
+            <div className={styles.children}>
+                { children }
+            </div>
         </div>
     )
 }
