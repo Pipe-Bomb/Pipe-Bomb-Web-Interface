@@ -20,8 +20,9 @@
         overflow: hidden;
 
         .titleContainer {
-            display: flex;
-            gap: 1rem;
+            margin: 0;
+            padding: 0 !important;
+            height: 75px;
 
             .title {
                 margin: 0;
@@ -46,6 +47,30 @@
 }
 
 .roundButton {
+    svg {
+        height: 30px;
+        width: 30px;
+    }
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+.suggestions {
+    margin-top: 100px;
+
+    .suggestionsLoader {
+        width: 200px;
+        position: relative;
+        height: 100px;
+    }
+}
+
+.contextButton {
+    width: 64px !important;
+    min-width: 0 !important;
+
     svg {
         height: 30px;
         width: 30px;

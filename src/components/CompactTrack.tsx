@@ -24,7 +24,7 @@ interface Props {
 export default function CompactTrack({ track, parentPlaylist, inverse }: Props) {
     const metadata = useTrackMeta(track);
     const [currentlyAdding, setCurrentlyAdding] = useState(false);
-    const isSelfOwned = useIsSelf(parentPlaylist.owner);
+    const isSelfOwned = useIsSelf(parentPlaylist?.owner);
     const currentTrack = useCurrentTrack();
 
     function playTrack() {

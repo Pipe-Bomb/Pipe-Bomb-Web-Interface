@@ -18,9 +18,6 @@ export default function SuggestionsPlaylist() {
     let paramID: any = useParams().ID;
     const track = useTrack(paramID);
     const trackMeta = useTrackMeta(track);
-
-
-    // const [trackMeta, setTrackMeta] = useState<TrackMeta | null | false>(null);
     const [suggestions, setSuggestions] = useState<TrackList | null | false>(null);
 
     const api = PipeBombConnection.getInstance().getApi();
