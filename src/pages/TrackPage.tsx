@@ -19,10 +19,11 @@ import TrackList from "pipebomb.js/dist/collection/TrackList";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import ListTrack from "../components/ListTrack";
 import { openAddToPlaylist } from "../components/AddToPlaylist";
+import { useResizeDetector } from "react-resize-detector";
 
 export default function TrackPage() {
     let paramID: any = useParams().ID;
-    const size = useWindowSize();
+    const waveformRef = useResizeDetector();
     
     const track = useTrack(paramID);
     const trackMeta = useTrackMeta(track);
@@ -32,6 +33,7 @@ export default function TrackPage() {
         paused: true
     });
     const [suggestions, setSuggestions] = useState<TrackList | null | false>(null);
+    const [waveformSegments, setWaveformSegments] = useState(10);
 
     useEffect(() => {
         if (track) {
@@ -48,25 +50,15 @@ export default function TrackPage() {
         
     }, [track]);
 
-    function resize(node: HTMLDivElement) {
-        if (!node) return;
-        const width = node.clientWidth;
-        setWaveformSegments(Math.round(width / 10));
-    }
+    useEffect(() => {
+        if (!waveformRef.width) return;
+        setWaveformSegments(Math.round(waveformRef.width / 10));
+    }, [waveformRef.width]);
 
-    const waveformContainer = useRef<HTMLDivElement>(null);
-    const waveformContainerCallback = useCallback((node: HTMLDivElement) => {
-        waveformContainer.current = node;
-        resize(node);
-    }, []);
     const [waveformPercentage, setWaveformPercentage] = useState(-1);
 
-    const [waveformSegments, setWaveformSegments] = useState(10);
 
-    useEffect(() => {
-        if (!waveformContainer.current) return;
-        resize(waveformContainer.current);
-    }, [size]);
+
 
     if (trackMeta === null) {
         return <Loader text="Loading..." />
@@ -85,7 +77,6 @@ export default function TrackPage() {
             playTrack();
             return;
         }
-
 
         const element = e.currentTarget;
 
@@ -239,7 +230,7 @@ export default function TrackPage() {
                                 </Grid>
                             </Grid.Container>
                             <Text h3 className={styles.artist}>{ convertArrayToString(trackMeta.artists) }</Text>
-                            <div className={styles.waveform} ref={waveformContainerCallback} onMouseDownCapture={waveformClick}>
+                            <div className={styles.waveform} ref={waveformRef.ref} onMouseDownCapture={waveformClick}>
                                 <Waveform url={ track.getAudioUrl() } active={true} percent={waveformPercentage != -1 ? waveformPercentage : isActive ? (playerState.currentTime / playerState.duration * 100) : 0} segments={waveformSegments} />
                             </div>
                             
