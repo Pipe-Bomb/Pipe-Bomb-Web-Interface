@@ -54,7 +54,7 @@ export default function UserPage() {
                 </div>
                 <div className={styles.info}>
                     <Text h1>{ user.username }</Text>
-                    <Text h2>{ user.userID }</Text>
+                    <Text h2>@{ user.userID }</Text>
                 </div>
             </div>
 

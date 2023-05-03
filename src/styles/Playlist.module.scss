@@ -39,3 +39,13 @@
 .playlistAuthor {
     margin-bottom: var(--nextui-space-3);
 }
+
+.link {
+    color: var(--nextui-colors-text);
+    text-decoration: underline;
+
+    &:hover {
+        text-decoration: underline;
+        color: var(--nextui-colors-primary);
+    }
+}

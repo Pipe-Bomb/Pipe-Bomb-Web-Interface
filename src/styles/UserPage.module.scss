@@ -12,9 +12,11 @@
         user-select: none;
         -webkit-user-select: none;
         -moz-user-select: none;
+        position: relative;
 
         .topImageInternal {
-            transform: scale(1.15);
+            transform: scale(1.3);
+            height: 100%;
         }
     }
 

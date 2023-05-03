@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import styles from "../styles/Playlist.module.scss";
@@ -221,10 +221,10 @@ export default function Playlist() {
         <>
             <Text h1>{playlist.getName()}</Text>
             {!isOwnPlaylist && (
-                <Text h4 className={styles.playlistAuthor}>by {playlist.owner.username}</Text>
+                <Text h4 className={styles.playlistAuthor}>by <Link to={`/user/${playlist.owner.userID}`} className={styles.link}>{playlist.owner.username}</Link></Text>
             )}
             {trackList && (
-                <Text h5 className={styles.trackCount}>{trackList.length} song{trackList.length == 1 ? "" : "s"}</Text>
+                <Text h5 className={styles.trackCount}>{trackList.length} track{trackList.length == 1 ? "" : "s"}</Text>
             )}
             <Grid.Container gap={2} alignItems="center" className={styles.top}>
                 <Grid>

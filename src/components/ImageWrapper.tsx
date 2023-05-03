@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import styles from "../styles/Image.module.scss"
+import styles from "../styles/ImageWrapper.module.scss"
 import { Loading } from "@nextui-org/react";
 
 export interface ImageWrapperProps {
