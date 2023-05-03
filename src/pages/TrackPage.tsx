@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import useTrack from "../hooks/TrackHook"
 import useTrackMeta from "../hooks/TrackMetaHook";
 import Loader from "../components/Loader";
-import { Text } from "@nextui-org/react"
+import { Button, Text } from "@nextui-org/react"
 import { convertArrayToString } from "../logic/Utils";
 import styles from "../styles/TrackPage.module.scss"
 import LazyImage from "../components/LazyImage";
@@ -13,6 +13,8 @@ import usePlayerUpdate from "../hooks/PlayerUpdateHook";
 import { useCallback, useEffect, useRef, useState } from "react";
 import AudioPlayer from "../logic/AudioPlayer";
 import ImageWrapper from "../components/ImageWrapper";
+import { MdPause, MdPlayArrow } from "react-icons/md";
+import GlowEffect from "../components/GlowEffect";
 
 export default function TrackPage() {
     let paramID: any = useParams().ID;
@@ -22,7 +24,8 @@ export default function TrackPage() {
     const trackMeta = useTrackMeta(track);
     const currentTrack = useCurrentTrack();
     const playerState = usePlayerUpdate({
-        currentTime: true
+        currentTime: true,
+        paused: true
     });
 
     function resize(node: HTMLDivElement) {
@@ -54,11 +57,6 @@ export default function TrackPage() {
             <Text h1>Error 404</Text>
             <Text h3>Track Not Found.</Text>
         </>
-    }
-
-    function playTrack() {
-        if (!track) return;
-        AudioPlayer.getInstance().playTrack(track);
     }
 
     function waveformClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
@@ -94,20 +92,49 @@ export default function TrackPage() {
         });
     }
 
+    const isActive = currentTrack?.trackID == track.trackID;
+    const shouldPause = isActive && !playerState.paused;
+
+    function playTrack() {
+        if (!track) return;
+        if (isActive) {
+            if (playerState.paused) {
+                AudioPlayer.getInstance().play();
+            } else {
+                AudioPlayer.getInstance().pause();
+            }
+        } else {
+            AudioPlayer.getInstance().playTrack(track);
+        }
+    }
+
     return (
         <>
             <div className={styles.top}>
-                <div className={styles.topImage} onClick={playTrack}>
-                    <ImageWrapper src={ track.getThumbnailUrl() } loadingSize="xl" />
-                </div>
-                <div className={styles.topInfo}>
-                    <Text h1 className={styles.title}>{ trackMeta.title }</Text>
-                    <Text h3 className={styles.artist}>{ convertArrayToString(trackMeta.artists) }</Text>
-                    <div className={styles.waveform} ref={waveformContainerCallback} onMouseDownCapture={waveformClick}>
-                        <Waveform url={ track.getAudioUrl() } active={true} percent={waveformPercentage != -1 ? waveformPercentage : currentTrack?.trackID == track.trackID ? (playerState.currentTime / playerState.duration * 100) : 0} segments={waveformSegments} />
+                <GlowEffect active={isActive} spread={50} image={ track.getThumbnailUrl() }>
+                    <div className={styles.topFlex}>
+                        <div className={styles.topImage} onClick={playTrack}>
+                            <ImageWrapper src={ track.getThumbnailUrl() } loadingSize="xl" />
+                        </div>
+                        <div className={styles.topInfo}>
+                            <div className={styles.titleContainer}>
+                                <Text h1 className={styles.title}>{ trackMeta.title }</Text>
+                                <Button size="xl" auto onPress={playTrack} className={styles.roundButton} color="gradient">
+                                    { shouldPause ? (
+                                        <MdPause />
+                                    ) : (
+                                        <MdPlayArrow />
+                                    )}
+                                </Button>
+                            </div>
+                            <Text h3 className={styles.artist}>{ convertArrayToString(trackMeta.artists) }</Text>
+                            <div className={styles.waveform} ref={waveformContainerCallback} onMouseDownCapture={waveformClick}>
+                                <Waveform url={ track.getAudioUrl() } active={true} percent={waveformPercentage != -1 ? waveformPercentage : isActive ? (playerState.currentTime / playerState.duration * 100) : 0} segments={waveformSegments} />
+                            </div>
+                            
+                        </div>
                     </div>
-                    
-                </div>
+                </GlowEffect>
             </div>
         </>
     )

@@ -1,7 +1,10 @@
 .top {
-    display: flex;
-    gap: 1rem;
     height: 200px;
+
+    .topFlex {
+        display: flex;
+        gap: 1rem;
+    }
 
     .topImage {
         width: 200px;
@@ -16,11 +19,16 @@
         flex-grow: 1;
         overflow: hidden;
 
-        .title {
-            margin: 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .titleContainer {
+            display: flex;
+            gap: 1rem;
+
+            .title {
+                margin: 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
         }
 
         .artist {
@@ -34,5 +42,12 @@
             height: 90px;
             cursor: pointer;
         }
+    }
+}
+
+.roundButton {
+    svg {
+        height: 30px;
+        width: 30px;
     }
 }
