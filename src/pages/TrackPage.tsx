@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import useTrack from "../hooks/TrackHook"
 import useTrackMeta from "../hooks/TrackMetaHook";
 import Loader from "../components/Loader";
-import { Text } from "@nextui-org/react"
+import { Button, Text } from "@nextui-org/react"
 import { convertArrayToString } from "../logic/Utils";
 import styles from "../styles/TrackPage.module.scss"
 import LazyImage from "../components/LazyImage";
@@ -13,6 +13,7 @@ import usePlayerUpdate from "../hooks/PlayerUpdateHook";
 import { useCallback, useEffect, useRef, useState } from "react";
 import AudioPlayer from "../logic/AudioPlayer";
 import ImageWrapper from "../components/ImageWrapper";
+import { MdPlayArrow } from "react-icons/md";
 
 export default function TrackPage() {
     let paramID: any = useParams().ID;
@@ -101,7 +102,11 @@ export default function TrackPage() {
                     <ImageWrapper src={ track.getThumbnailUrl() } loadingSize="xl" />
                 </div>
                 <div className={styles.topInfo}>
-                    <Text h1 className={styles.title}>{ trackMeta.title }</Text>
+                    <div className={styles.titleContainer}>
+                        <Button size="xl" auto onPress={playTrack} className={styles.roundButton} color="gradient"><MdPlayArrow /></Button>
+                        <Text h1 className={styles.title}>{ trackMeta.title }</Text>
+                    </div>
+                    
                     <Text h3 className={styles.artist}>{ convertArrayToString(trackMeta.artists) }</Text>
                     <div className={styles.waveform} ref={waveformContainerCallback} onMouseDownCapture={waveformClick}>
                         <Waveform url={ track.getAudioUrl() } active={true} percent={waveformPercentage != -1 ? waveformPercentage : currentTrack?.trackID == track.trackID ? (playerState.currentTime / playerState.duration * 100) : 0} segments={waveformSegments} />

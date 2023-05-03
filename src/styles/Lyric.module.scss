@@ -1,0 +1,24 @@
+.lyric {
+    margin-left: 1rem;
+    transform: scale(0.6);
+    filter: blur(1px);
+    transition: color 0.2s, transform 0.2s, opacity 0.2s, filter 0.2s;
+    opacity: 0.8;
+    transform-origin: left;
+    cursor: pointer;
+    font-weight: var(--nextui-fontWeights-semibold);
+    font-size: 2.2rem;
+    margin: 1rem 0;
+    position: relative;
+}
+
+.activeLyric {
+    transform: scale(1);
+    filter: none;
+    opacity: 1;
+    
+}
+
+.backgroundLyric {
+    opacity: 0.5;
+}

@@ -7,7 +7,6 @@ import AudioPlayer from "../logic/AudioPlayer";
 import { openAddToPlaylist } from "./AddToPlaylist";
 import { Link } from "react-router-dom";
 import { FaPlus, FaMinus } from "react-icons/fa";
-import Account, { UserDataFormat } from "../logic/Account";
 import Playlist from "pipebomb.js/dist/collection/Playlist";
 import GlowEffect from "./GlowEffect";
 import ImageWrapper from "./ImageWrapper";
@@ -62,6 +61,7 @@ export default function CompactTrack({ track, parentPlaylist, inverse }: Props) 
                 <Dropdown.Menu disabledKeys={[]} onAction={contextMenu}>
                     <Dropdown.Item key="next-up">Play Next</Dropdown.Item>
                     <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
+                    <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${track.trackID}`}>See Track Page</Link></Dropdown.Item>
                     <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
                     <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${track.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
                     <Dropdown.Item key="download">Download as MP3</Dropdown.Item>
@@ -73,6 +73,7 @@ export default function CompactTrack({ track, parentPlaylist, inverse }: Props) 
                 <Dropdown.Menu disabledKeys={[]} onAction={contextMenu}>
                     <Dropdown.Item key="next-up">Play Next</Dropdown.Item>
                     <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
+                    <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${track.trackID}`}>See Track Page</Link></Dropdown.Item>
                     <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
                     <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${track.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
                     <Dropdown.Item key="download">Download as MP3</Dropdown.Item>

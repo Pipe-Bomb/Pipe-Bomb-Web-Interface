@@ -5,12 +5,14 @@ import usePlayerUpdate from "../hooks/PlayerUpdateHook";
 import styles from "../styles/Lyrics.module.scss"
 import AudioPlayer from "../logic/AudioPlayer";
 import Loader from "./Loader";
+import Lyric from "./Lyric";
 
 export default function Lyrics() {
     const track = useCurrentTrack();
     const [lyrics, setLyrics] = useState<PipeBombLyrics | null | false>(null);
     const [activeLyric, setActiveLyric] = useState(-1);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const [lyricPercent, setLyricPercent] = useState(0);
 
     const audioStatus = usePlayerUpdate({
         currentTime: true
@@ -35,11 +37,24 @@ export default function Lyrics() {
 
     useEffect(() => {
         if (!lyrics || !lyrics.synced) return setActiveLyric(-1);
+        const currentTime = audioStatus.currentTime + 0.5;
         
         for (let i = 0; i < lyrics.lyrics.length; i++) {
             const checkingLyric = lyrics.lyrics[i];
-            if (audioStatus.currentTime < checkingLyric.time - 0.5) {
+            if (currentTime < checkingLyric.time) {
                 setActiveLyric(i - 1);
+
+                if (i) {
+                    const activeLyric = lyrics.lyrics[i - 1];
+                    const lyricDuration = checkingLyric.time - activeLyric.time;
+                    const percent = (currentTime - activeLyric.time) / lyricDuration * 100;
+                    setLyricPercent(percent);
+                } else {
+                    setLyricPercent(0);
+                }
+                
+                
+
                 return;
             }
         }
@@ -52,7 +67,7 @@ export default function Lyrics() {
         const activeElement: HTMLParagraphElement = scrollRef.current.querySelector(`[data-index="${activeLyric}"]`);
         if (activeElement) {
             const currentScroll = scrollRef.current.parentElement.scrollTop;
-            const scrollTarget = activeElement.offsetTop - scrollRef.current.parentElement.clientHeight / 2;
+            const scrollTarget = activeElement.offsetTop - scrollRef.current.parentElement.clientHeight / 2 + 100;
 
             scrollRef.current.parentElement.scrollTo({
                 top: scrollTarget,
@@ -106,7 +121,9 @@ export default function Lyrics() {
 
         if (lyrics.synced) {
             return lyrics.lyrics.map((lyric, index) => (
-                <p key={index} className={styles.lyric + (index == activeLyric ? ` ${styles.activeLyric}` : "")} data-index={index} onClick={() => lyricScroll(lyric.time)}>{ lyric.words }</p>
+                <span key={index} data-index={index} onClick={() => lyricScroll(lyric.time)}>
+                    <Lyric active={index == activeLyric} words={lyric.words} percent={lyricPercent} />
+                </span>
             ));
         }
 
