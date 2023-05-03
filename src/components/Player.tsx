@@ -1,23 +1,19 @@
 import { Button, Grid, Progress, Text } from "@nextui-org/react";
 import styles from "../styles/Player.module.scss";
-import { MdSkipNext, MdSkipPrevious, MdPlayArrow, MdPause, MdOutlineLyrics } from "react-icons/md";
+import { MdSkipNext, MdSkipPrevious, MdPlayArrow, MdPause } from "react-icons/md";
 import { useEffect, useRef, useState } from "react";
 import AudioPlayer from "../logic/AudioPlayer";
 import { convertArrayToString, formatTime } from "../logic/Utils";
-import Queue from "./Queue";
 import KeyboardShortcuts from "../logic/KeyboardShortcuts";
-import Volume from "./Volume";
-import CastButton from "./CastButton";
 import ImageWrapper from "./ImageWrapper";
-import { getSidebarState, setSidebar } from "../App";
 import useTrackMeta from "../hooks/TrackMetaHook";
 import usePlayerUpdate from "../hooks/PlayerUpdateHook";
 
 interface PlayerProps {
-    showQueue: boolean
+    children?: JSX.Element | JSX.Element[]
 }
 
-export default function Player({ showQueue }: PlayerProps) {
+export default function Player({ children }: PlayerProps) {
     const audioPlayer = AudioPlayer.getInstance();
     const [currentlyPlaying, setCurrentlyPlaying] = useState(audioPlayer.getCurrentTrack()?.track);
     const [dummyReload, setDummyReload] = useState(false);
@@ -126,15 +122,7 @@ export default function Player({ showQueue }: PlayerProps) {
                 <span className={styles.time}>{currentlyPlaying && status.duration != -1 ? formatTime(status.duration) : ""}</span>
             </div>
             <div className={styles.rightContainer}>
-                <CastButton />
-                {!showQueue && (
-                    <Button className={styles.roundButton} light={getSidebarState() != "lyrics"} auto rounded onPress={() => setSidebar(getSidebarState() == "lyrics" ? "queue" : "lyrics") }><MdOutlineLyrics /></Button>
-                )}
-                
-                <Volume />
-                {showQueue && (
-                    <Queue />
-                )}
+                { children }
             </div>
         </div>
     )

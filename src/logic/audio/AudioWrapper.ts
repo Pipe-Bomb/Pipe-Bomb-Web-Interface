@@ -34,7 +34,6 @@ export default class AudioWrapper {
 
         type.onEnd(() => {
             if (type != this.activeType) return;
-            console.log("detected track end!");
             for (let callback of this.endEventListeners) {
                 callback();
             }

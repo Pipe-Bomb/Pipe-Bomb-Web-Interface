@@ -1,6 +1,6 @@
 import styles from "./styles/App.module.scss";
 import { Route, Routes } from "react-router-dom";
-import SideBar from './components/SideBar';
+import Navbar from './components/Navbar';
 import Search from "./pages/Search";
 import Home from "./pages/Home";
 import Player from "./components/Player";
@@ -8,26 +8,19 @@ import Playlist from "./pages/Playlist";
 import AddToPlaylist from "./components/AddToPlaylist";
 import Connect from "./pages/Connect";
 import CreatePlaylist from "./components/CreatePlaylist";
-import useWindowSize from "./hooks/WindowSizeHook";
 import SuggestionsPlaylist from "./pages/SuggestionsPlaylist";
 import Chart from "./pages/Chart";
 import NotificationManager from "./components/NotificationManager";
-import SidebarState from "./components/SidebarState";
-import { useState } from "react";
 import TrackPage from "./pages/TrackPage";
-
-export let setSidebar: (state: "queue" | "lyrics") => void = null;
-let currentSidebarState: "queue" | "lyrics" = "queue";
-
-export const getSidebarState = () => {
-    return currentSidebarState;
-}
+import Sidebar from "./components/Sidebar";
+import Volume from "./components/Volume";
+import CastButton from "./components/CastButton";
+import { Button } from "@nextui-org/react";
+import { VscLayoutSidebarRight } from "react-icons/vsc"
+import { useState } from "react";
 
 function App() {
-    const size = useWindowSize();
-    const [sidebarState, setSidebarState] = useState<"queue" | "lyrics">("queue");
-    setSidebar = setSidebarState;
-    currentSidebarState = sidebarState;
+    const [sidebarEnabled, setSidebarEnabled] = useState(true);
 
     function getRoutes() {
         return (
@@ -55,8 +48,6 @@ function App() {
         )
     }
 
-    const doRightSide = size.width && size.width >= 1800;
-
     return (
         <>
             <NotificationManager />
@@ -64,10 +55,14 @@ function App() {
                 <Route path="/connect" element={<Connect />} /> {/* connect route */}
                 <Route path="*" element={
                     <>
-                        <SideBar></SideBar>
-                        <Player showQueue={!doRightSide}></Player>
-                        <AddToPlaylist></AddToPlaylist>
-                        <CreatePlaylist></CreatePlaylist>
+                        <Navbar />
+                        <Player>
+                            <CastButton />
+                            <Volume />
+                            <Button auto rounded className={styles.roundButton} light={!sidebarEnabled} onPress={() => setSidebarEnabled(!sidebarEnabled)}><VscLayoutSidebarRight /></Button>
+                        </Player>
+                        <AddToPlaylist />
+                        <CreatePlaylist />
 
                         <div className={styles.content}>
                             <div className={styles.main}>
@@ -75,11 +70,7 @@ function App() {
                                     { getRoutes() }
                                 </div>
                             </div>
-                            {doRightSide && (
-                                <div className={styles.rightSpace}>
-                                    <SidebarState state={sidebarState} />
-                                </div>
-                            )}
+                            <Sidebar enabled={sidebarEnabled} />
                         </div>
                     </>
                 } />

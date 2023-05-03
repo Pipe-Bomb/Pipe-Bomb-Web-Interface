@@ -1,114 +1,76 @@
-.sideBar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 250px;
-    background: var(--nextui-colors-backgroundContrast);
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
+.container {
+    flex-grow: 0;
+    flex-shrink: 0;
+    width: 800px;
+    margin-left: 1rem;
+    transition: width 0.2s cubic-bezier(.99,.24,.11,.99);
+
+    &.inactive {
+        width: 0;
+
+        .widthContainer {
+            margin-left: 2rem;
+        }
+    }
+}
+
+.widthContainer {
+    transition: margin 0.2s cubic-bezier(.99,.24,.11,.99), width cubic-bezier(.99,.24,.11,.99);
+    width: 800px;
+    height: 100%;
+    position: relative;
     display: flex;
     flex-direction: column;
-}
 
-.logo {
-    .image {
-        max-height: 120px;
-        max-width: 100%;
-        margin: 2rem auto 0 auto;
-        display: block;
+    .content {
+        position: relative;
+        flex-grow: 1;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
     
-    .spacer {
-        height: 1px;
-        margin: 0 auto;
-        width: 60%;
-        max-width: 80px;
-        background: var(--nextui-colors-accents8);
-        margin-bottom: 2rem;
+    .buttons {
+        height: 50px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
     }
 }
 
-.topLinks {
-
-    .topLink {
-        display: block;
-        margin: 0.2rem 1rem 0 2rem;
-        padding: 0;
-        color: var(--nextui-colors-sidebarUnselectedText);
-        font-size: var(--nextui-fontSizes-xl);
-        transition: color 0.2s;
-        border: none;
-        background: none;
-        cursor: pointer;
-        border-radius: 0;
-        width: calc(100% - 40px);
-        text-align: left;
-
-        &:hover {
-            color: var(--nextui-colors-text);
-        }
-
-        .topLinkIcon {
-            margin-right: 5px;
-
-            svg {
-                position: relative;
-                top: 1px;
-            }
-        }
-    }
-
-    button span {
-        justify-content: left !important;
+@media only screen and (max-width: 2600px) {
+    .container, .widthContainer {
+        width: 700px;
     }
 }
 
-.playlistTop {
-    position: relative;
-    margin: 2rem 1rem 0 1rem;
-
-    &::after {
-        content: "";
-        position: absolute;
-        bottom: -1px;
-        height: 1px;
-        left: 0;
-        right: 20px;
-        background: var(--nextui-colors-accents6);
+@media only screen and (max-width: 2300px) {
+    .container, .widthContainer {
+        width: 600px;
     }
 }
 
-.playlists {
-    flex-grow: 1;
-    overflow-y: scroll;
-    position: relative;
-    margin-bottom: 100px;
+@media only screen and (max-width: 2000px) {
+    .container, .widthContainer {
+        width: 500px;
+    }
+}
 
-    .playlist {
-        margin: 5px 1rem 5px 1rem;
-        color: var(--nextui-colors-sidebarUnselectedText);
-        font-size: var(--nextui-fontSizes-md);
-        display: block;
-        transition: color 0.2s;
-        position: relative;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
+@media only screen and (max-width: 1700px) {
+    .container, .widthContainer {
+        width: 400px;
+    }
+}
 
-        &:hover {
-            color: var(--nextui-colors-text);
-        }
+@media only screen and (max-width: 1300px) {
+    .container, .widthContainer {
+        width: 300px;
+    }
+}
 
-        &:first-of-type {
-            margin-top: 10px;
-        }
-
-        .playlistIcon {
-            position: relative;
-            top: 2px;
-            margin-right: 0.5rem;
-        }
+.roundButton {
+    svg {
+        height: 30px;
+        width: 30px;
     }
 }

@@ -40,16 +40,9 @@
     }
 }
 
-.rightSpace {
-    flex-grow: 0;
-    flex-shrink: 0;
-    width: 600px;
-    position: relative;
-    margin-left: 1rem;
-}
-
-@media only screen and (max-width: 2000px) {
-    .rightSpace {
-        width: 500px;
+.roundButton {
+    svg {
+        height: 30px;
+        width: 30px;
     }
 }

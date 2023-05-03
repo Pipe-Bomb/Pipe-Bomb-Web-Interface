@@ -20,9 +20,12 @@
     }
 
     .sizer {
-        width: 30px;
+        width: 35px;
         display: flex;
         align-items: center;
+        margin-left: 17px;
         height: 100%;
+        position: relative;
+        top: 3px;
     }
 }

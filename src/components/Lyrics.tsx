@@ -5,12 +5,14 @@ import usePlayerUpdate from "../hooks/PlayerUpdateHook";
 import styles from "../styles/Lyrics.module.scss"
 import AudioPlayer from "../logic/AudioPlayer";
 import Loader from "./Loader";
+import useWindowSize from "../hooks/WindowSizeHook";
 
 export default function Lyrics() {
     const track = useCurrentTrack();
     const [lyrics, setLyrics] = useState<PipeBombLyrics | null | false>(null);
     const [activeLyric, setActiveLyric] = useState(-1);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const size = useWindowSize();
 
     const audioStatus = usePlayerUpdate({
         currentTime: true
@@ -59,7 +61,7 @@ export default function Lyrics() {
                 behavior: currentScroll ? "smooth" : undefined
             });
         }
-    }, [activeLyric]);
+    }, [activeLyric, size]);
 
     useEffect(() => {
         setTimeout(() => {
