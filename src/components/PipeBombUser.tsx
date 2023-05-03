@@ -2,6 +2,7 @@ import { Loading, User } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import Account, { UserDataFormat } from "../logic/Account";
 import styles from "../styles/PipeBombUser.module.scss";
+import { Link } from "react-router-dom";
 
 export interface UserProps {
     userInfo?: UserDataFormat
@@ -23,14 +24,17 @@ export default function PipeBombUser({ userInfo }: UserProps) {
     const url = Account.getAvatarUrl(userData.userID);
 
     return <div className={styles.container}>
-        <User
-            className={styles.user}
-            as="button"
-            size="lg"
-            color="primary"
-            name={userData.username}
-            description={"@" + userData.userID}
-            src={url}
-        />
+        <Link to={`/user/${userData.userID}`}>
+            <User
+                className={styles.user}
+                as="button"
+                size="lg"
+                color="primary"
+                name={userData.username}
+                description={"@" + userData.userID}
+                src={url}
+            />
+        </Link>
+        
     </div>
 }

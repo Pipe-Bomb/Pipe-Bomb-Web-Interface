@@ -18,6 +18,7 @@ import CastButton from "./components/CastButton";
 import { Button } from "@nextui-org/react";
 import { VscLayoutSidebarRight } from "react-icons/vsc"
 import { useState } from "react";
+import UserPage from "./pages/UserPage";
 
 function App() {
     const [sidebarEnabled, setSidebarEnabled] = useState(true);
@@ -44,6 +45,8 @@ function App() {
                     <Route path=":ID" element={<TrackPage />} />
                     <Route path=":ID/suggestions" element={<SuggestionsPlaylist />}></Route>
                 </Route>
+
+                <Route path="/user/:userID" element={<UserPage />} />
           </Routes>
         )
     }

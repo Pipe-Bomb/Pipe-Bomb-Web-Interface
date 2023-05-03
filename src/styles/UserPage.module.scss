@@ -1,0 +1,54 @@
+.top {
+    display: flex;
+    gap: var(--nextui-space-10);
+    
+
+    .topImage {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        overflow: hidden;
+        pointer-events: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+
+        .topImageInternal {
+            transform: scale(1.15);
+        }
+    }
+
+    .info {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        h1 {
+            font-size: var(--nextui-fontSizes-6xl);
+            margin: 0;
+        }
+
+        h2 {
+            font-size: var(--nextui-fontSizes-lg);
+            margin: 0;
+            opacity: 0.5;
+        }
+    }
+}
+
+.playlists {
+    margin-top: 50px;
+
+    .playlistContainer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: left;
+
+        .playlist {
+            flex: 1 0 0;
+            flex-grow: 0;
+            min-width: min(400px, 100%);
+        }
+    }
+}
