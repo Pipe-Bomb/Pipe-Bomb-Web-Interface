@@ -6,9 +6,12 @@ import ListTrack from "../components/ListTrack";
 import styles from "../styles/Search.module.scss";
 import Loader from "../components/Loader";
 import ServiceInfo from "pipebomb.js/dist/ServiceInfo";
+import ExternalCollection from "pipebomb.js/dist/collection/ExternalCollection";
+import SquarePlaylist from "../components/SquarePlaylist";
+import ListPlaylist from "../components/ListPlaylist";
 
 let value = "";
-let storedTrackList: Track[] = [];
+let storedTrackList: (Track | ExternalCollection)[] = [];
 let storedPlatform = "Youtube Music";
 
 export default function Search() {
@@ -83,9 +86,13 @@ export default function Search() {
             return <Loader text="Searching..."></Loader>;
         } else {
             return <>
-                {trackList.map((track, index) => (
-                    <ListTrack key={index} track={track} />
-                ))}
+                {trackList.map((item, index) => {
+                    return (item instanceof Track ? (
+                        <ListTrack key={index} track={item} />
+                    ) : (
+                        <ListPlaylist key={index} title={item.getName()} image={item.getThumbnailUrl()} subtitle={`${item.service} playlist`} url={`/collection/playlist/${item.collectionID}`} />
+                    ))
+                })}
             </>
         }
     }

@@ -1,6 +1,4 @@
 .top {
-    height: 200px;
-
     .topFlex {
         display: flex;
         gap: 1rem;
@@ -23,12 +21,26 @@
             margin: 0;
             padding: 0 !important;
             height: 75px;
+            overflow-x: hidden;
+            position: relative;
+            padding: 0;
+            width: 100%;
+            display: flex;
+            gap: 2rem;
 
             .title {
-                margin: 0;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                display: block;
+                flex-grow: 0;
+            }
+
+            .buttons {
+                display: flex;
+                height: 100%;
+                align-items: center;
+                flex-shrink: 0;
             }
         }
 
@@ -74,5 +86,34 @@
     svg {
         height: 30px;
         width: 30px;
+    }
+}
+
+@media only screen and (max-width: 1000px) {
+    .top {
+        .topImage {
+            width: 100px;
+            height: 100px;
+        }
+
+        .topInfo {
+            .titleContainer {
+                height: 50px;
+                overflow: initial;
+                margin-top: 10px;
+
+                .title {
+                    font-size: var(--nextui-fontSizes-3xl);
+                }
+            }
+
+            .artist {
+                font-size: var(--nextui-fontSizes-lg);
+            }
+        }
+    }
+    
+    .waveform {
+        display: none;
     }
 }

@@ -69,7 +69,7 @@ export default function Chart() {
 
     return (
         <>
-            <Text h1>{chart.collectionName}</Text>
+            <Text h1>{chart.getName()}</Text>
             <Grid.Container gap={2} alignItems="center" className={styles.top}>
                 <Grid>
                     <Button size="xl" auto onPress={playChart} className={styles.roundButton} color="gradient"><MdPlayArrow /></Button>

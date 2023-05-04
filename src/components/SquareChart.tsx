@@ -17,7 +17,7 @@ export default function SquareChart({ chart }: SquareChartProps) {
                     <LazyImage src={PipeBombConnection.getInstance().getUrl() + "/v1/serviceicon/" + chart.service} />
                 </div>
                 <div className={styles.title}>
-                    <Text h3>{chart.collectionName}</Text>
+                    <Text h3>{chart.getName()}</Text>
                 </div>
             </Link>
         </div>

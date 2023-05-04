@@ -19,6 +19,7 @@ import { Button } from "@nextui-org/react";
 import { VscLayoutSidebarRight } from "react-icons/vsc"
 import { useState } from "react";
 import UserPage from "./pages/UserPage";
+import ExternalPlaylistPage from "./pages/ExternalPlaylistPage";
 
 function App() {
     const [sidebarEnabled, setSidebarEnabled] = useState(true);
@@ -47,6 +48,8 @@ function App() {
                 </Route>
 
                 <Route path="/user/:userID" element={<UserPage />} />
+
+                <Route path="/collection/playlist/:collectionID" element={<ExternalPlaylistPage />} />
           </Routes>
         )
     }

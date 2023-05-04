@@ -200,11 +200,9 @@ export default function TrackPage() {
                             <ImageWrapper src={ track.getThumbnailUrl() } loadingSize="xl" />
                         </div>
                         <div className={styles.topInfo}>
-                            <Grid.Container gap={2} alignItems="center" className={styles.titleContainer}>
-                                <Grid>
-                                    <Text h1 className={styles.title}>{ trackMeta.title }</Text>
-                                </Grid>
-                                <Grid>
+                            <div className={styles.titleContainer}>
+                                <Text h1 className={styles.title}>{ trackMeta.title }</Text>
+                                <div className={styles.buttons}>
                                     <Button size="xl" auto onPress={playTrack} className={styles.roundButton} color="gradient">
                                         { shouldPause ? (
                                             <MdPause />
@@ -212,8 +210,6 @@ export default function TrackPage() {
                                             <MdPlayArrow />
                                         )}
                                     </Button>
-                                </Grid>
-                                <Grid>
                                     <Dropdown>
                                         <Dropdown.Trigger>
                                             <Button light size="xl" className={styles.contextButton}>
@@ -227,8 +223,8 @@ export default function TrackPage() {
                                             <Dropdown.Item key="download">Download as MP3</Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown>
-                                </Grid>
-                            </Grid.Container>
+                                </div>
+                            </div>
                             <Text h3 className={styles.artist}>{ convertArrayToString(trackMeta.artists) }</Text>
                             <div className={styles.waveform} ref={waveformRef.ref} onMouseDownCapture={waveformClick}>
                                 <Waveform url={ track.getAudioUrl() } active={true} percent={waveformPercentage != -1 ? waveformPercentage : isActive ? (playerState.currentTime / playerState.duration * 100) : 0} segments={waveformSegments} />
