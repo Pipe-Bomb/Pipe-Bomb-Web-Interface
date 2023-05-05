@@ -9,6 +9,7 @@ import ServiceInfo from "pipebomb.js/dist/ServiceInfo";
 import ExternalCollection from "pipebomb.js/dist/collection/ExternalCollection";
 import SquarePlaylist from "../components/SquarePlaylist";
 import ListPlaylist from "../components/ListPlaylist";
+import { useNavigate } from "react-router-dom";
 
 let value = "";
 let storedTrackList: (Track | ExternalCollection)[] = [];
@@ -20,6 +21,7 @@ export default function Search() {
     const [services, setServices] = useState<ServiceInfo[] | null>(null);
     const [trackList, setTrackList] = useState(storedTrackList);
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     function keyPress(event: React.KeyboardEvent) {
         if (event.key !== "Enter") return;
@@ -42,10 +44,19 @@ export default function Search() {
         if (!target) return;
         setLoading(true);
         PipeBombConnection.getInstance().getApi().v1.search(storedPlatform, target)
-        .then((tracks) => {
-            storedTrackList = tracks;
-            setTrackList(tracks);
-            setLoading(false);
+        .then(response => {
+            if (response.responseType == "found object") {
+                if (response.objectType == "playlist") {
+                    return navigate("/collection/playlist/" + response.id);
+                }
+                if (response.objectType == "track") {
+                    return navigate("/track/" + response.id);
+                }
+            } else {
+                storedTrackList = response.results;
+                setTrackList(storedTrackList);
+                setLoading(false);
+            }
         }).catch((error) => {
             console.error(error);
             setTrackList([]);

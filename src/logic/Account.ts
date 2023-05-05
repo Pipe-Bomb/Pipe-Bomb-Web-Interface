@@ -78,7 +78,8 @@ export default class Account {
                     Cookies.set("pipebomb-token", token, {
                         expires: 365
                     });
-                    history.pushState("", document.title, location.pathname + location.search);
+
+                    // history.pushState("", document.title, location.pathname + location.search);
 
                     while (this.dataAwaitCallbacks.length) {
                         const callback = this.dataAwaitCallbacks.shift();

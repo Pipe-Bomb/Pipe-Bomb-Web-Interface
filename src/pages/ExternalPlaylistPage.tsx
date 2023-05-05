@@ -16,9 +16,11 @@ export default function ExternalPlaylistPage() {
     const collectionID = useParams().collectionID;
     const [collection, setCollection] = useState<ExternalCollection | false>(null);
     const [tracklist, setTracklist] = useState<Track[]>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setCollection(null);
+        setLoading(true);
         PipeBombConnection.getInstance().getApi().v1.getExternalPlaylist(collectionID)
         .then(setCollection)
         .catch(() => setCollection(false));
@@ -29,7 +31,7 @@ export default function ExternalPlaylistPage() {
         
         collection.loadNextPage().then(success => {
             setTracklist(collection.getTrackList());
-
+            setLoading(success);
             if (success) {
                 load();
             }
@@ -121,7 +123,7 @@ export default function ExternalPlaylistPage() {
                 { tracklist && tracklist.map((track, index) => (
                     <ListTrack key={index} track={track} />
                 ))}
-                { !collection.hasFullTracklist() && (
+                { loading && (
                     <div className={styles.loader}>
                         <Loader text="Loading tracks..." />
                     </div>
