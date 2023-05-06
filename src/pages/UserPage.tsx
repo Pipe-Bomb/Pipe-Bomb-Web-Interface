@@ -8,7 +8,7 @@ import styles from "../styles/UserPage.module.scss"
 import ImageWrapper from "../components/ImageWrapper";
 import Account from "../logic/Account";
 import { Text } from "@nextui-org/react"
-import SquarePlaylist from "../components/SquarePlaylist";
+import PlaylistCollection from "../components/PlaylistCollection";
 
 export default function UserPage() {
     const userID = useParams().userID;
@@ -40,7 +40,7 @@ export default function UserPage() {
 
     if (!user) {
         return (
-            <Loader text="Loading User..." />
+            <Loader text="Loading User" />
         )
     }
 
@@ -62,11 +62,7 @@ export default function UserPage() {
                 <div className={styles.playlists}>
                     <Text h2>Playlists</Text>
                     <div className={styles.playlistContainer}>
-                        {playlists.map((playlist, index) => (
-                            <div key={index} className={styles.playlist}>
-                                <SquarePlaylist playlist={playlist} />
-                            </div>
-                        ))}
+                        <PlaylistCollection playlists={playlists} />
                     </div>
                 </div>
             )}

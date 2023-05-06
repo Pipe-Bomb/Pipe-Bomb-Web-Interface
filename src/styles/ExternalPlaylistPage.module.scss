@@ -9,15 +9,12 @@
         flex-shrink: 0;
         border-radius: 20px;
         overflow: hidden;
+        border: 2px solid var(--nextui-colors-border);
     }
 
     .info {
         flex-grow: 1;
     }
-}
-
-.tracklist {
-    margin-top: 50px;
 }
 
 .loader {
@@ -45,4 +42,9 @@
         height: 30px;
         width: 30px;
     }
+}
+
+.buttons {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
 }

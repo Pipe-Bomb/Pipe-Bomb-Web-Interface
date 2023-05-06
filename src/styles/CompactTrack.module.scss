@@ -11,6 +11,7 @@
     min-width: min(400px, 100%);
     margin: auto;
     flex-grow: 1;
+    box-shadow: var(--nextui-shadows-md);
     
     background: var(--nextui-colors-background);
     border-radius: var(--nextui-radii-base);

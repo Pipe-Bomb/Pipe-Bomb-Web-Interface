@@ -37,3 +37,11 @@
         margin-right: 0.5rem;
     }
 }
+
+.playlists {
+    display: flex;
+    flex-wrap: wrap;
+    // max-width: 1400px;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}

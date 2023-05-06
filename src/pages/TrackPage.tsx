@@ -61,7 +61,7 @@ export default function TrackPage() {
 
 
     if (trackMeta === null) {
-        return <Loader text="Loading..." />
+        return <Loader text="Loading" />
     }
 
     if (!trackMeta || !track) {

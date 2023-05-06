@@ -102,7 +102,7 @@ export default function CompactTrack({ track, parentPlaylist, inverse }: Props) 
             <GlowEffect active={currentTrack?.trackID == track.trackID} image={track.getThumbnailUrl()} spread={10}>
                 <div className={styles.box}>
                     <div className={styles.image} onClick={playTrack}>
-                        <ImageWrapper src={track.getThumbnailUrl()} loadingSize="lg" />
+                        <ImageWrapper src={track.getThumbnailUrl()} loadingSize="md" />
                     </div>
                     <div className={styles.info}>
                         <div>

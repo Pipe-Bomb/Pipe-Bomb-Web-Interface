@@ -1,12 +1,11 @@
 .container {
     position: relative;
-    margin: 0 0 var(--nextui-space-8) 0;
     display: block;
-    height: 100px;
     background: var(--nextui-colors-background);
     border-radius: var(--nextui-radii-base);
-    max-width: 1400px;
+    width: 200px;
     transition: background 0.2s;
+    box-shadow: var(--nextui-shadows-md);
 
     &:hover {
         background: var(--nextui-colors-secondaryLightHover);
@@ -16,22 +15,21 @@
 .link {
     width: 100%;
     display: flex;
-    align-items: start;
+    flex-direction: column;
+    align-items: stretch;
 }
 
 .imageContainer {
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    aspect-ratio: 1;
     background: var(--nextui-colors-waitingBackground);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     flex-shrink: 0;
-    margin-right: var(--nextui-space-8);
     position: relative;
     overflow: hidden;
     border-radius: var(--nextui-radii-base);
-    border: 2px solid var(--nextui-colors-border);
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -45,15 +43,27 @@
         position: relative;
         z-index: 1;
     }
+
+    .image {
+        box-sizing: border-box;
+        border: 2px solid var(--nextui-colors-border);
+        border-radius: var(--nextui-radii-base);
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
 }
 
 .info {
     display: block;
     overflow: hidden;
-    margin: 10px var(--nextui-space-8) 0 0;
+    margin: 0.5rem 1rem;
     
     .title {
-        font-size: var(--nextui-fontSizes-2xl);
+        font-size: var(--nextui-fontSizes-xl);
         font-weight: var(--nextui-fontWeights-semibold);
         word-wrap: break-word;
         white-space: nowrap;

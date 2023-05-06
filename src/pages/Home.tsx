@@ -2,7 +2,6 @@ import { Grid, Text } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import Loader from "../components/Loader";
 import PipeBombUser from "../components/PipeBombUser";
-import SquarePlaylist from "../components/SquarePlaylist";
 import Account, { UserDataFormat } from "../logic/Account";
 import PlaylistIndex from "../logic/PlaylistIndex";
 import styles from "../styles/Home.module.scss";
@@ -10,6 +9,9 @@ import TrackList from "pipebomb.js/dist/collection/TrackList";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import ChartIndex from "../logic/ChartIndex";
 import SquareChart from "../components/SquareChart";
+import ListPlaylist from "../components/ListPlaylist";
+import PlaylistImage from "../components/PlaylistImage";
+import PlaylistCollection from "../components/PlaylistCollection";
 
 export default function Home() {
     const [playlists, setPlaylists] = useState(PlaylistIndex.getInstance().getPlaylists());
@@ -46,13 +48,7 @@ export default function Home() {
             return (
                 <>
                     <Text h2 className={styles.title}>Playlists</Text>
-                    <div className={styles.playlistContainer}>
-                        {playlists.map((playlist, index) => (
-                            <div key={index} className={styles.playlist}>
-                                <SquarePlaylist playlist={playlist} />
-                            </div>
-                        ))}
-                    </div>
+                    <PlaylistCollection playlists={playlists} />
                 </>
             )
         }
@@ -73,9 +69,9 @@ export default function Home() {
             return (
                 <>
                     <Text h2 className={styles.title}>Charts</Text>
-                    <div className={styles.playlistContainer}>
+                    <div className={styles.charts}>
                         {charts.map((chart, index) => (
-                            <div key={index} className={styles.playlist}>
+                            <div key={index} className={styles.chart}>
                                 <SquareChart chart={chart} />
                             </div>
                         ))}

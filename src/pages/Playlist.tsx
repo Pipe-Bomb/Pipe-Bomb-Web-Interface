@@ -15,6 +15,9 @@ import { useNavigate } from "react-router-dom";
 import Account, { UserDataFormat } from "../logic/Account";
 import CompactTrack from "../components/CompactTrack";
 import PipeBombPlaylist from "pipebomb.js/dist/collection/Playlist";
+import PlaylistImage from "../components/PlaylistImage";
+import PlaylistTop from "../components/PlaylistTop";
+import useIsSelf from "../hooks/IsSelfHook";
 
 let lastPlaylistID = "";
 
@@ -24,9 +27,9 @@ export default function Playlist() {
     const [playlist, setPlaylist] = useState<PipeBombPlaylist | null>(null);
     const [trackList, setTrackList] = useState<Track[] | null | false>(false);
     const [errorCode, setErrorCode] = useState(0);
-    const [selfInfo, setSelfInfo] = useState<UserDataFormat | null>(null);
     const [suggestions, setSuggestions] = useState<Track[] | null>(null);
     const navigate = useNavigate();
+    const self = useIsSelf(playlist?.owner);
 
 
     const playlistID: string = paramID;
@@ -73,10 +76,6 @@ export default function Playlist() {
     }, [paramID]);
 
     useEffect(() => {
-        if (!selfInfo) {
-            Account.getInstance().getUserData().then(setSelfInfo);
-        }
-
         if (playlist) {
             playlist.registerUpdateCallback(callback);
         }
@@ -107,14 +106,14 @@ export default function Playlist() {
     }
 
     if (!playlist) {
-        return <Loader text="Loading..."></Loader>
+        return <Loader text="Loading"></Loader>
     }
 
     if (trackList === false) {
         return (
             <>
                 <Text h1>{playlist.getName()}</Text>
-                <Loader text="Loading Tracks..."></Loader>
+                <Loader text="Loading Tracks"></Loader>
             </>
         )
     }
@@ -165,10 +164,8 @@ export default function Playlist() {
         }
     }
 
-    const isOwnPlaylist = selfInfo && selfInfo.userID == playlist.owner.userID;
-
     function generateContextMenu() {
-        if (isOwnPlaylist) {
+        if (self) {
             return (
                 <Dropdown.Menu onAction={contextMenu} disabledKeys={["rename"]}>
                     <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
@@ -191,7 +188,7 @@ export default function Playlist() {
 
     function generateSuggestions() {
         if (!suggestions || !playlist || !trackList) {
-            return <Loader text="Loading Suggestions..." />;
+            return <Loader text="Loading Suggestions" />;
         }
 
         if (!suggestions.length) {
@@ -219,31 +216,7 @@ export default function Playlist() {
 
     return (
         <>
-            <Text h1>{playlist.getName()}</Text>
-            {!isOwnPlaylist && (
-                <Text h4 className={styles.playlistAuthor}>by <Link to={`/user/${playlist.owner.userID}`} className={styles.link}>{playlist.owner.username}</Link></Text>
-            )}
-            {trackList && (
-                <Text h5 className={styles.trackCount}>{trackList.length} track{trackList.length == 1 ? "" : "s"}</Text>
-            )}
-            <Grid.Container gap={2} alignItems="center" className={styles.top}>
-                <Grid>
-                    <Button size="xl" auto onPress={playPlaylist} className={styles.roundButton} color="gradient"><MdPlayArrow /></Button>
-                </Grid>
-                <Grid>
-                    <Button size="lg" auto onPress={shufflePlaylist} className={styles.roundButton} bordered><MdShuffle /></Button>
-                </Grid>
-                <Grid>
-                    <Dropdown>
-                        <Dropdown.Trigger>
-                            <Button light size="xl" className={styles.contextButton}>
-                                <MdMoreHoriz />
-                            </Button>
-                        </Dropdown.Trigger>
-                        { generateContextMenu() }
-                    </Dropdown>
-                </Grid>
-            </Grid.Container>
+            <PlaylistTop name={playlist.getName()} trackCount={trackList ? trackList.length : undefined} onPlay={playPlaylist} onShuffle={shufflePlaylist} owner={playlist.owner} image={<PlaylistImage playlist={playlist} />} contextMenu={generateContextMenu()} />
             {newTrackList.map((track, index) => (
                 <ListTrack key={index} track={track} parentPlaylist={playlist} />
             ))}

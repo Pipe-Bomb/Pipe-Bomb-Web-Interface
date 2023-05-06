@@ -1,4 +1,4 @@
-import { Input, Button, Loading } from "@nextui-org/react";
+import { Input, Button, Loading, Text } from "@nextui-org/react";
 import { useState, useRef, useEffect } from "react";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import Track from "pipebomb.js/dist/music/Track";
@@ -7,19 +7,30 @@ import styles from "../styles/Search.module.scss";
 import Loader from "../components/Loader";
 import ServiceInfo from "pipebomb.js/dist/ServiceInfo";
 import ExternalCollection from "pipebomb.js/dist/collection/ExternalCollection";
-import SquarePlaylist from "../components/SquarePlaylist";
 import ListPlaylist from "../components/ListPlaylist";
 import { useNavigate } from "react-router-dom";
+import { TbMoodEmpty } from "react-icons/tb";
+import CenterIcon from "../components/CenterIcon";
+import PlaylistCollection from "../components/PlaylistCollection";
+
+interface storedResults {
+    tracks: Track[],
+    playlists: ExternalCollection[]
+}
 
 let value = "";
-let storedTrackList: (Track | ExternalCollection)[] = [];
+let storedTrackList: storedResults = {
+    tracks: [],
+    playlists: []
+};
 let storedPlatform = "Youtube Music";
 
 export default function Search() {
     const input = useRef<HTMLInputElement>(null);
     const [currentPlatform, setCurrentPlatform] = useState(storedPlatform);
     const [services, setServices] = useState<ServiceInfo[] | null>(null);
-    const [trackList, setTrackList] = useState(storedTrackList);
+    const [trackList, setTrackList] = useState(storedTrackList.tracks);
+    const [playlists, setPlaylists] = useState(storedTrackList.playlists)
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -29,14 +40,12 @@ export default function Search() {
     }
 
     useEffect(() => {
-        if (services === null) {
-            PipeBombConnection.getInstance().getApi().v1.getServices()
-            .then(setServices)
-            .catch(e => {
-                console.error(e);
-            });
-        }
-    });
+        PipeBombConnection.getInstance().getApi().v1.getServices()
+        .then(setServices)
+        .catch(e => {
+            console.error(e);
+        });
+    }, []);
 
     function search() {
         const target = input.current?.value;
@@ -53,8 +62,18 @@ export default function Search() {
                     return navigate("/track/" + response.id);
                 }
             } else {
-                storedTrackList = response.results;
-                setTrackList(storedTrackList);
+                storedTrackList.tracks.splice(0, storedTrackList.tracks.length);
+                storedTrackList.playlists.splice(0, storedTrackList.playlists.length);
+
+                for (let item of response.results) {
+                    if (item instanceof Track) {
+                        storedTrackList.tracks.push(item);
+                    } else if (item instanceof ExternalCollection) {
+                        storedTrackList.playlists.push(item);
+                    }
+                }
+                setTrackList(storedTrackList.tracks);
+                setPlaylists(storedTrackList.playlists);
                 setLoading(false);
             }
         }).catch((error) => {
@@ -73,7 +92,7 @@ export default function Search() {
 
     function generateServices() {
         if (services === null) {
-            return <Loader text="Loading Services..."></Loader>;
+            return <Loader text="Loading Services"></Loader>;
         } else {
             const serverUrl = PipeBombConnection.getInstance().getUrl();
             return <>
@@ -94,17 +113,50 @@ export default function Search() {
 
     function generateList() {
         if (loading) {
-            return <Loader text="Searching..."></Loader>;
+            return <Loader text="Searching"></Loader>;
+        } else if (!trackList.length) {
+            if (!value) return null;
+            return (
+                <CenterIcon icon={<TbMoodEmpty />} text="No Results" />
+            )
         } else {
-            return <>
-                {trackList.map((item, index) => {
-                    return (item instanceof Track ? (
+            const newTracklist = Array.from(trackList);
+            const firstTracks = newTracklist.splice(0, 5);
+            if (playlists.length) {
+                return <>
+                    <Text h2>Top Results</Text>
+                    {firstTracks.map((item, index) => (
                         <ListTrack key={index} track={item} />
-                    ) : (
-                        <ListPlaylist key={index} title={item.getName()} image={item.getThumbnailUrl()} subtitle={`${item.service} playlist`} url={`/collection/playlist/${item.collectionID}`} />
-                    ))
-                })}
-            </>
+                    ))}
+                    <Text h2>Playlists</Text>
+                    <div className={styles.playlists}>
+                        <PlaylistCollection>
+                            {playlists.map((item, index) => (
+                                <ListPlaylist key={index} url={`/collection/playlist/${item.collectionID}`} title={item.getName()} subtitle={item.service + " playlist"} image={item.getThumbnailUrl()} />
+                            ))}
+                        </PlaylistCollection>
+                    </div>
+                    {!!newTracklist.length && (
+                        <Text h2>More Results</Text>
+                    )}
+                    {newTracklist.map((item, index) => (
+                        <ListTrack key={index} track={item} />
+                    ))}
+                </>
+            } else {
+                return <>
+                    <Text h2>Top Results</Text>
+                    {firstTracks.map((item, index) => (
+                        <ListTrack key={index} track={item} />
+                    ))}
+                    {!!newTracklist.length && (
+                        <Text h2>More Results</Text>
+                    )}
+                    {newTracklist.map((item, index) => (
+                        <ListTrack key={index} track={item} />
+                    ))}
+                </>
+            }
         }
     }
 

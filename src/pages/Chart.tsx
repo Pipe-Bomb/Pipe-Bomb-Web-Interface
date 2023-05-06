@@ -35,7 +35,7 @@ export default function Chart() {
     }, []);
 
     if (!chart || !trackList) {
-        return <Loader text="Loading..."></Loader>
+        return <Loader text="Loading"></Loader>
     }
 
     function playChart() {

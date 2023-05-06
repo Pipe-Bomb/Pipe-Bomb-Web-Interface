@@ -5,6 +5,7 @@
     max-width: 1400px;
     background: var(--nextui-colors-background);
     transition: background 0.2s;
+    box-shadow: var(--nextui-shadows-md);
 
     &:hover {
         background: var(--nextui-colors-secondaryLightHover);

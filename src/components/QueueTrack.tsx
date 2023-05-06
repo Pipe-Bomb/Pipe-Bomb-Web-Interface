@@ -87,7 +87,7 @@ export default function QueueTrack({ track, index }: Props) {
             <GlowEffect active={index == -1 && false} spread={100} image={track.track.getThumbnailUrl()}>
                 <div className={styles.box}>
                     <div className={styles.image} onClick={() => contextMenu("play")}>
-                        <ImageWrapper src={track.track.getThumbnailUrl()} loadingSize="lg" />
+                        <ImageWrapper src={track.track.getThumbnailUrl()} loadingSize="md" />
                     </div>
                     <div className={styles.info}>
                         <span className={styles.trackName}>{metadata ? metadata.title : track.track.trackID}</span>

@@ -94,7 +94,7 @@ export default function AddToPlaylist() {
     }
 
     function generatePlaylistHTML() {
-        if (!playlists) return <Loader text="Loading Playlists..." />;
+        if (!playlists) return <Loader text="Loading Playlists" />;
 
         return playlists.map(playlist => (
             <div key={playlist.collectionID} className={styles.playlist}>

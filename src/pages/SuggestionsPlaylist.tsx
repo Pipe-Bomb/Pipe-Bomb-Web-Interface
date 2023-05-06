@@ -38,7 +38,7 @@ export default function SuggestionsPlaylist() {
     }, [track]);
 
     if (trackMeta === null) {
-        return <Loader text="Loading..." />
+        return <Loader text="Loading" />
     }
 
     if (!trackMeta) {
@@ -54,7 +54,7 @@ export default function SuggestionsPlaylist() {
                 {trackMeta && (
                     <Text h4>A collection of tracks similar to <span className={styles.underline}>{trackMeta.title}</span></Text>
                 )}
-                <Loader text="Loading Tracks..." />
+                <Loader text="Loading Tracks" />
             </>
         }
 

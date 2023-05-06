@@ -11,6 +11,7 @@ import Track from "pipebomb.js/dist/music/Track";
 import { MdMoreHoriz, MdPlayArrow, MdShuffle } from "react-icons/md";
 import AudioPlayer from "../logic/AudioPlayer";
 import { convertTracklistToM3u } from "../logic/Utils";
+import PlaylistTop from "../components/PlaylistTop";
 
 export default function ExternalPlaylistPage() {
     const collectionID = useParams().collectionID;
@@ -53,7 +54,7 @@ export default function ExternalPlaylistPage() {
 
     if (!collection) {
         return (
-            <Loader text="Loading Playlist..." />
+            <Loader text="Loading Playlist" />
         )
     }
 
@@ -88,44 +89,20 @@ export default function ExternalPlaylistPage() {
 
      return (
         <>
-            <div className={styles.top}>
-                <div className={styles.imageContainer}>
-                    <ImageWrapper src={collection.getThumbnailUrl()} />
-                </div>
-                <div className={styles.info}>
-                    <Text h1>{collection.getName()}</Text>
-                    <Text h5 className={styles.trackCount}>{collection.getTrackListLength()} track{collection.getTrackListLength() == 1 ? "" : "s"}</Text>
-                </div>
-            </div>
-            <Grid.Container gap={2} alignItems="center" className={styles.buttons}>
-                <Grid>
-                    <Button size="xl" auto onPress={playPlaylist} className={styles.roundButton} color="gradient"><MdPlayArrow /></Button>
-                </Grid>
-                <Grid>
-                    <Button size="lg" auto onPress={shufflePlaylist} className={styles.roundButton} bordered><MdShuffle /></Button>
-                </Grid>
-                <Grid>
-                    <Dropdown>
-                        <Dropdown.Trigger>
-                            <Button light size="xl" className={styles.contextButton}>
-                                <MdMoreHoriz />
-                            </Button>
-                        </Dropdown.Trigger>
-                        <Dropdown.Menu onAction={contextMenu} disabledKeys={["like"]}>
-                            <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
-                            <Dropdown.Item key="like">Like Playlist</Dropdown.Item>
-                            <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
-                </Grid>
-            </Grid.Container>
+            <PlaylistTop name={collection.getName()} trackCount={collection.getTrackListLength()} onPlay={playPlaylist} onShuffle={shufflePlaylist} image={collection.getThumbnailUrl()} contextMenu={
+                <Dropdown.Menu onAction={contextMenu} disabledKeys={["like"]}>
+                    <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
+                    <Dropdown.Item key="like">Like Playlist</Dropdown.Item>
+                    <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
+                </Dropdown.Menu>
+            } />
             <div className={styles.tracklist}>
                 { tracklist && tracklist.map((track, index) => (
                     <ListTrack key={index} track={track} />
                 ))}
                 { loading && (
                     <div className={styles.loader}>
-                        <Loader text="Loading tracks..." />
+                        <Loader text="Loading tracks" />
                     </div>
                 )}
             </div>

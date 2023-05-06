@@ -1,0 +1,43 @@
+.top {
+    display: flex;
+    align-items: center;
+    gap: var(--nextui-space-lg);
+
+    .image {
+        width: 200px;
+        height: 200px;
+        border-radius: var(--nextui-radii-xl);
+        box-sizing: border-box;
+        overflow: hidden;
+        flex-shrink: 0;
+        flex-grow: 0;
+
+        .imageBorder {
+            height: 100%;
+            border: 2px solid var(--nextui-colors-border);
+            border-radius: var(--nextui-radii-xl);
+            overflow: hidden;
+        }
+    }
+
+    .info {
+        flex-grow: 1;
+
+        .link {
+            color: var(--nextui-colors-text);
+            text-decoration: underline;
+        
+            &:hover {
+                text-decoration: underline;
+                color: var(--nextui-colors-primary);
+            }
+        }
+    }
+}
+
+.buttons {
+    display: flex;
+    align-items: center;
+    margin: var(--nextui-space-md) 0 var(--nextui-space-xl) 0;
+    gap: var(--nextui-space-lg);
+}
