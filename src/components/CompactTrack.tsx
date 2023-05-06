@@ -14,6 +14,7 @@ import ImageWrapper from "./ImageWrapper";
 import useTrackMeta from "../hooks/TrackMetaHook";
 import useIsSelf from "../hooks/IsSelfHook";
 import useCurrentTrack from "../hooks/CurrentTrackHook";
+import { openContextMenu } from "./ContextMenu";
 
 interface Props {
   track: Track,
@@ -56,7 +57,6 @@ export default function CompactTrack({ track, parentPlaylist, inverse }: Props) 
     }
 
     function dropdown() {
-
         if (parentPlaylist) {
             return (
                 <Dropdown.Menu disabledKeys={[]} onAction={contextMenu}>
@@ -100,7 +100,7 @@ export default function CompactTrack({ track, parentPlaylist, inverse }: Props) 
     return (
         <div className={styles.container}>
             <GlowEffect active={currentTrack?.trackID == track.trackID} image={track.getThumbnailUrl()} spread={10}>
-                <div className={styles.box}>
+                <div className={styles.box} onContextMenu={e => openContextMenu(e, dropdown())}>
                     <div className={styles.image} onClick={playTrack}>
                         <ImageWrapper src={track.getThumbnailUrl()} loadingSize="md" />
                     </div>

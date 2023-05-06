@@ -20,6 +20,7 @@ import { VscLayoutSidebarRight } from "react-icons/vsc"
 import { useState } from "react";
 import UserPage from "./pages/UserPage";
 import ExternalPlaylistPage from "./pages/ExternalPlaylistPage";
+import ContextMenu from "./components/ContextMenu";
 
 function App() {
     const [sidebarEnabled, setSidebarEnabled] = useState(true);
@@ -69,6 +70,7 @@ function App() {
                         </Player>
                         <AddToPlaylist />
                         <CreatePlaylist />
+                        <ContextMenu />
 
                         <div className={styles.content}>
                             <div className={styles.main}>

@@ -11,6 +11,7 @@ import GlowEffect from "./GlowEffect";
 import ImageWrapper from "./ImageWrapper";
 import useTrackMeta from "../hooks/TrackMetaHook";
 import useCurrentTrack from "../hooks/CurrentTrackHook";
+import { openContextMenu } from "./ContextMenu";
 
 interface Props {
   track: Track,
@@ -79,7 +80,7 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
     return (
         <div className={styles.container} key={track.trackID}>
             <GlowEffect active={currentTrack?.trackID == track.trackID} image={track.getThumbnailUrl()} spread={30}>
-                <div className={styles.box}>
+                <div className={styles.box} onContextMenu={e => openContextMenu(e, dropdown())}>
                     <div className={styles.image} onClick={playTrack}>
                         <ImageWrapper src={track.getThumbnailUrl()} />
                     </div>

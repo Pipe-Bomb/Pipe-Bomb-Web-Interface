@@ -43,7 +43,7 @@ export default function PlaylistTop(props: PlaylistTopProps) {
             </div>
             <div className={styles.buttons}>
                 <IconButton size="xl" onClick={props.onPlay} color="gradient"><MdPlayArrow /></IconButton>
-                <IconButton size="lg" onClick={props.onPlay} bordered><MdShuffle /></IconButton>
+                <IconButton size="lg" onClick={props.onShuffle} bordered><MdShuffle /></IconButton>
                 <Dropdown>
                     <Dropdown.Trigger>
                         <Button light auto size="lg">

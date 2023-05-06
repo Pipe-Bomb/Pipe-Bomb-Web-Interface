@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import GlowEffect from "./GlowEffect";
 import ImageWrapper from "./ImageWrapper";
 import useTrackMeta from "../hooks/TrackMetaHook";
+import { openContextMenu } from "./ContextMenu";
 
 interface Props {
   track: TrackWrapper,
@@ -85,7 +86,7 @@ export default function QueueTrack({ track, index }: Props) {
     return (
         <div className={styles.container + (index == -2 ? ` ${styles.history}` : "")}>
             <GlowEffect active={index == -1 && false} spread={100} image={track.track.getThumbnailUrl()}>
-                <div className={styles.box}>
+                <div className={styles.box} onContextMenu={e => openContextMenu(e, dropdownItems)}>
                     <div className={styles.image} onClick={() => contextMenu("play")}>
                         <ImageWrapper src={track.track.getThumbnailUrl()} loadingSize="md" />
                     </div>
