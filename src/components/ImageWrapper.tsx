@@ -32,17 +32,14 @@ export default function ImageWrapper({src, fallback, loadingSize}: ImageWrapperP
         setActiveSrc(image.current.src);
     }
 
-    if (loading) {
-        return (
-            <div className={styles.loadingContainer}>
-                <Loading className={styles.loading} size={loadingSize || "xl"} />
-                <img ref={image} className={styles.image} src={activeSrc} onLoadStart={() => setLoading(true)} onError={loadError} onLoad={loadSuccess} />
-            </div>
-            
-        )
-    }
-
     return (
-        <img ref={image} className={styles.image} src={activeSrc} onLoadStart={() => setLoading(true)} onError={loadError} onLoad={loadSuccess} />
+        <div className={styles.container + (loading ? ` ${styles.loadingContainer}` : "")}>
+            {loading && (
+                <Loading className={styles.loading} size={loadingSize || "xl"} />
+            )}
+            
+            <img ref={image} className={styles.image} src={activeSrc} onLoadStart={() => setLoading(true)} onError={loadError} onLoad={loadSuccess} />
+        </div>
+        
     )
 }
