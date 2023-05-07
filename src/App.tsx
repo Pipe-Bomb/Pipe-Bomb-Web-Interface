@@ -12,7 +12,6 @@ import SuggestionsPlaylist from "./pages/SuggestionsPlaylist";
 import Chart from "./pages/Chart";
 import NotificationManager from "./components/NotificationManager";
 import TrackPage from "./pages/TrackPage";
-import Sidebar from "./components/Sidebar";
 import Volume from "./components/Volume";
 import CastButton from "./components/CastButton";
 import { Button } from "@nextui-org/react";
@@ -21,6 +20,7 @@ import { useState } from "react";
 import UserPage from "./pages/UserPage";
 import ExternalPlaylistPage from "./pages/ExternalPlaylistPage";
 import ContextMenu from "./components/ContextMenu";
+import Sidebar from "./components/SideBar";
 
 function App() {
     const [sidebarEnabled, setSidebarEnabled] = useState(true);
