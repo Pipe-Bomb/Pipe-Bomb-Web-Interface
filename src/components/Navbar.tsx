@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import styles from "../styles/Navbar.module.scss";
-import logo from "../assets/Pipe Bomb logo no background.png";
 import PlaylistIndex from "../logic/PlaylistIndex";
 import { useEffect, useState } from "react";
 import PipeBombConnection from "../logic/PipeBombConnection";
@@ -20,6 +19,7 @@ export default function Navbar() {
     const playlistIndex = PlaylistIndex.getInstance();
     const [playlists, setPlaylists] = useState(playlistIndex.getPlaylists());
     const navigate = useNavigate();
+    const logoID = getComputedStyle(document.body).getPropertyValue("--nextui-colors-logoID") || "main";
 
     function playlistsUpdated(playlists: Playlist[]) {
         setPlaylists(playlists);
@@ -65,8 +65,7 @@ export default function Navbar() {
 
     return <div className={styles.sideBar}>
         <Link to="/" className={styles.logo}>
-            <img src={logo} className={styles.image} />
-            <div className={styles.spacer} />
+            <img src={`/logos/${logoID}.png`} className={styles.image} />
         </Link>
         <div className={styles.topLinks}>
             <Button className={styles.topLink} onPress={() => navigate("/")}>

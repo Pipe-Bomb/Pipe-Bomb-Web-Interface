@@ -9,8 +9,6 @@ import TrackList from "pipebomb.js/dist/collection/TrackList";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import ChartIndex from "../logic/ChartIndex";
 import SquareChart from "../components/SquareChart";
-import ListPlaylist from "../components/ListPlaylist";
-import PlaylistImage from "../components/PlaylistImage";
 import PlaylistCollection from "../components/PlaylistCollection";
 
 export default function Home() {
