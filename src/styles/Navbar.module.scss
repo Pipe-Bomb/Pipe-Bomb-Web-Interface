@@ -18,6 +18,9 @@
         max-width: 100%;
         margin: 2rem auto;
         display: block;
+        transition: opacity 1s;
+        opacity: 0;
+        transition-delay: 1s;
     }
 }
 
