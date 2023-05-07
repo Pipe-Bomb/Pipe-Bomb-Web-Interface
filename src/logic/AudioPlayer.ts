@@ -129,7 +129,7 @@ export default class AudioPlayer {
                 if (!this.paused) this.audio.activeType.setPaused(false);
             } catch (e) {
                 console.error("Error while loading audio!", url, e, trackWrapper.track);
-                const trackName = trackWrapper.track.isUnknown() ? "track" : (await trackWrapper.track.getMetadata()).title;
+                const trackName = trackWrapper.track.isUnknown() ? "track" : (await trackWrapper.track.loadMetadata()).title;
                 createNotification({
                     text: `Failed to play ${trackName}`,
                     status: "error"
@@ -139,7 +139,7 @@ export default class AudioPlayer {
         }
 
         if ("mediaSession" in navigator && this.currentTrack) {
-            this.currentTrack.track.getMetadata().then(metadata => {
+            this.currentTrack.track.loadMetadata().then(metadata => {
                 const mediaMeta = new MediaMetadata({
                     title: metadata.title,
                     artist: convertArrayToString(metadata.artists),

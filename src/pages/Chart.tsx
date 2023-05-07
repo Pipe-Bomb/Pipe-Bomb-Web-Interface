@@ -12,6 +12,7 @@ import ListTrack from "../components/ListTrack";
 import NumberWrapper from "../components/NumberWrapper";
 import Track from "pipebomb.js/dist/music/Track";
 import PipeBombConnection from "../logic/PipeBombConnection";
+import { ViewportList } from "react-viewport-list";
 
 export default function Chart() {
     let paramID: any = useParams().chartID;
@@ -92,11 +93,13 @@ export default function Chart() {
                     
                 </Grid>
             </Grid.Container>
-            {trackList.map((track, index) => (
-                <NumberWrapper key={index} number={index + 1}>
-                    <ListTrack track={track} />
-                </NumberWrapper>
-            ))}
+            <ViewportList items={trackList}>
+                {(track, index) => (
+                    <NumberWrapper key={index} number={index + 1}>
+                        <ListTrack track={track} />
+                    </NumberWrapper>
+                )}
+            </ViewportList>
         </>
     )
 }

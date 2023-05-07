@@ -123,7 +123,7 @@ export function convertTracklistToM3u(pipeBombUrl: string, tracks: Track[], m3u8
         let loadedCount = 0;
     
         function loadTrackMeta(index: number, track: Track) {
-            track.getMetadata()
+            track.loadMetadata()
             .then(meta => {
                 trackMetas[index] = meta;
             }).catch(e => {

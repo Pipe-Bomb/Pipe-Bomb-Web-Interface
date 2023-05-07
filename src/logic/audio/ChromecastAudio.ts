@@ -311,7 +311,7 @@ export default class ChromecastAudio extends AudioType {
                 const mediaInfo = new window.chrome.cast.media.MediaInfo(track.getAudioUrl(), "audio/mpeg");
                 mediaInfo.metadata = new window.chrome.cast.media.MusicTrackMediaMetadata();
                 
-                const meta = await track.getMetadata();
+                const meta = await track.loadMetadata();
 
                 if (meta) {
                     this.meta = meta;

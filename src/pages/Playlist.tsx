@@ -18,6 +18,7 @@ import PipeBombPlaylist from "pipebomb.js/dist/collection/Playlist";
 import PlaylistImage from "../components/PlaylistImage";
 import PlaylistTop from "../components/PlaylistTop";
 import useIsSelf from "../hooks/IsSelfHook";
+import { ViewportList } from "react-viewport-list";
 
 let lastPlaylistID = "";
 
@@ -217,9 +218,11 @@ export default function Playlist() {
     return (
         <>
             <PlaylistTop name={playlist.getName()} trackCount={trackList ? trackList.length : undefined} onPlay={playPlaylist} onShuffle={shufflePlaylist} owner={playlist.owner} image={<PlaylistImage playlist={playlist} />} contextMenu={generateContextMenu()} />
-            {newTrackList.map((track, index) => (
-                <ListTrack key={index} track={track} parentPlaylist={playlist} />
-            ))}
+            <ViewportList items={newTrackList}>
+                {(track, index) => (
+                    <ListTrack key={index} track={track} parentPlaylist={playlist} />
+                )}
+            </ViewportList>
             <div className={styles.suggestions}>
                 { generateSuggestions() }
             </div>

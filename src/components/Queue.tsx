@@ -1,11 +1,12 @@
-import { Button, Grid, Popover, Text } from "@nextui-org/react";
+import { Button, Grid, Text } from "@nextui-org/react";
 import { useEffect, useRef, useState } from "react";
-import { MdQueueMusic, MdRepeat, MdRepeatOne, MdOutlineDeleteOutline } from "react-icons/md";
+import { MdRepeat, MdRepeatOne, MdOutlineDeleteOutline } from "react-icons/md";
 import { ReactSortable } from "react-sortablejs";
 import AudioPlayer from "../logic/AudioPlayer";
 import styles from "../styles/Queue.module.scss";
 import QueueTrack from "./QueueTrack";
 import { IoMdShuffle } from "react-icons/io";
+import { ViewportList } from "react-viewport-list";
 
 interface ItemInterface {
     id: number
@@ -76,6 +77,7 @@ export default function Queue() {
 
     return (
         <div className={styles.container}>
+            
             <Grid.Container className={styles.topButtons} gap={1}>
                 <Grid>
                     <Button className={styles.roundButton} auto light={!audioPlayer.isShuffled()} onPress={() => audioPlayer.setShuffled(!audioPlayer.isShuffled())}><IoMdShuffle /></Button>
@@ -97,12 +99,14 @@ export default function Queue() {
                 {history.length ? (
                     <Text h3 className={styles.queueTitle}>History</Text>
                 ) : null}
-                
-                <div>
-                    {history.map(track => (
-                        <QueueTrack key={track.queueID} track={track} index={-2} />
-                    ))}
-                </div>
+
+                {!!history.length && (
+                    <ViewportList items={history}>
+                        {track => (
+                            <QueueTrack key={track.queueID} track={track} index={-2} />
+                        )}
+                    </ViewportList>
+                )}
 
                 <div ref={currentTrack}></div>
 
@@ -116,7 +120,7 @@ export default function Queue() {
                 {!!trackList.length && (
                     <>
                         <Text h3 className={styles.queueTitle}>Queue</Text>
-                        <ReactSortable list={itemList} setList={event => reArrangeQueue(event)} animation={100}>
+                        <ReactSortable list={itemList} setList={e => reArrangeQueue(e)} animation={100}>
                             {trackList.map((track, index) => (
                                 <QueueTrack key={track.queueID} track={track} index={index} />
                             ))}

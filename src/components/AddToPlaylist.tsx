@@ -67,7 +67,7 @@ export default function AddToPlaylist() {
             .then(async () => {
                 let trackName = "track";
                 if (selectedTrack && !selectedTrack.isUnknown()) {
-                    trackName = (await selectedTrack.getMetadata()).title;
+                    trackName = (await selectedTrack.loadMetadata()).title;
                 }
                 createNotification({
                     text: `Added ${trackName} to ${playlist.getName()}`
@@ -80,7 +80,7 @@ export default function AddToPlaylist() {
                 console.error(error);
                 let trackName = "track";
                 if (selectedTrack && !selectedTrack.isUnknown()) {
-                    trackName = (await selectedTrack.getMetadata()).title;
+                    trackName = (await selectedTrack.loadMetadata()).title;
                 }
                 createNotification({
                     text: `Failed to add ${trackName} to ${playlist.getName()}`

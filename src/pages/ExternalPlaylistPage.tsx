@@ -12,6 +12,7 @@ import { MdMoreHoriz, MdPlayArrow, MdShuffle } from "react-icons/md";
 import AudioPlayer from "../logic/AudioPlayer";
 import { convertTracklistToM3u } from "../logic/Utils";
 import PlaylistTop from "../components/PlaylistTop";
+import { ViewportList } from "react-viewport-list";
 
 export default function ExternalPlaylistPage() {
     const collectionID = useParams().collectionID;
@@ -96,16 +97,18 @@ export default function ExternalPlaylistPage() {
                     <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
                 </Dropdown.Menu>
             } />
-            <div className={styles.tracklist}>
-                { tracklist && tracklist.map((track, index) => (
-                    <ListTrack key={index} track={track} />
-                ))}
-                { loading && (
-                    <div className={styles.loader}>
-                        <Loader text="Loading tracks" />
-                    </div>
-                )}
-            </div>
+            {tracklist && (
+                <ViewportList items={tracklist}>
+                    {(track, index) => (
+                        <ListTrack key={index} track={track} />
+                    )}
+                </ViewportList>
+            )}
+            { loading && (
+                <div className={styles.loader}>
+                    <Loader text="Loading tracks" />
+                </div>
+            )}
         </>
     )
 }

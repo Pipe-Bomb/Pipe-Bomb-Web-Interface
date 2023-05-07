@@ -85,7 +85,7 @@ export default function Lyrics() {
         return (
             <>
                 <h1>Lyrics</h1>
-                <Loader text="Loading lyrics..." />
+                <Loader text="Loading lyrics" />
             </>
         )
     }
