@@ -7,6 +7,7 @@ import styles from "../styles/Queue.module.scss";
 import QueueTrack from "./QueueTrack";
 import { IoMdShuffle } from "react-icons/io";
 import { ViewportList } from "react-viewport-list";
+import useCurrentTrack from "../hooks/CurrentTrackHook";
 
 interface ItemInterface {
     id: number
@@ -17,10 +18,15 @@ export default function Queue() {
     const [trackList, setTrackList] = useState(audioPlayer.getQueue());
     const [history, setHistory] = useState(audioPlayer.getHistory());
     const currentTrack = useRef<HTMLDivElement>(null);
+    const nowPlaying = useCurrentTrack();
 
     const queueCallback = () => {
         setTrackList(audioPlayer.getQueue());
         setHistory(audioPlayer.getHistory());
+    }
+
+    function scroll() {
+        queueCallback();
         setTimeout(() => {
             if (currentTrack.current) {
                 const offset = currentTrack.current.offsetTop;
@@ -42,6 +48,8 @@ export default function Queue() {
             audioPlayer.unregisterQueueCallback(queueCallback);
         }
     }, []);
+
+    useEffect(scroll, [nowPlaying]);
 
     useEffect(() => {
         setTimeout(() => {
