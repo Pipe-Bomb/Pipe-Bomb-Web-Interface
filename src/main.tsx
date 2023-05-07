@@ -41,6 +41,44 @@ const dark = createTheme({
   }
 });
 
+const midnight = createTheme({
+  type: "dark",
+  theme: {
+    colors: {
+      logoID: "midnight",
+      primaryLight: '#8bd5ca',
+      primaryLightHover: '#8bd5ca',
+      primaryLightActive: '#8bd5ca',
+      primaryLightContrast: '#8bd5ca',
+      primaryAlpha: '#cad3f5',
+      primary: '#4B406E',
+      primaryBorder: '#8bd5ca',
+      primaryBorderHover: '#8bd5ca',
+      primarySolidHover: '#8bd5ca',
+      primarySolidContrast: '$white',
+      primaryShadow: '#89b4fa',
+      secondaryLightHover: '#353046',
+      
+
+      gradient: 'linear-gradient(112deg, #4B406E -25%, #4B406E -10%, #4B406E 80%)',
+      link: '#b8c0e0',
+
+      sidebarUnselectedText: "#7D6199",
+      waitingBackground: "#181825",
+      backgroundSecondary: "#100C18",
+      background: "#1E192A",
+      backgroundContrast: "#1E192A",
+    },
+    space: {},
+    fonts: {
+      sans: "'Inter', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif"
+    },
+    shadows: {
+      center: "0 0 20px 6px rgb(0 0 0 / 0.2)"
+    }
+  }
+});
+
 // const midnight = createTheme({
 //   type: "dark",
 //   theme: {
@@ -111,7 +149,7 @@ const dark = createTheme({
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
-      <NextUIProvider theme={dark}>
+      <NextUIProvider theme={midnight}>
         <App />
       </NextUIProvider>
     </BrowserRouter>
