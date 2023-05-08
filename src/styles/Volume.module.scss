@@ -17,10 +17,10 @@
 
         .popup {
             height: 40px;
-            background: var(--nextui-colors-background);
+            background: transparent;
             position: relative;
             border-radius: 20px;
-            transition: height 0.2s, top 0.2s, box-shadow 0.2s;
+            transition: height 0.2s, top 0.2s, box-shadow 0.2s, background 0.2s;
             transition-delay: 0.4s;
             top: 0;
 
@@ -102,6 +102,7 @@
             height: 140px;
             top: 0;
             box-shadow: var(--nextui-shadows-center);
+            background: var(--nextui-colors-background);
         }
 
         .content {

@@ -30,6 +30,7 @@
         position: relative;
         top: calc(50% - 3px);
         transform: translate(0, -50%);
+        box-shadow: var(--nextui-shadows-lg);
     }
 
     .time {
