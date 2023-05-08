@@ -21,6 +21,7 @@ import UserPage from "./pages/UserPage";
 import ExternalPlaylistPage from "./pages/ExternalPlaylistPage";
 import ContextMenu from "./components/ContextMenu";
 import Sidebar from "./components/Sidebar";
+import BackgroundGlow from "./components/BackgroundGlow";
 
 function App() {
     const [sidebarEnabled, setSidebarEnabled] = useState(true);
@@ -58,6 +59,7 @@ function App() {
     return (
         <>
             <NotificationManager />
+            <BackgroundGlow />
             <Routes>
                 <Route path="/connect" element={<Connect />} /> {/* connect route */}
                 <Route path="*" element={

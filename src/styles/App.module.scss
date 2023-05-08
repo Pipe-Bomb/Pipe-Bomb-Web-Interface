@@ -11,7 +11,7 @@
 .main {
     flex-grow: 1;
     overflow: hidden;
-    background: var(--nextui-colors-backgroundSecondary);
+    
     border-radius: 50px;
     position: relative;
 
@@ -24,6 +24,18 @@
         overflow-x: hidden;
         overflow-y: auto;
         height: 100%;
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--nextui-colors-backgroundSecondary);
+        z-index: -1;
+        opacity: 0.8;
     }
 
     &::after {

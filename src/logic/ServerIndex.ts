@@ -103,7 +103,7 @@ export default class ServerIndex {
     }
 
     public getServers() {
-        return Array.from(this.servers);
+        return Array.from(this.servers).reverse();
     }
 
     public async addServer(host: string) {
