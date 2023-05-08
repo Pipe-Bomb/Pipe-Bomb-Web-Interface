@@ -38,6 +38,10 @@ export default class AudioPlayer {
     private volumeUpdateCallbacks: ((volume: VolumeStatus) => void)[] = [];
     private loudnessUpdateCallbacks: ((loudness: number) => void)[] = [];
 
+    private autoplayID: string = "";
+    private autoplayTracks: Track[] | null = null;
+    private autoplayEnabled = true;
+
     private constructor() {
         if ("mediaSession" in navigator) {
             navigator.mediaSession.setActionHandler("previoustrack", () => this.previousTrack());
@@ -221,7 +225,13 @@ export default class AudioPlayer {
         if (nextTrack) {
             await this.playTrack(nextTrack, true, ignoreHistory);
         } else {
-            this.clearCurrent();
+            if (this.autoplayEnabled && this.autoplayTracks?.length) {
+                this.addToQueue(this.autoplayTracks, false);
+                this.autoplayTracks = null;
+                await this.nextTrack();
+            } else {
+                this.clearCurrent();
+            }
         }
     }
 
@@ -346,6 +356,7 @@ export default class AudioPlayer {
     public clearQueue() {
         this.queue.splice(0, this.queue.length);
         this.realQueue.splice(0, this.queue.length);
+        this.autoplayTracks = null;
         this.sendQueueCallbacks();
     }
 
@@ -394,9 +405,47 @@ export default class AudioPlayer {
         this.loudnessUpdateCallbacks.splice(index, 1);
     }
 
+    public setAutoplayTracks(source: string, sourceID: string, callback: () => Promise<Track[]>) {
+        const newID = source + " " + sourceID;
+        if (this.autoplayID == newID) return;
+        this.autoplayID = newID;
+
+        callback().then(tracks => {
+            if (this.autoplayID == newID) {
+                this.autoplayTracks = tracks;
+            }
+        }).catch(() => {
+            this.autoplayID = "";
+        });
+    }
+
     private sendQueueCallbacks() {
         for (let callbackFunction of this.queueUpdateCallbacks) {
             callbackFunction();
         }
+        this.checkAutoplayTracks();
+    }
+
+    public setAutoplayEnabled(enabled: boolean) {
+        this.autoplayEnabled = enabled;
+        this.sendQueueCallbacks();
+    }
+
+    public isAutoplayEnabled() {
+        return this.autoplayEnabled;
+    }
+
+    private checkAutoplayTracks() {
+        const lastTrack = this.queue[this.queue.length - 1] || this.currentTrack;
+        if (!lastTrack) return;
+        const trackID = "track " + lastTrack.queueID;
+        if (this.autoplayID && (this.autoplayID == trackID || (this.autoplayID && !this.autoplayID.startsWith("track ")))) return;
+        this.autoplayID = trackID;
+        const api = PipeBombConnection.getInstance().getApi();
+        lastTrack.track.getSuggestedTracks(api.collectionCache, api.trackCache).then(tracks => {
+            if (this.autoplayID == trackID) {
+                this.autoplayTracks = tracks.getTrackList();
+            }
+        });
     }
 }

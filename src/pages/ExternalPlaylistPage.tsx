@@ -19,6 +19,7 @@ export default function ExternalPlaylistPage() {
     const [collection, setCollection] = useState<ExternalCollection | false>(null);
     const [tracklist, setTracklist] = useState<Track[]>(null);
     const [loading, setLoading] = useState(true);
+    const audioPlayer = AudioPlayer.getInstance();
 
     useEffect(() => {
         setCollection(null);
@@ -61,16 +62,16 @@ export default function ExternalPlaylistPage() {
 
     function playPlaylist() {
         if (!tracklist) return;
-        AudioPlayer.getInstance().clearQueue();
-        AudioPlayer.getInstance().addToQueue(tracklist);
-        AudioPlayer.getInstance().nextTrack();
+        audioPlayer.clearQueue();
+        audioPlayer.addToQueue(tracklist);
+        audioPlayer.nextTrack();
     }
 
     function shufflePlaylist() {
         if (!tracklist) return;
-        AudioPlayer.getInstance().clearQueue();
-        AudioPlayer.getInstance().addToQueue(tracklist, true);
-        AudioPlayer.getInstance().nextTrack();
+        audioPlayer.clearQueue();
+        audioPlayer.addToQueue(tracklist, true);
+        audioPlayer.nextTrack();
     }
 
     function contextMenu(button: React.Key) {
@@ -82,7 +83,7 @@ export default function ExternalPlaylistPage() {
                 break;
             case "queue":
                 if (tracklist) {
-                    AudioPlayer.getInstance().addToQueue(tracklist);
+                    audioPlayer.addToQueue(tracklist);
                 }
                 break;
         }

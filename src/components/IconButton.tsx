@@ -11,7 +11,7 @@ export interface IconButtonProps {
 }
 
 export default function IconButton(props: IconButtonProps) {
-    if (!props.size) props.size = "md";
+    const size = props.size || "md";
 
     const iconSize = {
         xs: 15,
@@ -19,10 +19,10 @@ export default function IconButton(props: IconButtonProps) {
         md: 25,
         lg: 30,
         xl: 35
-    }[props.size];
+    }[size];
 
     return (
-        <Button light={props.light} bordered={props.bordered} onPress={() => { props.onClick ? props.onClick() : null }} size={props.size} auto color={props.color}>
+        <Button light={props.light} bordered={props.bordered} onPress={() => { props.onClick ? props.onClick() : null }} size={size} auto color={props.color}>
             <IconContext.Provider value={{size: iconSize + "px"}}>
                 { props.children }
             </IconContext.Provider>

@@ -1,6 +1,6 @@
 import { Button, Grid, Text } from "@nextui-org/react";
 import { useEffect, useRef, useState } from "react";
-import { MdRepeat, MdRepeatOne, MdOutlineDeleteOutline } from "react-icons/md";
+import { MdRepeat, MdRepeatOne, MdOutlineDeleteOutline, MdOutlineAutoAwesome } from "react-icons/md";
 import { ReactSortable } from "react-sortablejs";
 import AudioPlayer from "../logic/AudioPlayer";
 import styles from "../styles/Queue.module.scss";
@@ -8,6 +8,7 @@ import QueueTrack from "./QueueTrack";
 import { IoMdShuffle } from "react-icons/io";
 import { ViewportList } from "react-viewport-list";
 import useCurrentTrack from "../hooks/CurrentTrackHook";
+import IconButton from "./IconButton";
 
 interface ItemInterface {
     id: number
@@ -98,6 +99,11 @@ export default function Queue() {
                             <MdRepeat />
                         )}
                     </Button>
+                </Grid>
+                <Grid>
+                    <IconButton light={!audioPlayer.isAutoplayEnabled()} onClick={() => audioPlayer.setAutoplayEnabled(!audioPlayer.isAutoplayEnabled())}>
+                        <MdOutlineAutoAwesome />
+                    </IconButton>
                 </Grid>
                 <Grid>
                     <Button className={styles.roundButton} auto light onPress={() => audioPlayer.clearQueue()} disabled={!audioPlayer.getQueue().length}><MdOutlineDeleteOutline /></Button>

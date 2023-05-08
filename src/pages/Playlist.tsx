@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import styles from "../styles/Playlist.module.scss";
@@ -9,10 +9,9 @@ import Track from "pipebomb.js/dist/music/Track";
 import ListTrack from "../components/ListTrack";
 import AudioPlayer from "../logic/AudioPlayer";
 import { convertTracklistToM3u } from "../logic/Utils";
-import { MdShuffle, MdPlayArrow, MdMoreHoriz } from "react-icons/md";
+import { MdPlayArrow } from "react-icons/md";
 import PlaylistIndex from "../logic/PlaylistIndex";
 import { useNavigate } from "react-router-dom";
-import Account, { UserDataFormat } from "../logic/Account";
 import CompactTrack from "../components/CompactTrack";
 import PipeBombPlaylist from "pipebomb.js/dist/collection/Playlist";
 import PlaylistImage from "../components/PlaylistImage";
@@ -127,6 +126,9 @@ export default function Playlist() {
         audioPlayer.clearQueue();
         audioPlayer.addToQueue(trackList, false, 0);
         audioPlayer.nextTrack();
+        audioPlayer.setAutoplayTracks("playlist", playlist.collectionID, async () => {
+            return await playlist.getSuggestedTracks(PipeBombConnection.getInstance().getApi().trackCache);
+        });
     }
 
     function shufflePlaylist() {
@@ -134,6 +136,9 @@ export default function Playlist() {
         audioPlayer.clearQueue();
         audioPlayer.addToQueue(trackList, true, 0);
         audioPlayer.nextTrack();
+        audioPlayer.setAutoplayTracks("playlist", playlist.collectionID, async () => {
+            return await playlist.getSuggestedTracks(PipeBombConnection.getInstance().getApi().trackCache);
+        });
     }
 
     function playSuggestions() {
