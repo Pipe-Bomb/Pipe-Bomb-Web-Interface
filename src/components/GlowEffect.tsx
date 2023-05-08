@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "../styles/GlowEffect.module.scss"
 import AudioPlayer from "../logic/AudioPlayer";
 import { getColorsForImage, getDefaultColors, loadColorsForImage } from "../logic/ImageColorIndex";
@@ -14,7 +14,6 @@ export interface GlowEffectProps {
 export default function GlowEffect(props: GlowEffectProps) {
     const [colorList, setColorList] = useState<string[][] | null>(props.image ? getColorsForImage(props.image) : null);
     const [brightness, setBrightness] = useState(1);
-    const container = useRef<HTMLDivElement>(null);
 
     const durationMultiplier = props.durationMultiplier || 1;
 
@@ -59,7 +58,7 @@ export default function GlowEffect(props: GlowEffectProps) {
     }
 
     return (
-        <div className={styles.container} style={style} ref={container}>
+        <div className={styles.container} style={style}>
             <div className={styles.background}>
                 <div className={styles.children}>
                     { props.children }
