@@ -1,12 +1,47 @@
+.container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 5rem 0 2rem 0;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    overflow-y: auto;
+}
+
 .title {
     text-align: center;
-    margin: 5rem 0;
+    margin-bottom: 5rem;
+    flex-shrink: 0;
 }
 
 .addContainer {
     max-width: min(1400px, calc(100% - 4rem));
+    width: 100%;
     margin: 0 auto !important;
-    background: var(--nextui-colors-backgroundSecondary);
     border-radius: var(--nextui-radii-base);
     padding: 2rem 1rem !important;
+    flex-grow: 0;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    isolation: isolate;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--nextui-colors-backgroundSecondary);
+        z-index: -1;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+    }
+
+    &:has(:focus)::before {
+        opacity: 0.9;
+    }
 }
