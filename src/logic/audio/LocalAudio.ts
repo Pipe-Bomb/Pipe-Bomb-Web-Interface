@@ -2,8 +2,13 @@ import Track, { TrackMeta } from "pipebomb.js/dist/music/Track";
 import AudioType from "./AudioType";
 import AudioPlayer from "../AudioPlayer";
 
+const anyWindow: any = window;
+const AudioContext = window.AudioContext || anyWindow.webkitAudioContext;
+
 export default class LocalAudio extends AudioType {
     private audio = new Audio();
+    private audioContext: AudioContext;
+    private gain: GainNode;
     private buffering = false;
     private lastBuffer = 0;
     private track: Track = null;
@@ -13,24 +18,24 @@ export default class LocalAudio extends AudioType {
     public constructor() {
         super("local");
         this.audio.crossOrigin = "anonymous";
-
-        const anyWindow: any = window;
-        const AudioContext = window.AudioContext || anyWindow.webkitAudioContext;
-        const audioContext: AudioContext = new AudioContext();
         
         setTimeout(() => {
             const audioPlayer = AudioPlayer.getInstance();
             let lastVolume = -1;
             try {
-                const source = audioContext.createMediaElementSource(this.audio);
-                source.connect(audioContext.destination);
+                this.audioContext = new AudioContext();
+                const source = this.audioContext.createMediaElementSource(this.audio);
+                this.gain = this.audioContext.createGain();
+                source.connect(this.gain);
+                this.gain.connect(this.audioContext.destination);
+                
 
-                const filter = audioContext.createBiquadFilter();
+                const filter = this.audioContext.createBiquadFilter();
                 filter.type = "lowpass";
-                filter.frequency.setValueAtTime(200, audioContext.currentTime);
+                filter.frequency.setValueAtTime(200, this.audioContext.currentTime);
                 source.connect(filter);
 
-                const analyserNode = audioContext.createAnalyser();
+                const analyserNode = this.audioContext.createAnalyser();
                 filter.connect(analyserNode);
                 
     
@@ -138,11 +143,18 @@ export default class LocalAudio extends AudioType {
     }
 
     public async setVolume(volume: number) {
-        this.audio.volume = volume / 100;
+        if (this.gain) {
+            this.gain.gain.setValueAtTime(volume / 100, this.audioContext.currentTime);
+        } else {
+            this.audio.volume = volume / 100;
+        }
         this.update();
     }
 
     public getVolume() {
+        if (this.gain) {
+            return this.gain.gain.value * 100;
+        }
         return this.audio.volume * 100;
     }
 
