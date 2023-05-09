@@ -59,6 +59,7 @@ function App() {
     return (
         <>
             <NotificationManager />
+            <BackgroundGlow />
             <Routes>
                 <Route path="/connect" element={<Connect />} /> {/* connect route */}
                 <Route path="*" element={
@@ -84,7 +85,6 @@ function App() {
                     </>
                 } />
             </Routes>
-            <BackgroundGlow />
         </>
     )
 }

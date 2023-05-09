@@ -1,13 +1,16 @@
-import { Button, Grid, Progress, Text } from "@nextui-org/react";
+import { Button, Dropdown, Grid, Progress, Text } from "@nextui-org/react";
 import styles from "../styles/Player.module.scss";
 import { MdSkipNext, MdSkipPrevious, MdPlayArrow, MdPause } from "react-icons/md";
 import { useEffect, useRef, useState } from "react";
 import AudioPlayer from "../logic/AudioPlayer";
-import { convertArrayToString, formatTime } from "../logic/Utils";
+import { convertArrayToString, downloadFile, formatTime } from "../logic/Utils";
 import KeyboardShortcuts from "../logic/KeyboardShortcuts";
 import ImageWrapper from "./ImageWrapper";
 import useTrackMeta from "../hooks/TrackMetaHook";
 import usePlayerUpdate from "../hooks/PlayerUpdateHook";
+import { Link } from "react-router-dom";
+import { openContextMenu } from "./ContextMenu";
+import { openAddToPlaylist } from "./AddToPlaylist";
 
 interface PlayerProps {
     children?: JSX.Element | JSX.Element[]
@@ -74,18 +77,44 @@ export default function Player({ children }: PlayerProps) {
         setDummyReload(!dummyReload);
     }
 
+    function contextMenuOpened(button: React.Key) {
+        const audioPlayer = AudioPlayer.getInstance();
+        switch (button) {
+            case "playlist":
+                openAddToPlaylist(currentlyPlaying);
+                break;
+            case "download":
+                const filename = (metadata ? metadata.title : currentlyPlaying.trackID) + ".mp3";
+                downloadFile(currentlyPlaying.getAudioUrl(), filename);
+                break;
+        }
+    }
+
+    const contextMenu = (
+        <Dropdown.Menu onAction={contextMenuOpened}>
+            <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${currentlyPlaying.trackID}`}>See Track Page</Link></Dropdown.Item>
+            <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
+            <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${currentlyPlaying.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
+            <Dropdown.Item key="download">Download as MP3</Dropdown.Item>
+        </Dropdown.Menu>
+    )
+
     return (
         <div className={styles.container}>
             <div className={styles.currentTrackContainer}>
-                <div className={styles.image}>
-                    {currentlyPlaying && (
-                        <ImageWrapper src={currentlyPlaying.getThumbnailUrl()} />
-                    )}
-                </div>
-                <div className={styles.content}>
-                    <Text className={styles.title}>{metadata ? metadata.title : currentlyPlaying?.trackID}</Text>
-                    <Text className={styles.artist}>{convertArrayToString(metadata ? metadata.artists : [])}</Text>
-                </div>
+                {currentlyPlaying && (
+                    <>
+                        <div className={styles.image}>
+                            <Link to={`/track/${currentlyPlaying.trackID}`} onContextMenu={e => openContextMenu(e, contextMenu)}>
+                                <ImageWrapper src={currentlyPlaying.getThumbnailUrl()} />
+                            </Link>
+                        </div>
+                        <div className={styles.content}>
+                            <Link to={`/track/${currentlyPlaying.trackID}`} onContextMenu={e => openContextMenu(e, contextMenu)}><Text className={styles.title}>{metadata ? metadata.title : currentlyPlaying.trackID}</Text></Link>
+                            <Text className={styles.artist}>{convertArrayToString(metadata ? metadata.artists : [])}</Text>
+                        </div>
+                    </>
+                )}
             </div>
 
             <div className={styles.progressContainer}>

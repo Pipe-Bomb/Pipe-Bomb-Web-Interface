@@ -134,10 +134,21 @@
         font-size: var(--nextui-fontSizes-lg);
         font-weight: var(--nextui-fontWeights-semibold);
         margin-top: var(--nextui-space-4);
+
+        text-overflow: ellipsis;
+        word-wrap: break-word;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
     }
 
     .artist {
-        margin-top: -5px;
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: var(--nextui-fontSizes-sm);
     }
 }
 
@@ -147,4 +158,18 @@
     align-items: center;
     padding: 1rem;
     gap: 0.5rem;
+}
+
+.dropdownLink {
+    color: inherit;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding-left: var(--nextui-space-6);
+    padding-right: var(--nextui-space-6);
+    border-radius: var(--nextui--dropdownItemBorderRadius);
+    display: flex;
+    align-items: center;
 }
