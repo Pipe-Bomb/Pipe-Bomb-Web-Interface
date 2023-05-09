@@ -92,9 +92,9 @@ export default function Player({ children }: PlayerProps) {
 
     const contextMenu = (
         <Dropdown.Menu onAction={contextMenuOpened}>
-            <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${currentlyPlaying.trackID}`}>See Track Page</Link></Dropdown.Item>
+            <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${currentlyPlaying?.trackID}`}>See Track Page</Link></Dropdown.Item>
             <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
-            <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${currentlyPlaying.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
+            <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${currentlyPlaying?.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
             <Dropdown.Item key="download">Download as MP3</Dropdown.Item>
         </Dropdown.Menu>
     )

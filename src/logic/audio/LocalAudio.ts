@@ -20,42 +20,7 @@ export default class LocalAudio extends AudioType {
         this.audio.crossOrigin = "anonymous";
         
         setTimeout(() => {
-            const audioPlayer = AudioPlayer.getInstance();
-            let lastVolume = -1;
-            try {
-                this.audioContext = new AudioContext();
-                const source = this.audioContext.createMediaElementSource(this.audio);
-                this.gain = this.audioContext.createGain();
-                source.connect(this.gain);
-                this.gain.connect(this.audioContext.destination);
-                
-
-                const filter = this.audioContext.createBiquadFilter();
-                filter.type = "lowpass";
-                filter.frequency.setValueAtTime(200, this.audioContext.currentTime);
-                source.connect(filter);
-
-                const analyserNode = this.audioContext.createAnalyser();
-                filter.connect(analyserNode);
-                
-    
-                const pcmData = new Float32Array(analyserNode.fftSize);
-                function onFrame() {
-                    analyserNode.getFloatTimeDomainData(pcmData);
-                    let sumSquares = 0.0;
-                    for (const amplitude of pcmData) {
-                        sumSquares += amplitude * amplitude;
-                    }
-                    const volume = Math.sqrt(sumSquares / pcmData.length);
-                    if (volume != lastVolume) {
-                        lastVolume = volume;
-                        audioPlayer.setLoudness(volume);
-                    }
-                };
-                setInterval(() => onFrame(), 50);
-            } catch (e) {
-                console.error(e);
-            }
+            
         });
 
         this.audio.ontimeupdate = () => {
@@ -109,6 +74,43 @@ export default class LocalAudio extends AudioType {
             this.track = null;
             this.end();
         }
+    }
+
+    private setupAudioContext() {
+        const audioPlayer = AudioPlayer.getInstance();
+        let lastVolume = -1;
+        this.audioContext = new AudioContext();
+        const source = this.audioContext.createMediaElementSource(this.audio);
+        this.gain = this.audioContext.createGain();
+        this.gain.gain.setValueAtTime(this.audio.volume, this.audioContext.currentTime);
+        this.audio.volume = 1;
+        source.connect(this.gain);
+        this.gain.connect(this.audioContext.destination);
+        
+
+        const filter = this.audioContext.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(200, this.audioContext.currentTime);
+        source.connect(filter);
+
+        const analyserNode = this.audioContext.createAnalyser();
+        filter.connect(analyserNode);
+        
+
+        const pcmData = new Float32Array(analyserNode.fftSize);
+        function onFrame() {
+            analyserNode.getFloatTimeDomainData(pcmData);
+            let sumSquares = 0.0;
+            for (const amplitude of pcmData) {
+                sumSquares += amplitude * amplitude;
+            }
+            const volume = Math.sqrt(sumSquares / pcmData.length);
+            if (volume != lastVolume) {
+                lastVolume = volume;
+                audioPlayer.setLoudness(volume);
+            }
+        };
+        setInterval(() => onFrame(), 50);
     }
 
     public terminate() {
@@ -172,6 +174,14 @@ export default class LocalAudio extends AudioType {
     }
 
     public async setTrack(track: Track): Promise<void> {
+        try {
+            if (!this.audioContext) {
+                this.setupAudioContext();
+            }
+        } catch (e) {
+            console.log(e);
+        }
+
         return new Promise(async (resolve, reject) => {
             this.track = track;
             if (this.track) {
