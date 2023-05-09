@@ -6,14 +6,15 @@ import { getColorsForImage, getDefaultColors, loadColorsForImage } from "../logi
 export interface GlowEffectProps {
     active: boolean,
     image?: string,
-    spread?: number
+    spread?: number,
     children?: JSX.Element | JSX.Element[],
-    durationMultiplier?: number
+    durationMultiplier?: number,
+    staticBrightness?: boolean
 }
 
 export default function GlowEffect(props: GlowEffectProps) {
     const [colorList, setColorList] = useState<string[][] | null>(props.image ? getColorsForImage(props.image) : null);
-    const [brightness, setBrightness] = useState(1);
+    const [brightness, setBrightness] = useState(AudioPlayer.getInstance().getLoudness());
 
     const durationMultiplier = props.durationMultiplier || 1;
 
@@ -64,7 +65,7 @@ export default function GlowEffect(props: GlowEffectProps) {
                     { props.children }
                 </div>
             </div>
-            <div className={styles.glow} style={{opacity: brightness}}>
+            <div className={styles.glow} style={{opacity: props.staticBrightness ? 1 : brightness}}>
                 <svg viewBox="0 0 100 100" preserveAspectRatio="none" className={styles.svg}>
                     <defs>
                         <radialGradient id="Gradient1" cx="50%" cy="50%" fx="0.441602%" fy="50%" r=".5"><animate attributeName="fx" dur={durationMultiplier * 34 + "s"} values="0%;3%;0%" repeatCount="indefinite"></animate><stop offset="0%" stopColor={colors[0 % colors.length][0]}></stop><stop offset="100%" stopColor={colors[0 % colors.length][1]}></stop></radialGradient>

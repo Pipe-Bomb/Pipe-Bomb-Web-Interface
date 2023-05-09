@@ -1,5 +1,6 @@
 import Track, { TrackMeta } from "pipebomb.js/dist/music/Track";
 import AudioType from "./AudioType";
+import AudioPlayer from "../AudioPlayer";
 
 export default class LocalAudio extends AudioType {
     private audio = new Audio();
@@ -11,6 +12,46 @@ export default class LocalAudio extends AudioType {
 
     public constructor() {
         super("local");
+        this.audio.crossOrigin = "anonymous";
+
+        const anyWindow: any = window;
+        const AudioContext = window.AudioContext || anyWindow.webkitAudioContext;
+        const audioContext: AudioContext = new AudioContext();
+        
+        setTimeout(() => {
+            const audioPlayer = AudioPlayer.getInstance();
+            let lastVolume = -1;
+            try {
+                const source = audioContext.createMediaElementSource(this.audio);
+                source.connect(audioContext.destination);
+
+                const filter = audioContext.createBiquadFilter();
+                filter.type = "lowpass";
+                filter.frequency.setValueAtTime(200, audioContext.currentTime);
+                source.connect(filter);
+
+                const analyserNode = audioContext.createAnalyser();
+                filter.connect(analyserNode);
+                
+    
+                const pcmData = new Float32Array(analyserNode.fftSize);
+                function onFrame() {
+                    analyserNode.getFloatTimeDomainData(pcmData);
+                    let sumSquares = 0.0;
+                    for (const amplitude of pcmData) {
+                        sumSquares += amplitude * amplitude;
+                    }
+                    const volume = Math.sqrt(sumSquares / pcmData.length);
+                    if (volume != lastVolume) {
+                        lastVolume = volume;
+                        audioPlayer.setLoudness(volume);
+                    }
+                };
+                setInterval(() => onFrame(), 50);
+            } catch (e) {
+                console.error(e);
+            }
+        });
 
         this.audio.ontimeupdate = () => {
             this.update();

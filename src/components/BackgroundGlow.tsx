@@ -19,7 +19,7 @@ export default function BackgroundGlow() {
                 </filter>
                 <rect width='100%' height='100%' filter='url(#noiseFilter)'/>
             </svg>
-            <GlowEffect active={true} durationMultiplier={10} spread={40} image={currentTrack?.getThumbnailUrl()} />
+            <GlowEffect active={true} durationMultiplier={10} spread={40} staticBrightness={true} image={currentTrack?.getThumbnailUrl()} />
         </div>
     )
 }
