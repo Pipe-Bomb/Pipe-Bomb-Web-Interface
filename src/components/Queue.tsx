@@ -9,6 +9,7 @@ import { IoMdShuffle } from "react-icons/io";
 import { ViewportList } from "react-viewport-list";
 import useCurrentTrack from "../hooks/CurrentTrackHook";
 import IconButton from "./IconButton";
+import ScrollFade from "./ScrollFade";
 
 interface ItemInterface {
     id: number
@@ -110,37 +111,41 @@ export default function Queue() {
                 </Grid>
             </Grid.Container>
             <div className={styles.scroll}>
-                {history.length ? (
-                    <Text h3 className={styles.queueTitle}>History</Text>
-                ) : null}
+                <ScrollFade>
+                    <div className={styles.space} />
+                    {history.length ? (
+                        <Text h3 className={styles.queueTitle}>History</Text>
+                    ) : null}
 
-                {!!history.length && (
-                    <ViewportList items={history}>
-                        {track => (
-                            <QueueTrack key={track.queueID} track={track} index={-2} />
-                        )}
-                    </ViewportList>
-                )}
+                    {!!history.length && (
+                        <ViewportList items={history}>
+                            {track => (
+                                <QueueTrack key={track.queueID} track={track} index={-2} />
+                            )}
+                        </ViewportList>
+                    )}
 
-                <div ref={currentTrack}></div>
+                    <div ref={currentTrack}></div>
 
-                {track ? (
-                    <div>
-                        <Text h3 className={styles.queueTitle}>Now Playing</Text>
-                        <QueueTrack key={track.queueID} track={track} index={-1} />
-                    </div>
-                ) : null}
-                
-                {!!trackList.length && (
-                    <>
-                        <Text h3 className={styles.queueTitle}>Queue</Text>
-                        <ReactSortable list={itemList} setList={e => reArrangeQueue(e)} animation={100}>
-                            {trackList.map((track, index) => (
-                                <QueueTrack key={track.queueID} track={track} index={index} />
-                            ))}
-                        </ReactSortable>
-                    </>
-                )}
+                    {track ? (
+                        <div>
+                            <Text h3 className={styles.queueTitle}>Now Playing</Text>
+                            <QueueTrack key={track.queueID} track={track} index={-1} />
+                        </div>
+                    ) : null}
+                    
+                    {!!trackList.length && (
+                        <>
+                            <Text h3 className={styles.queueTitle}>Queue</Text>
+                            <ReactSortable list={itemList} setList={e => reArrangeQueue(e)} animation={100}>
+                                {trackList.map((track, index) => (
+                                    <QueueTrack key={track.queueID} track={track} index={index} />
+                                ))}
+                            </ReactSortable>
+                        </>
+                    )}
+                    <div className={styles.space} />
+                </ScrollFade>
             </div>
         </div>
     )

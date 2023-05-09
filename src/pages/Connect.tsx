@@ -49,7 +49,7 @@ export default function Connect() {
     }
 
     return (
-        <>
+        <div className={styles.container}>
             <h1 className={styles.title}>Connect to Server</h1>
             <Grid.Container className={styles.addContainer} alignItems="center" gap={3}>
                 <Grid style={{flexGrow: 1}}>
@@ -62,6 +62,6 @@ export default function Connect() {
             {servers.map(server => (
                 <Server key={server.host} hostInfo={server} status={serverIndex.getServerStatus(server)} connectCallback={connectToHost}></Server>
             ))}
-        </>
+        </div>
     )
 }

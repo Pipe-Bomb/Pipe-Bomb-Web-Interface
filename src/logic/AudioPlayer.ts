@@ -41,6 +41,10 @@ export default class AudioPlayer {
     private autoplayID: string = "";
     private autoplayTracks: Track[] | null = null;
     private autoplayEnabled = true;
+    
+    private loudnessSamples: number[] = [];
+    private lastLoudnessUpdate: number = 0;
+    private loudness: number = 0.3;
 
     private constructor() {
         if ("mediaSession" in navigator) {
@@ -77,17 +81,43 @@ export default class AudioPlayer {
             }
         });
 
-        // setInterval(() => {
-        //     const volume = (Date.now() % 1000) / 1000;
-        //     for (let callback of this.loudnessUpdateCallbacks) {
-        //         callback(volume);
-        //     }
-        // }, 50);
+        setInterval(() => {
+            if (this.lastLoudnessUpdate + 500 < Date.now()) {
+                const loudness = Math.max(this.loudness - 0.01, 0.3);
+                if (loudness < this.loudness) {
+                    this.loudness = loudness;
+                    for (let callback of this.loudnessUpdateCallbacks) {
+                        callback(this.loudness);
+                    }
+                }
+            }
+        }, 50);
     }
 
     public static getInstance() {
         if (!this.instance) this.instance = new AudioPlayer();
         return this.instance;
+    }
+
+    public setLoudness(loudness: number) {
+        loudness = Math.min(Math.max(loudness * 1.5 + 0.3, 0.3), 1);
+        this.loudnessSamples.push(loudness);
+        while (this.loudnessSamples.length > 5) this.loudnessSamples.shift();
+        this.lastLoudnessUpdate = Date.now();
+
+        let newLoudness = 0;
+        for (let number of this.loudnessSamples) {
+            newLoudness += number;
+        }
+        this.loudness = newLoudness / this.loudnessSamples.length;
+
+        for (let callback of this.loudnessUpdateCallbacks) {
+            callback(this.loudness);
+        }
+    }
+
+    public getLoudness() {
+        return this.loudness;
     }
 
     public getCurrentTrack() {

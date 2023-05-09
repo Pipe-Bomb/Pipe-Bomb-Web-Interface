@@ -11,29 +11,33 @@
     position: relative;
     overflow: hidden;
 
-    &::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 100px;
-        background: linear-gradient(0deg, transparent 0%, var(--nextui-colors-background) 100%);
-        z-index: 1;
-        pointer-events: none;
-    }
+    --scrollbar-width: calc(1rem + 6px);
+    --mask-height: 100px;
+    overflow-y: auto;
+    
+    --mask-image-content: linear-gradient(
+        to bottom,
+        transparent,
+        black var(--mask-height),
+        black calc(100% - var(--mask-height)),
+        transparent
+    );
 
-    &::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 100px;
-        background: linear-gradient(180deg, transparent 0%, var(--nextui-colors-background) 100%);
-        z-index: 1;
-        pointer-events: none;
-    }
+    --mask-size-content: calc(100% - var(--scrollbar-width)) 100%;
+    --mask-image-scrollbar: linear-gradient(black, black);
+
+    --mask-size-scrollbar: var(--scrollbar-width) 100%;
+
+    mask-image: var(--mask-image-content), var(--mask-image-scrollbar);
+    -webkit-mask-image: var(--mask-image-content), var(--mask-image-scrollbar);
+    mask-size: var(--mask-size-content), var(--mask-size-scrollbar);
+    -webkit-mask-size: var(--mask-size-content), var(--mask-size-scrollbar);
+
+    mask-position: 0 0, 100% 0;
+    -webkit-mask-position: 0 0, 100% 0;
+
+    mask-repeat: no-repeat, no-repeat;
+    -webkit-mask-repeat: no-repeat, no-repeat;
 
     ::-webkit-scrollbar-track {
         margin: 100px 0;
