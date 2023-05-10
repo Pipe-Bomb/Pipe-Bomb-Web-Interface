@@ -20,6 +20,8 @@ import PipeBombConnection from "../logic/PipeBombConnection";
 import ListTrack from "../components/ListTrack";
 import { openAddToPlaylist } from "../components/AddToPlaylist";
 import { useResizeDetector } from "react-resize-detector";
+import { BiPlus } from "react-icons/bi";
+import IconButton from "../components/IconButton";
 
 export default function TrackPage() {
     let paramID: any = useParams().ID;
@@ -223,6 +225,9 @@ export default function TrackPage() {
                                             <Dropdown.Item key="download">Download as MP3</Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown>
+                                    <Button light size="lg" className={styles.contextButton} onPress={() => openAddToPlaylist(track)}>
+                                        <BiPlus />
+                                    </Button>
                                 </div>
                             </div>
                             <Text h3 className={styles.artist}>{ convertArrayToString(trackMeta.artists) }</Text>
