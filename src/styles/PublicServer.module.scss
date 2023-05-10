@@ -26,15 +26,14 @@
 
     .content {
         flex-grow: 1;
-        margin-top: 1rem;
     }
 
-    h4 {
-        margin-bottom: 1rem;
+    h3 {
+        margin-top: 0.5rem;
     }
 
     .button {
-        margin: 0 1rem 1rem 0;
+        margin-right: 0.7rem;
     }
 
     .smallButton {
@@ -56,6 +55,28 @@
             top: 50%;
             transform: translateY(-50%);
 
+        }
+    }
+
+    .details {
+        h5 {
+            font-weight: var(--nextui-fontWeights-normal);
+
+            & > span {
+                font-weight: var(--nextui-fontWeights-semibold);
+            }
+        }
+    }
+    
+
+    .ping {
+        display: flex;
+        height: 32px;
+        align-items: center;
+        gap: 0.5rem;
+
+        h5 {
+            margin: 0;
         }
     }
 
