@@ -5,22 +5,20 @@ import Loader from "../components/Loader";
 import { Button, Dropdown, Grid, Text } from "@nextui-org/react"
 import { convertArrayToString, downloadFile } from "../logic/Utils";
 import styles from "../styles/TrackPage.module.scss"
-import LazyImage from "../components/LazyImage";
 import Waveform from "../components/Waveform";
-import useWindowSize from "../hooks/WindowSizeHook";
 import useCurrentTrack from "../hooks/CurrentTrackHook";
 import usePlayerUpdate from "../hooks/PlayerUpdateHook";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import AudioPlayer from "../logic/AudioPlayer";
 import ImageWrapper from "../components/ImageWrapper";
 import { MdMoreHoriz, MdPause, MdPlayArrow } from "react-icons/md";
 import GlowEffect from "../components/GlowEffect";
 import TrackList from "pipebomb.js/dist/collection/TrackList";
-import PipeBombConnection from "../logic/PipeBombConnection";
 import ListTrack from "../components/ListTrack";
 import { openAddToPlaylist } from "../components/AddToPlaylist";
 import { useResizeDetector } from "react-resize-detector";
 import { BiPlus } from "react-icons/bi";
+import PipeBombConnection from "../logic/PipeBombConnection";
 
 export default function TrackPage() {
     let paramID: any = useParams().ID;
@@ -39,7 +37,6 @@ export default function TrackPage() {
     useEffect(() => {
         if (track) {
             setSuggestions(null);
-            const api = PipeBombConnection.getInstance().getApi();
             track.getSuggestedTracks()
             .then(setSuggestions)
             .catch(() => {
@@ -189,6 +186,9 @@ export default function TrackPage() {
                 const filename = (trackMeta ? trackMeta.title : track.trackID) + ".mp3";
                 downloadFile(track.getAudioUrl(), filename);
                 break;
+            case "share":
+                PipeBombConnection.getInstance().copyLink("track", track.trackID);
+                break;
         }
     }
 
@@ -220,6 +220,7 @@ export default function TrackPage() {
                                         <Dropdown.Menu disabledKeys={[]} onAction={contextMenu}>
                                             <Dropdown.Item key="next-up">Play Next</Dropdown.Item>
                                             <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
+                                            <Dropdown.Item key="share">Copy Link</Dropdown.Item>
                                             <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
                                             <Dropdown.Item key="download">Download as MP3</Dropdown.Item>
                                         </Dropdown.Menu>

@@ -167,6 +167,9 @@ export default function Playlist() {
                     audioPlayer.addToQueue(trackList);
                 }
                 break;
+            case "share":
+                PipeBombConnection.getInstance().copyLink("playlist", playlist.collectionID);
+                break;
         }
     }
 
@@ -175,6 +178,7 @@ export default function Playlist() {
             return (
                 <Dropdown.Menu onAction={contextMenu} disabledKeys={["rename"]}>
                     <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
+                    <Dropdown.Item key="share">Copy Link</Dropdown.Item>
                     <Dropdown.Item key="rename">Rename Playlist</Dropdown.Item>
                     <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
                     <Dropdown.Item key="delete" color="error">Delete Playlist</Dropdown.Item>
@@ -184,6 +188,7 @@ export default function Playlist() {
             return (
                 <Dropdown.Menu onAction={contextMenu} disabledKeys={["like"]}>
                     <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
+                    <Dropdown.Item key="share">Copy Link</Dropdown.Item>
                     <Dropdown.Item key="like">Like Playlist</Dropdown.Item>
                     <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
                 </Dropdown.Menu>

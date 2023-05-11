@@ -65,6 +65,9 @@ export default function Chart() {
                     audioPlayer.addToQueue(trackList);
                 }
                 break;
+            case "share":
+                PipeBombConnection.getInstance().copyLink("chart", chart.collectionID.split("/")[1]);
+                break;
         }
     }
 
@@ -87,6 +90,7 @@ export default function Chart() {
                         </Dropdown.Trigger>
                         <Dropdown.Menu onAction={contextMenu}>
                             <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
+                            <Dropdown.Item key="share">Copy Link</Dropdown.Item>
                             <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>

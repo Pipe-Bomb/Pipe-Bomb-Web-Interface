@@ -21,7 +21,7 @@ export default function PipeBombUser({ userInfo }: UserProps) {
         return <Loading className={styles.loader} />
     }
 
-    const url = Account.getAvatarUrl(userData.userID);
+    const url = Account.getAvatarUrl(userData.rawID);
 
     return <div className={styles.container}>
         <Link to={`/user/${userData.userID}`}>

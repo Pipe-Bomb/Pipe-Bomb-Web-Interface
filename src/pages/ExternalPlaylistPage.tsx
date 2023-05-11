@@ -86,6 +86,11 @@ export default function ExternalPlaylistPage() {
                     audioPlayer.addToQueue(tracklist);
                 }
                 break;
+            case "share":
+                if (collection) {
+                    PipeBombConnection.getInstance().copyLink("externalplaylist", collection.collectionID);
+                }
+                break;
         }
     }
 
@@ -94,6 +99,7 @@ export default function ExternalPlaylistPage() {
             <PlaylistTop name={collection.getName()} trackCount={collection.getTrackListLength()} onPlay={playPlaylist} onShuffle={shufflePlaylist} image={collection.getThumbnailUrl()} contextMenu={
                 <Dropdown.Menu onAction={contextMenu} disabledKeys={["like"]}>
                     <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
+                    <Dropdown.Item key="share">Copy Link</Dropdown.Item>
                     <Dropdown.Item key="like">Like Playlist</Dropdown.Item>
                     <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
                 </Dropdown.Menu>

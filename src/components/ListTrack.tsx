@@ -12,6 +12,7 @@ import ImageWrapper from "./ImageWrapper";
 import useTrackMeta from "../hooks/TrackMetaHook";
 import useCurrentTrack from "../hooks/CurrentTrackHook";
 import { openContextMenu } from "./ContextMenu";
+import PipeBombConnection from "../logic/PipeBombConnection";
 
 interface Props {
   track: Track,
@@ -47,6 +48,9 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
                 const filename = (metadata ? metadata.title : track.trackID) + ".mp3";
                 downloadFile(track.getAudioUrl(), filename);
                 break;
+            case "share":
+                PipeBombConnection.getInstance().copyLink("track", track.trackID);
+                break;
         }
     }
 
@@ -56,6 +60,7 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
                 <Dropdown.Menu disabledKeys={[]} onAction={contextMenu}>
                     <Dropdown.Item key="next-up">Play Next</Dropdown.Item>
                     <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
+                    <Dropdown.Item key="share">Copy Link</Dropdown.Item>
                     <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${track.trackID}`}>See Track Page</Link></Dropdown.Item>
                     <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
                     <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${track.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
@@ -68,6 +73,7 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
                 <Dropdown.Menu disabledKeys={[]} onAction={contextMenu}>
                     <Dropdown.Item key="next-up">Play Next</Dropdown.Item>
                     <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
+                    <Dropdown.Item key="share">Copy Link</Dropdown.Item>
                     <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${track.trackID}`}>See Track Page</Link></Dropdown.Item>
                     <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
                     <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${track.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>

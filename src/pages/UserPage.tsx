@@ -21,7 +21,7 @@ export default function UserPage() {
         PipeBombConnection.getInstance().getApi().v1.getUser(userID)
         .then(userData => {
             setUser(userData.user);
-            setUserImage(Account.getAvatarUrl(userData.user.userID));
+            setUserImage(Account.getAvatarUrl(userData.user.rawID));
             setPlaylists(userData.playlists);
         }).catch(e => {
             console.error(e);
@@ -54,7 +54,7 @@ export default function UserPage() {
                 </div>
                 <div className={styles.info}>
                     <Text h1>{ user.username }</Text>
-                    <Text h2>@{ user.userID }</Text>
+                    <Text h2>{ user.userID.includes("@") ? user.userID : `@${user.userID}` }</Text>
                 </div>
             </div>
 

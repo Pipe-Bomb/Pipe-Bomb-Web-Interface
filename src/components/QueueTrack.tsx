@@ -8,6 +8,7 @@ import GlowEffect from "./GlowEffect";
 import ImageWrapper from "./ImageWrapper";
 import useTrackMeta from "../hooks/TrackMetaHook";
 import { openContextMenu } from "./ContextMenu";
+import PipeBombConnection from "../logic/PipeBombConnection";
 
 interface Props {
   track: TrackWrapper,
@@ -46,6 +47,9 @@ export default function QueueTrack({ track, index }: Props) {
                 const filename = (metadata ? metadata.title : track.track.trackID) + ".mp3";
                 downloadFile(track.track.getAudioUrl(), filename);
                 break;
+            case "share":
+                PipeBombConnection.getInstance().copyLink("track", track.track.trackID);
+                break;
         }
     }
 
@@ -53,6 +57,7 @@ export default function QueueTrack({ track, index }: Props) {
         dropdownItems = (
             <Dropdown.Menu onAction={contextMenu}>
                 <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${track.track.trackID}`}>See Track Page</Link></Dropdown.Item>
+                <Dropdown.Item key="share">Copy Link</Dropdown.Item>
                 <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
                 <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${track.track.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
                 <Dropdown.Item key="download">Download as MP3</Dropdown.Item>
@@ -63,6 +68,7 @@ export default function QueueTrack({ track, index }: Props) {
             <Dropdown.Menu onAction={contextMenu}>
                 <Dropdown.Item key="play">Play Now</Dropdown.Item>
                 <Dropdown.Item key="next-up">Play Next</Dropdown.Item>
+                <Dropdown.Item key="share">Copy Link</Dropdown.Item>
                 <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${track.track.trackID}`}>See Track Page</Link></Dropdown.Item>
                 <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
                 <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${track.track.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
@@ -74,6 +80,7 @@ export default function QueueTrack({ track, index }: Props) {
             <Dropdown.Menu disabledKeys={index == 0 ? ["next-up"] : []} onAction={contextMenu}>
                 <Dropdown.Item key="play">Play Now</Dropdown.Item>
                 <Dropdown.Item key="next-up">Play Next</Dropdown.Item>
+                <Dropdown.Item key="share">Copy Link</Dropdown.Item>
                 <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${track.track.trackID}`}>See Track Page</Link></Dropdown.Item>
                 <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
                 <Dropdown.Item key="remove">Remove from Queue</Dropdown.Item>

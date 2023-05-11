@@ -269,3 +269,7 @@ export function lerp(start: number, end: number, time: number, callback: (value:
 
     return prematureEnd;
 }
+
+export function copyTextToClipboard(text: string) {
+    navigator.clipboard.writeText(text);
+}

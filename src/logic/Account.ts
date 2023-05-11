@@ -6,7 +6,8 @@ import { generateHash } from "./Utils";
 export interface UserDataFormat {
     username: string,
     userID: string,
-    email: string
+    email: string,
+    rawID: string
 }
 
 export default class Account {
@@ -15,6 +16,7 @@ export default class Account {
     private token: string | null = null;
     private username: string | null = null;
     private userID: string | null = null;
+    private rawID: string | null = null;
     private email: string | null = null;
 
     private dataAwaitCallbacks: (() => void)[] = [];
@@ -72,6 +74,7 @@ export default class Account {
                 const response: any = data.data;
                 if (typeof response?.id == "string" && typeof response?.username == "string" && typeof response?.email == "string") {
                     this.userID = response.id;
+                    this.rawID = this.userID.includes("@") ? this.userID.split("@", 2)[1] : this.userID;
                     this.username = response.username;
                     this.email = response.email;
                     this.token = token;
@@ -101,14 +104,16 @@ export default class Account {
             if (this.userID && this.username && this.email) return resolve({
                 username: this.username,
                 userID: this.userID,
-                email: this.email
+                email: this.email,
+                rawID: this.rawID
             });
 
             this.dataAwaitCallbacks.push(() => {
                 resolve({
                     username: this.username || "",
                     userID: this.userID || "",
-                    email: this.email || ""
+                    email: this.email || "",
+                    rawID: this.rawID || ""
                 });
             });
         });

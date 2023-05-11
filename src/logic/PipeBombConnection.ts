@@ -1,4 +1,7 @@
 import PipeBomb from "pipebomb.js";
+import Cookies from "js-cookie";
+import { copyTextToClipboard } from "./Utils";
+import { createNotification } from "../components/NotificationManager";
 
 export default class PipeBombConnection {
     private static instance: PipeBombConnection;
@@ -8,7 +11,9 @@ export default class PipeBombConnection {
     private eventListeners: ((api: PipeBombConnection) => void)[] = [];
     
     private constructor() {
-        this.api = new PipeBomb("");
+        this.api = new PipeBomb("", {
+            token: Cookies.get("pipebomb-token")
+        });
     }
 
     public static getInstance() {
@@ -47,5 +52,23 @@ export default class PipeBombConnection {
         const index = this.eventListeners.indexOf(callback);
         if (index < 0) return;
         this.eventListeners.splice(index, 1);
+    }
+
+    public copyLink(subject: string, id: string) {
+        if (typeof id != "string") {
+            const anyId: any = id;
+            id = anyId.toString();
+        }
+        if (id.includes("@")) {
+            const parts = id.split("@", 2);
+            copyTextToClipboard(`http://${parts[0]}/${subject}/${parts[1]}`);
+        } else {
+            copyTextToClipboard(`${this.api.context.getHost()}/${subject}/${id}`);
+        }
+        
+        createNotification({
+            text: "Copied link to clipboard!",
+            status: "normal"
+        })
     }
 }

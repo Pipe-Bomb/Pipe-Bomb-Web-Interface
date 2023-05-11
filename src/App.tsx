@@ -1,5 +1,5 @@
 import styles from "./styles/App.module.scss";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Navbar from './components/Navbar';
 import Search from "./pages/Search";
 import Home from "./pages/Home";
@@ -16,15 +16,29 @@ import Volume from "./components/Volume";
 import CastButton from "./components/CastButton";
 import { Button } from "@nextui-org/react";
 import { VscLayoutSidebarRight } from "react-icons/vsc"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UserPage from "./pages/UserPage";
 import ExternalPlaylistPage from "./pages/ExternalPlaylistPage";
 import ContextMenu from "./components/ContextMenu";
 import BackgroundGlow from "./components/BackgroundGlow";
 import Sidebar from "./components/Sidebar";
+import PipeBombConnection from "./logic/PipeBombConnection";
 
 function App() {
+    const navigate = useNavigate();
+    const location = useLocation();
     const [sidebarEnabled, setSidebarEnabled] = useState(true);
+
+    useEffect(() => {
+        const path = location.pathname;
+        if (!path.includes("@") || !path.includes("/")) return;
+        const end = path.split("/").pop();
+        if (!end.includes("@")) return;
+        const parts = end.split("@", 2);
+        if (parts[0] != PipeBombConnection.getInstance().getApi().context.getAddress()) return;
+        const newPath = path.substring(0, path.length - end.length) + parts[1];
+        navigate(newPath);
+    }, [location.pathname]);
 
     function getRoutes() {
         return (

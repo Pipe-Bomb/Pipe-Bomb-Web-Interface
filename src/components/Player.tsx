@@ -11,6 +11,7 @@ import usePlayerUpdate from "../hooks/PlayerUpdateHook";
 import { Link } from "react-router-dom";
 import { openContextMenu } from "./ContextMenu";
 import { openAddToPlaylist } from "./AddToPlaylist";
+import PipeBombConnection from "../logic/PipeBombConnection";
 
 interface PlayerProps {
     children?: JSX.Element | JSX.Element[]
@@ -78,7 +79,6 @@ export default function Player({ children }: PlayerProps) {
     }
 
     function contextMenuOpened(button: React.Key) {
-        const audioPlayer = AudioPlayer.getInstance();
         switch (button) {
             case "playlist":
                 openAddToPlaylist(currentlyPlaying);
@@ -87,12 +87,16 @@ export default function Player({ children }: PlayerProps) {
                 const filename = (metadata ? metadata.title : currentlyPlaying.trackID) + ".mp3";
                 downloadFile(currentlyPlaying.getAudioUrl(), filename);
                 break;
+            case "share":
+                PipeBombConnection.getInstance().copyLink("track", currentlyPlaying.trackID);
+                break;
         }
     }
 
     const contextMenu = (
         <Dropdown.Menu onAction={contextMenuOpened}>
             <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${currentlyPlaying?.trackID}`}>See Track Page</Link></Dropdown.Item>
+            <Dropdown.Item key="share">Copy Link</Dropdown.Item>
             <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
             <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${currentlyPlaying?.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
             <Dropdown.Item key="download">Download as MP3</Dropdown.Item>
