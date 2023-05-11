@@ -20,8 +20,8 @@ import { useState } from "react";
 import UserPage from "./pages/UserPage";
 import ExternalPlaylistPage from "./pages/ExternalPlaylistPage";
 import ContextMenu from "./components/ContextMenu";
-import Sidebar from "./components/Sidebar";
 import BackgroundGlow from "./components/BackgroundGlow";
+import Sidebar from "./components/Sidebar";
 
 function App() {
     const [sidebarEnabled, setSidebarEnabled] = useState(true);

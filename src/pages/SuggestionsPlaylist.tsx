@@ -26,7 +26,7 @@ export default function SuggestionsPlaylist() {
     useEffect(() => {
         if (track) {
             setSuggestions(null);
-            track.getSuggestedTracks(api.collectionCache, api.trackCache)
+            track.getSuggestedTracks()
             .then(setSuggestions)
             .catch(() => {
                 setSuggestions(false);

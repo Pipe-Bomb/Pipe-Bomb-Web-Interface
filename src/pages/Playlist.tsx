@@ -36,12 +36,12 @@ export default function Playlist() {
 
     const callback = (collection: PipeBombPlaylist) => {
         if (!collection) return;
-        collection.getTrackList(PipeBombConnection.getInstance().getApi().trackCache)
+        collection.getTrackList()
         .then(tracks => {
             if (lastPlaylistID != paramID) return;
             setTrackList(tracks);
 
-            collection.getSuggestedTracks(PipeBombConnection.getInstance().getApi().trackCache)
+            collection.getSuggestedTracks()
             .then(newSuggestions => {
                 if (lastPlaylistID != paramID) return;
                 setSuggestions(newSuggestions);
@@ -127,7 +127,7 @@ export default function Playlist() {
         audioPlayer.addToQueue(trackList, false, 0);
         audioPlayer.nextTrack();
         audioPlayer.setAutoplayTracks("playlist", playlist.collectionID, async () => {
-            return await playlist.getSuggestedTracks(PipeBombConnection.getInstance().getApi().trackCache);
+            return await playlist.getSuggestedTracks();
         });
     }
 
@@ -137,7 +137,7 @@ export default function Playlist() {
         audioPlayer.addToQueue(trackList, true, 0);
         audioPlayer.nextTrack();
         audioPlayer.setAutoplayTracks("playlist", playlist.collectionID, async () => {
-            return await playlist.getSuggestedTracks(PipeBombConnection.getInstance().getApi().trackCache);
+            return await playlist.getSuggestedTracks();
         });
     }
 

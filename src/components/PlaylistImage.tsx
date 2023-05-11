@@ -44,7 +44,7 @@ export default function PlaylistImage({ playlist }: PlaylistImageProps) {
     
     useEffect(() => {
         setLoaded(false);
-        playlist.getTrackList(PipeBombConnection.getInstance().getApi().trackCache)
+        playlist.getTrackList()
         .then(tracks => {
             if (!tracks) {
                 setImageUrls([]);

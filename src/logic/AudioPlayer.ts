@@ -472,7 +472,7 @@ export default class AudioPlayer {
         if (this.autoplayID && (this.autoplayID == trackID || (this.autoplayID && !this.autoplayID.startsWith("track ")))) return;
         this.autoplayID = trackID;
         const api = PipeBombConnection.getInstance().getApi();
-        lastTrack.track.getSuggestedTracks(api.collectionCache, api.trackCache).then(tracks => {
+        lastTrack.track.getSuggestedTracks().then(tracks => {
             if (this.autoplayID == trackID) {
                 this.autoplayTracks = tracks.getTrackList();
             }

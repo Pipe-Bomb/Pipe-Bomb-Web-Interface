@@ -21,7 +21,6 @@ import ListTrack from "../components/ListTrack";
 import { openAddToPlaylist } from "../components/AddToPlaylist";
 import { useResizeDetector } from "react-resize-detector";
 import { BiPlus } from "react-icons/bi";
-import IconButton from "../components/IconButton";
 
 export default function TrackPage() {
     let paramID: any = useParams().ID;
@@ -41,7 +40,7 @@ export default function TrackPage() {
         if (track) {
             setSuggestions(null);
             const api = PipeBombConnection.getInstance().getApi();
-            track.getSuggestedTracks(api.collectionCache, api.trackCache)
+            track.getSuggestedTracks()
             .then(setSuggestions)
             .catch(() => {
                 setSuggestions(false);
