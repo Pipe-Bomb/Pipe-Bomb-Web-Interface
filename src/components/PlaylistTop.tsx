@@ -15,7 +15,7 @@ export interface PlaylistTopProps {
     onShuffle: () => void
     contextMenu: JSX.Element
     owner?: User
-    image: string | JSX.Element
+    image: string
 }
 
 export default function PlaylistTop(props: PlaylistTopProps) {

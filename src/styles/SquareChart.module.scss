@@ -22,11 +22,13 @@
 }
 
 .imageContainer {
-    width: 40px;
-    height: 40px;
-    margin-left: 1rem;
+    height: 100px;
+    width: 100px;
     flex-shrink: 0;
     flex-grow: 0;
+    border-radius: var(--nextui-radii-base);
+    overflow: hidden;
+    border: 2px solid var(--nextui-colors-border);
 }
 
 .title {

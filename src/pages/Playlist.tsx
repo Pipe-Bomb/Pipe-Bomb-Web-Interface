@@ -14,7 +14,6 @@ import PlaylistIndex from "../logic/PlaylistIndex";
 import { useNavigate } from "react-router-dom";
 import CompactTrack from "../components/CompactTrack";
 import PipeBombPlaylist from "pipebomb.js/dist/collection/Playlist";
-import PlaylistImage from "../components/PlaylistImage";
 import PlaylistTop from "../components/PlaylistTop";
 import useIsSelf from "../hooks/IsSelfHook";
 import { ViewportList } from "react-viewport-list";
@@ -227,7 +226,7 @@ export default function Playlist() {
 
     return (
         <>
-            <PlaylistTop name={playlist.getName()} trackCount={trackList ? trackList.length : undefined} onPlay={playPlaylist} onShuffle={shufflePlaylist} owner={playlist.owner} image={<PlaylistImage playlist={playlist} />} contextMenu={generateContextMenu()} />
+            <PlaylistTop name={playlist.getName()} trackCount={trackList ? trackList.length : undefined} onPlay={playPlaylist} onShuffle={shufflePlaylist} owner={playlist.owner} image={playlist.getThumbnailUrl()} contextMenu={generateContextMenu()} />
             <ViewportList items={newTrackList}>
                 {(track, index) => (
                     <ListTrack key={index} track={track} parentPlaylist={playlist} />

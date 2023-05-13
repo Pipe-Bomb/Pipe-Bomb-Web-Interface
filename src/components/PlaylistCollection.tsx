@@ -1,7 +1,6 @@
 import Playlist from "pipebomb.js/dist/collection/Playlist";
 import styles from "../styles/PlaylistCollection.module.scss"
 import ListPlaylist from "./ListPlaylist";
-import PlaylistImage from "./PlaylistImage";
 
 export interface PlaylistCollectionProps {
     playlists?: Playlist[],
@@ -12,7 +11,7 @@ export default function PlaylistCollection({ playlists, children }: PlaylistColl
     return (
         <div className={styles.container}>
             {playlists && playlists.map((playlist, index) => (
-                <ListPlaylist key={index} url={`/playlist/${playlist.collectionID}`} title={playlist.getName()} subtitle="Pipe Bomb Playlist" image={<PlaylistImage playlist={playlist} />} />
+                <ListPlaylist key={index} url={`/playlist/${playlist.collectionID}`} title={playlist.getName()} subtitle="Pipe Bomb Playlist" image={playlist.getThumbnailUrl()} />
             ))}
             { children }
         </div>

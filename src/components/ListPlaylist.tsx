@@ -7,7 +7,7 @@ export interface ListPlaylistProps {
     url: string,
     title: string,
     subtitle: string,
-    image?: string | JSX.Element
+    image?: string
 }
 
 export default function ListPlaylist(props: ListPlaylistProps) {
@@ -15,11 +15,9 @@ export default function ListPlaylist(props: ListPlaylistProps) {
         <div className={styles.container}>
             <Link to={props.url} className={styles.link}>
                 <div className={styles.imageContainer}>
-                    {!!props.image && ((typeof props.image == "string") ? (
-                        <div className={styles.image}>
-                            <ImageWrapper src={props.image} />
-                        </div>
-                    ) : props.image)}
+                    <div className={styles.image}>
+                        <ImageWrapper src={props.image} />
+                    </div>
                 </div>
                 <div className={styles.info}>
                     <Text h3 className={styles.title}>{props.title}</Text>
