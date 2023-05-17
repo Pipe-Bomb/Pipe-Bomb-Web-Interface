@@ -6,7 +6,6 @@ import Playlist from "pipebomb.js/dist/collection/Playlist";
 import Loader from "../components/Loader";
 import styles from "../styles/UserPage.module.scss"
 import ImageWrapper from "../components/ImageWrapper";
-import Account from "../logic/Account";
 import { Text } from "@nextui-org/react"
 import PlaylistCollection from "../components/PlaylistCollection";
 
@@ -21,7 +20,7 @@ export default function UserPage() {
         PipeBombConnection.getInstance().getApi().v1.getUser(userID)
         .then(userData => {
             setUser(userData.user);
-            setUserImage(Account.getAvatarUrl(userData.user.rawID));
+            setUserImage(PipeBombConnection.getAvatarUrl(userData.user.rawID));
             setPlaylists(userData.playlists);
         }).catch(e => {
             console.error(e);

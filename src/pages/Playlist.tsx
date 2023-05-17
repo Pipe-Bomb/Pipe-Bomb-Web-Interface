@@ -95,7 +95,7 @@ export default function Playlist() {
         )
     }
 
-    if (paramID === undefined || isNaN(parseInt(paramID)) || errorCode != 0) {
+    if (paramID === undefined || errorCode != 0) {
         return (
             <>
                 <Text h1>Error 500</Text>

@@ -1,19 +1,19 @@
 import { Loading, User } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-import Account, { UserDataFormat } from "../logic/Account";
 import styles from "../styles/PipeBombUser.module.scss";
 import { Link } from "react-router-dom";
+import PipeBombConnection, { UserData } from "../logic/PipeBombConnection";
 
 export interface UserProps {
-    userInfo?: UserDataFormat
+    userInfo?: UserData
 }
 
 export default function PipeBombUser({ userInfo }: UserProps) {
-    const [userData, setUserData] = useState<UserDataFormat | null>(userInfo || null);
+    const [userData, setUserData] = useState<UserData | null>(userInfo || null);
 
     useEffect(() => {
         if (!userInfo) {
-            Account.getInstance().getUserData().then(setUserData);
+            PipeBombConnection.getInstance().getUserData().then(setUserData);
         }
     }, [userInfo]);
 
@@ -21,7 +21,7 @@ export default function PipeBombUser({ userInfo }: UserProps) {
         return <Loading className={styles.loader} />
     }
 
-    const url = Account.getAvatarUrl(userData.rawID);
+    const url = PipeBombConnection.getAvatarUrl(userData.userID);
 
     return <div className={styles.container}>
         <Link to={`/user/${userData.userID}`}>

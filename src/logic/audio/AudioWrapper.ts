@@ -64,7 +64,7 @@ export default class AudioWrapper {
         try {
             const newAudioType = this.audioTypes.get(audioType);
             if (!newAudioType) return console.error(`Attemped to use audio type '${audioType}' but it doesn't exist!`);
-            if (newAudioType.ID == this.activeType.ID) return console.log("audio type is already", this.activeType.ID);
+            if (newAudioType.ID == this.activeType.ID) return console.warn("audio type is already", this.activeType.ID);
             const oldAudioType = this.activeType;
             try {
                 await oldAudioType.setPaused(true);

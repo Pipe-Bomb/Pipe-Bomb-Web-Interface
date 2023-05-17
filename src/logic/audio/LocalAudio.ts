@@ -179,7 +179,7 @@ export default class LocalAudio extends AudioType {
                 this.setupAudioContext();
             }
         } catch (e) {
-            console.log(e);
+            console.error(e);
         }
 
         return new Promise(async (resolve, reject) => {

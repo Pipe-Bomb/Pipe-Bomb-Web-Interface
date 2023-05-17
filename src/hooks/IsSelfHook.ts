@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import Account from "../logic/Account";
 import User from "pipebomb.js/dist/User";
+import PipeBombConnection from "../logic/PipeBombConnection";
 
 export default function useIsSelf(user?: User) {
     const [isSelf, setIsSelf] = useState<boolean | null>(null);
@@ -9,7 +9,7 @@ export default function useIsSelf(user?: User) {
         setIsSelf(null);
         
         if (user) {
-            Account.getInstance().getUserData()
+            PipeBombConnection.getInstance().getUserData()
             .then(self => {
                 setIsSelf(self.userID == user.userID);
             });

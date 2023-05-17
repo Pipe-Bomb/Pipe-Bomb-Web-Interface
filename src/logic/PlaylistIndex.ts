@@ -15,13 +15,17 @@ export default class PlaylistIndex {
 
         setInterval(() => {
             if (PipeBombConnection.getInstance().getUrl()) {
-                this.checkPlaylists();
+                if (PipeBombConnection.getInstance().getStatus() == "authenticated") {
+                    this.checkPlaylists();
+                }
             }
         }, 10_000);
 
         PipeBombConnection.getInstance().registerUpdateCallback(() => {
-            this.playlists = null;
-            this.checkPlaylists();
+            if (PipeBombConnection.getInstance().getStatus() == "authenticated") {
+                this.playlists = null;
+                this.checkPlaylists();
+            }
         });
     }
 
@@ -31,6 +35,8 @@ export default class PlaylistIndex {
     }
 
     public async checkPlaylists() {
+        if (PipeBombConnection.getInstance().getStatus() != "authenticated") return;
+        
         const playlists = await PipeBombConnection.getInstance().getApi().v1.getPlaylists();
         if (!this.playlists) this.playlists = new Map();
 

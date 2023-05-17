@@ -7,7 +7,6 @@ import AudioPlayer from "../logic/AudioPlayer";
 import { openAddToPlaylist } from "./AddToPlaylist";
 import { Link } from "react-router-dom";
 import { FaPlus, FaMinus } from "react-icons/fa";
-import Account, { UserDataFormat } from "../logic/Account";
 import Playlist from "pipebomb.js/dist/collection/Playlist";
 import GlowEffect from "./GlowEffect";
 import ImageWrapper from "./ImageWrapper";

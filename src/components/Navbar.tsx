@@ -4,9 +4,6 @@ import PlaylistIndex from "../logic/PlaylistIndex";
 import { useEffect, useRef, useState } from "react";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import { useNavigate } from 'react-router-dom';
-import { connectToHost } from "../pages/Connect";
-import ServerIndex from "../logic/ServerIndex";
-import Account from "../logic/Account";
 import { Button } from "@nextui-org/react";
 import { openCreatePlaylist } from "./CreatePlaylist";
 import { GoPlus } from "react-icons/go";
@@ -26,23 +23,21 @@ export default function Navbar() {
         setPlaylists(playlists);
     }
 
-    Account.getInstance();
-
     useEffect(() => {
         playlistIndex.registerUpdateCallback(playlistsUpdated);
         if (!PipeBombConnection.getInstance().getUrl()) {
-            const host = localStorage.getItem("host");
-            let connected = false;
-            if (host) {
-                const hostInfo = ServerIndex.getInstance().getServer(host);
-                if (hostInfo) {
-                    connectToHost(hostInfo, "secure");   
-                    connected = true;
-                }
-            }
-            if (!connected) {
-                navigate("/connect");
-            }
+            // const host = localStorage.getItem("host");
+            // let connected = false;
+            // if (host) {
+            //     const hostInfo = ServerIndex.getInstance().getServer(host);
+            //     if (hostInfo) {
+            //         connectToHost(hostInfo, "secure");   
+            //         connected = true;
+            //     }
+            // }
+            // if (!connected) {
+            //     navigate("/connect");
+            // }
         }
 
         return () => {

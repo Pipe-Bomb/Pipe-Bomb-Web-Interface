@@ -2,11 +2,10 @@ import { Grid, Text } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import Loader from "../components/Loader";
 import PipeBombUser from "../components/PipeBombUser";
-import Account, { UserDataFormat } from "../logic/Account";
 import PlaylistIndex from "../logic/PlaylistIndex";
 import styles from "../styles/Home.module.scss";
 import TrackList from "pipebomb.js/dist/collection/TrackList";
-import PipeBombConnection from "../logic/PipeBombConnection";
+import PipeBombConnection, { UserData } from "../logic/PipeBombConnection";
 import ChartIndex from "../logic/ChartIndex";
 import SquareChart from "../components/SquareChart";
 import PlaylistCollection from "../components/PlaylistCollection";
@@ -14,14 +13,14 @@ import PlaylistCollection from "../components/PlaylistCollection";
 export default function Home() {
     const [playlists, setPlaylists] = useState(PlaylistIndex.getInstance().getPlaylists());
     const [charts, setCharts] = useState<TrackList[] | null>(null);
-    const [userData, setUserData] = useState<UserDataFormat | null>(null);
+    const [userData, setUserData] = useState<UserData | null>(null);
     
     function reload() {
         ChartIndex.getInstance().getCharts().then(setCharts);
     }
 
     useEffect(() => {
-        Account.getInstance().getUserData().then(setUserData);
+        PipeBombConnection.getInstance().getUserData().then(setUserData);
 
         PipeBombConnection.getInstance().registerUpdateCallback(reload);
         PlaylistIndex.getInstance().registerUpdateCallback(setPlaylists);

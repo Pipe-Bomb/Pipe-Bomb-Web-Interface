@@ -18,17 +18,17 @@
     flex-shrink: 0;
 }
 
-.addContainer {
-    max-width: min(1400px, calc(100% - 4rem));
-    width: 100%;
-    margin: 0 auto !important;
+.modal {
+    width: calc(100% - 4rem);
+    max-width: 600px;
     border-radius: var(--nextui-radii-2xl);
-    padding: 2rem 1rem !important;
-    flex-grow: 0;
     position: relative;
     overflow: hidden;
-    flex-shrink: 0;
-    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    padding: 3rem 2rem 1rem 2rem;
+    gap: 1rem;
+    text-align: center;
 
     &::before {
         content: "";
@@ -47,27 +47,21 @@
     &:has(:focus)::before {
         opacity: 0.8;
     }
+
+    .input {
+        margin-bottom: 2rem;
+    }
+
+    .notice {
+        font-size: var(--nextui-fontSizes-lg);
+        margin-bottom: 1.5rem;
+    }
+
+    .modalOpen {
+        margin: 0 auto;
+    }
 }
 
-.loader {
-    position: relative;
-    height: 80px;
-}
-
-.servers {
-    gap: 2rem;
-    width: 100%;
-    max-width: min(1400px, calc(100% - 4rem));
-    display: flex;
-    flex-direction: column;
-    margin: 2rem 0;
-}
-
-.publicServers {
-    gap: 1rem;
-    width: 100%;
-    max-width: min(1400px, calc(100% - 4rem));
-    display: flex;
-    flex-direction: column;
-    margin: 2rem 0;
+.modalClose {
+    margin: 0 auto;
 }

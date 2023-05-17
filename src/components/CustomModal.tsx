@@ -17,8 +17,6 @@ export default function CustomModal(props: Props) {
         if (props.onClose) props.onClose();
     }
 
-
-
     return (
         <>
             <Modal

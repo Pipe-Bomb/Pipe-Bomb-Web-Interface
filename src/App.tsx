@@ -23,11 +23,17 @@ import ContextMenu from "./components/ContextMenu";
 import BackgroundGlow from "./components/BackgroundGlow";
 import Sidebar from "./components/Sidebar";
 import PipeBombConnection from "./logic/PipeBombConnection";
+import useAuthenticationStatus from "./hooks/AuthenticationStatusHook";
+import LoginPage from "./pages/LoginPage";
+import Loader from "./components/Loader";
+import LoadingPage from "./pages/LoadingPage";
 
 function App() {
     const navigate = useNavigate();
     const location = useLocation();
     const [sidebarEnabled, setSidebarEnabled] = useState(true);
+    const authStatus = useAuthenticationStatus();
+    const [lastUrl, setLastUrl] = useState("");
 
     useEffect(() => {
         const path = location.pathname;
@@ -39,6 +45,22 @@ function App() {
         const newPath = path.substring(0, path.length - end.length) + parts[1];
         navigate(newPath);
     }, [location.pathname]);
+
+    useEffect(() => {
+        if (authStatus == "disconnected" || authStatus == "loading") {
+            navigate("/connect");
+        } else if (authStatus == "unauthenticated") {
+            setLastUrl(location.pathname);
+            navigate("/login");
+        } else if (authStatus == "authenticated" && location.pathname == "/login") {
+            setLastUrl("");
+            if (lastUrl && lastUrl != "/login") {
+                navigate(lastUrl);
+            } else {
+                navigate("/");
+            }
+        }
+    }, [authStatus]);
 
     function getRoutes() {
         return (
@@ -75,28 +97,33 @@ function App() {
             <NotificationManager />
             <BackgroundGlow />
             <Routes>
-                <Route path="/connect" element={<Connect />} /> {/* connect route */}
+                <Route path="/connect" element={<Connect />} />
+                <Route path="/login" element={<LoginPage />} />
                 <Route path="*" element={
-                    <>
-                        <Navbar />
-                        <Player>
-                            <CastButton />
-                            <Volume />
-                            <Button auto rounded className={styles.roundButton} light={!sidebarEnabled} onPress={() => setSidebarEnabled(!sidebarEnabled)}><VscLayoutSidebarRight /></Button>
-                        </Player>
-                        <AddToPlaylist />
-                        <CreatePlaylist />
-                        <ContextMenu />
+                    authStatus == "pending" ? (
+                        <LoadingPage />
+                    ) : (
+                        <>
+                            <Navbar />
+                            <Player>
+                                <CastButton />
+                                <Volume />
+                                <Button auto rounded className={styles.roundButton} light={!sidebarEnabled} onPress={() => setSidebarEnabled(!sidebarEnabled)}><VscLayoutSidebarRight /></Button>
+                            </Player>
+                            <AddToPlaylist />
+                            <CreatePlaylist />
+                            <ContextMenu />
 
-                        <div className={styles.content}>
-                            <div className={styles.main}>
-                                <div className={styles.page}>
-                                    { getRoutes() }
+                            <div className={styles.content}>
+                                <div className={styles.main}>
+                                    <div className={styles.page}>
+                                        { getRoutes() }
+                                    </div>
                                 </div>
+                                <Sidebar enabled={sidebarEnabled} />
                             </div>
-                            <Sidebar enabled={sidebarEnabled} />
-                        </div>
-                    </>
+                        </>
+                    )
                 } />
             </Routes>
         </>
