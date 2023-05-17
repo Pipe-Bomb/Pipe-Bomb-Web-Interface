@@ -23,7 +23,6 @@ export default class ChromecastAudio extends AudioType {
     private static instance: ChromecastAudio;
 
     private track: Track = null;
-    private meta: TrackMeta | null = null;
     private buffering = false;
     private castSession: any;
     private sessionEvents: Map<string, (e: any) => void> = new Map();
@@ -31,7 +30,6 @@ export default class ChromecastAudio extends AudioType {
     private lastTime = 0;
     private duration = 0;
     private player: any;
-    private playerController: any;
     private lastIdleReason: string | null = null;
     private lastPlaying = false;
 
@@ -40,7 +38,6 @@ export default class ChromecastAudio extends AudioType {
         if (!window.cast) return;
 
         this.player = new window.cast.framework.RemotePlayer();
-        this.playerController = new window.cast.framework.RemotePlayerController(this.player);
 
         window.cast.framework.CastContext.getInstance().addEventListener(window.cast.framework.CastContextEventType.SESSION_STATE_CHANGED, (e: any) => {
             switch (e.sessionState) {
@@ -314,14 +311,12 @@ export default class ChromecastAudio extends AudioType {
                 const meta = await track.loadMetadata();
 
                 if (meta) {
-                    this.meta = meta;
                     mediaInfo.metadata.artist = convertArrayToString(meta.artists);
                     mediaInfo.metadata.title = meta.title;
                     mediaInfo.metadata.images = [
                         new window.chrome.cast.Image(track.getThumbnailUrl())
                     ];
                 } else {
-                    this.meta = null;
                     mediaInfo.metadata.title = "Pipe Bomb";
                 }
                 

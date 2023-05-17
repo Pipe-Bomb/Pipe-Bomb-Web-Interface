@@ -109,12 +109,6 @@ export default class PipeBombConnection {
         this.userID = userID;
         this.username = username;
 
-        if (!this.api.context.getAddress()) {
-            this.authenticationLoading = false;
-            this.updateCallbacks();
-            return;
-        }
-
         try {
             this.authenticationLoading = true;
             if (!options?.quiet) this.updateCallbacks();
@@ -161,8 +155,6 @@ export default class PipeBombConnection {
 
         this.connectionLoading = true;
         this.updateCallbacks();
-
-        await wait(1000);
 
         this.api.context.setHost(host);
         try {
