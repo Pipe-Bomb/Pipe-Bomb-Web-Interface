@@ -28,8 +28,9 @@ const dark = createTheme({
       sidebarUnselectedText: "#a5adcb",
       waitingBackground: "#181825",
       backgroundSecondary: "#11111b",
-      background: "#181825",
+      background: "#212133",
       backgroundContrast: "#181825",
+      secondaryLightHover: '#2e2e42',
     },
     space: {},
     fonts: {
@@ -150,7 +151,7 @@ const midnight = createTheme({
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
-      <NextUIProvider theme={midnight}>
+      <NextUIProvider theme={dark}>
         <App />
       </NextUIProvider>
     </BrowserRouter>
