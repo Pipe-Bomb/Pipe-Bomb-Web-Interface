@@ -25,15 +25,20 @@ import Sidebar from "./components/Sidebar";
 import PipeBombConnection from "./logic/PipeBombConnection";
 import useAuthenticationStatus from "./hooks/AuthenticationStatusHook";
 import LoginPage from "./pages/LoginPage";
-import Loader from "./components/Loader";
 import LoadingPage from "./pages/LoadingPage";
+import SettingsPage from "./pages/SettingsPage";
+import { getSetting, setSetting } from "./logic/SettingsIndex";
 
 function App() {
     const navigate = useNavigate();
     const location = useLocation();
-    const [sidebarEnabled, setSidebarEnabled] = useState(true);
+    const [sidebarEnabled, setSidebarEnabled] = useState(getSetting("sidebarOpen", true));
     const authStatus = useAuthenticationStatus();
     const [lastUrl, setLastUrl] = useState("");
+
+    useEffect(() => {
+        setSetting("sidebarOpen", sidebarEnabled);
+    }, [sidebarEnabled]);
 
     useEffect(() => {
         const path = location.pathname;
@@ -88,6 +93,8 @@ function App() {
                 <Route path="/user/:userID" element={<UserPage />} />
 
                 <Route path="/collection/playlist/:collectionID" element={<ExternalPlaylistPage />} />
+
+                <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         )
     }

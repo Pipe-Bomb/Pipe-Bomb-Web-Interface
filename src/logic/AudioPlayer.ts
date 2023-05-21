@@ -4,6 +4,7 @@ import { convertArrayToString, generateNumberHash, generateRandomString, shuffle
 import KeyboardShortcuts from "./KeyboardShortcuts";
 import AudioWrapper from "./audio/AudioWrapper";
 import { createNotification } from "../components/NotificationManager";
+import { getSetting, setSetting } from "./SettingsIndex";
 
 export interface VolumeStatus {
     volume: number,
@@ -30,7 +31,7 @@ export default class AudioPlayer {
     private muted = false;
     private volumeEnabled = true;
     private takenQueueIds: number[] = [];
-    private shuffled = false;
+    private shuffled = getSetting("shuffle", false);
     private loopStatus: "none" | "all" | "one" = "none";
     private loopTrackPoint: TrackWrapper;
 
@@ -40,7 +41,7 @@ export default class AudioPlayer {
 
     private autoplayID: string = "";
     private autoplayTracks: Track[] | null = null;
-    private autoplayEnabled = true;
+    private autoplayEnabled = getSetting("autoplay", true);
     
     private loudnessSamples: number[] = [];
     private lastLoudnessUpdate: number = 0;
@@ -218,6 +219,7 @@ export default class AudioPlayer {
     public setShuffled(shuffled: boolean) {
         if (shuffled == this.shuffled) return;
         this.shuffled = shuffled;
+        setSetting("shuffle", shuffled);
         if (shuffled) {
             const shuffledQueue = shuffle(this.queue);
             this.queue.splice(0, this.queue.length, ...shuffledQueue);
@@ -458,6 +460,7 @@ export default class AudioPlayer {
 
     public setAutoplayEnabled(enabled: boolean) {
         this.autoplayEnabled = enabled;
+        setSetting("autoplay", enabled);
         this.sendQueueCallbacks();
     }
 

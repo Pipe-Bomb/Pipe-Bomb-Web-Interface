@@ -1,4 +1,4 @@
-import { Loading, User } from "@nextui-org/react";
+import { Dropdown, Loading, User } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import styles from "../styles/PipeBombUser.module.scss";
 import { Link } from "react-router-dom";
@@ -23,18 +23,25 @@ export default function PipeBombUser({ userInfo }: UserProps) {
 
     const url = PipeBombConnection.getAvatarUrl(userData.userID);
 
-    return <div className={styles.container}>
-        <Link to={`/user/${userData.userID}`}>
-            <User
-                className={styles.user}
-                as="button"
-                size="lg"
-                color="primary"
-                name={userData.username}
-                description={"@" + userData.userID}
-                src={url}
-            />
-        </Link>
-        
-    </div>
+    return (
+        <div className={styles.container}>
+            <Dropdown placement="top-right">
+                <Dropdown.Trigger>
+                    <User
+                        className={styles.user}
+                        as="button"
+                        size="lg"
+                        color="primary"
+                        name={userData.username}
+                        description={"@" + userData.userID}
+                        src={url}
+                    />
+                </Dropdown.Trigger>
+                <Dropdown.Menu>
+                    <Dropdown.Item key="profile"><Link className={styles.dropdownLink} to={`/user/${userData.userID}`}>Profile</Link></Dropdown.Item>
+                    <Dropdown.Item key="settings"><Link className={styles.dropdownLink} to={"/settings"}>Settings</Link></Dropdown.Item>
+                </Dropdown.Menu>
+            </Dropdown>            
+        </div>
+    )
 }

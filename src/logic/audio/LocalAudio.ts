@@ -1,6 +1,7 @@
 import Track, { TrackMeta } from "pipebomb.js/dist/music/Track";
 import AudioType from "./AudioType";
 import AudioPlayer from "../AudioPlayer";
+import { getSetting, setSetting } from "../SettingsIndex";
 
 const anyWindow: any = window;
 const AudioContext = window.AudioContext || anyWindow.webkitAudioContext;
@@ -19,9 +20,8 @@ export default class LocalAudio extends AudioType {
         super("local");
         this.audio.crossOrigin = "anonymous";
         
-        setTimeout(() => {
-            
-        });
+        this.audio.volume = getSetting("volume", 1);
+        this.audio.muted = getSetting("mute", false);
 
         this.audio.ontimeupdate = () => {
             this.update();
@@ -150,6 +150,7 @@ export default class LocalAudio extends AudioType {
         } else {
             this.audio.volume = volume / 100;
         }
+        setSetting("volume", volume / 100);
         this.update();
     }
 
@@ -166,6 +167,7 @@ export default class LocalAudio extends AudioType {
 
     public async setMuted(muted: boolean) {
         this.audio.muted = muted;
+        setSetting("mute", muted);
         this.update();
     }
 
