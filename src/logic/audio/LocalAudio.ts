@@ -6,6 +6,13 @@ import { getSetting, setSetting } from "../SettingsIndex";
 const anyWindow: any = window;
 const AudioContext = window.AudioContext || anyWindow.webkitAudioContext;
 
+export interface EqNode {
+    node: BiquadFilterNode
+    frequency: number
+    setGain: (gain: number) => void
+    getGain: () => number
+}
+
 export default class LocalAudio extends AudioType {
     private audio = new Audio();
     private audioContext: AudioContext;
@@ -15,6 +22,8 @@ export default class LocalAudio extends AudioType {
     private track: Track = null;
     private meta: TrackMeta | null;
     private lastPause: boolean = false;
+    private eqNodes: EqNode[] = [];
+    private eqGain: GainNode = null;
 
     public constructor() {
         super("local");
@@ -76,6 +85,41 @@ export default class LocalAudio extends AudioType {
         }
     }
 
+    public getFrequencyResponse(response: Float32Array) {
+        const magCombined = new Float32Array(response.length);
+        const magCurr = new Float32Array(this.eqNodes.length);
+        const phaseCurr = new Float32Array(this.eqNodes.length);
+
+        for (let node of this.eqNodes) {
+            node.node.getFrequencyResponse(response, magCurr, phaseCurr);
+
+            for (let j = 0; j < response.length; j++) {
+                const magDb = Math.log(magCurr[j]) * 20;
+                magCombined[j] += magDb;
+            }
+        }
+
+        return magCombined;
+    }
+
+    public getEqNodes() {
+        return Array.from(this.eqNodes);
+    }
+
+    private calculateEqGain() {
+        if (!this.eqGain) return;
+
+        let maxGain = -60;
+
+        for (let node of this.eqNodes) {
+            const gain = node.getGain();
+            if (maxGain < gain) maxGain = gain;
+        }
+
+        const gain = 1 - maxGain / 45;
+        this.eqGain.gain.setValueAtTime(gain, this.audioContext.currentTime);
+    }
+
     private setupAudioContext() {
         const audioPlayer = AudioPlayer.getInstance();
         let lastVolume = -1;
@@ -85,7 +129,80 @@ export default class LocalAudio extends AudioType {
         this.gain.gain.setValueAtTime(this.audio.volume, this.audioContext.currentTime);
         this.audio.volume = 1;
         source.connect(this.gain);
-        this.gain.connect(this.audioContext.destination);
+
+
+        const frequencies = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000];
+        let storedEqSettings: any[];
+        try {
+            storedEqSettings = JSON.parse(getSetting("eq", []));
+        } catch {
+            storedEqSettings = [];
+        }
+
+        for (let frequency of frequencies) {
+            const filter = this.audioContext.createBiquadFilter();
+            if (!this.eqNodes.length) {
+                filter.type = "lowshelf";
+            } else if (this.eqNodes.length == frequencies.length - 1) {
+                filter.type = "highshelf";
+            } else {
+                filter.type = "peaking";
+            }
+            
+            filter.frequency.value = frequency;
+            let gainValue = 0;
+
+            for (let eqSetting of storedEqSettings) {
+                if (typeof eqSetting?.frequency != "number" || typeof eqSetting?.value != "number" || !frequencies.includes(eqSetting.frequency)) {
+                    storedEqSettings.splice(storedEqSettings.indexOf(eqSetting), 1);
+                } else if (eqSetting.frequency == frequency) {
+                    const value = eqSetting.value as number;
+                    if (value >= -60 && value <= 30) {
+                        filter.gain.setValueAtTime(value, this.audioContext.currentTime);
+                        gainValue = value;
+                    } else {
+                        storedEqSettings.splice(storedEqSettings.indexOf(eqSetting), 1);
+                    }
+                }
+            }
+
+            if (this.eqNodes.length) {
+                this.eqNodes[this.eqNodes.length - 1].node.connect(filter);
+            }
+
+
+            const localAudio = this;
+            this.eqNodes.push({
+                node: filter,
+                frequency,
+                setGain: (gain: number) => {
+                    if (gain < -60 || gain > 30) return;
+                    filter.gain.setValueAtTime(gain, this.audioContext.currentTime);
+                    gainValue = gain;
+                    localAudio.calculateEqGain();
+                    for (let eqSetting of storedEqSettings) {
+                        if (eqSetting.freqency == frequency) {
+                            eqSetting.value = gain;
+                            setSetting("eq", JSON.stringify(storedEqSettings));
+                            return;
+                        }
+                    }
+                    storedEqSettings.push({
+                        frequency,
+                        value: gain
+                    });
+                    setSetting("eq", JSON.stringify(storedEqSettings));
+                },
+                getGain: () => gainValue
+            });
+        }
+        setSetting("eq", JSON.stringify(storedEqSettings));
+
+        this.gain.connect(this.eqNodes[0].node);
+        this.eqGain = this.audioContext.createGain();
+        this.calculateEqGain();
+        this.eqNodes[this.eqNodes.length - 1].node.connect(this.eqGain);
+        this.eqGain.connect(this.audioContext.destination);
         
 
         const filter = this.audioContext.createBiquadFilter();

@@ -1,0 +1,10 @@
+.eq {
+    max-width: 1000px;
+
+    .eqOption {
+        width: 50px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}

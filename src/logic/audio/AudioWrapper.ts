@@ -40,6 +40,10 @@ export default class AudioWrapper {
         });
     }
 
+    public getAudioType(audioType: string) {
+        return this.audioTypes.get(audioType) || null;
+    }
+
     public registerUpdateEventListener(callback: (audio: AudioType) => void) {
         const index = this.updateEventListeners.indexOf(callback);
         if (index < 0) this.updateEventListeners.push(callback);

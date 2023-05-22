@@ -1,4 +1,5 @@
 const settings: Map<string, string | number | boolean> = new Map();
+const settingsListeners: Map<string, ((value: any) => void)[]> = new Map();
 
 export function loadSettings() {
     const json = localStorage.getItem("settings");
@@ -41,5 +42,33 @@ export function getSetting(setting: string, defaultValue?: any): any {
 
 export function setSetting(setting: string, value: string | number | boolean) {
     settings.set(setting, value);
+
+    const listeners = settingsListeners.get(setting);
+    if (listeners) {
+        for (let callback of listeners) {
+            callback(value);
+        }
+    }
+
     saveSettings();
+}
+
+export function registerSettingListener(setting: string, callback: (value: any) => void) {
+    const array = settingsListeners.get(setting);
+    if (array) {
+        if (array.indexOf(callback) < 0) {
+            array.push(callback);
+        }
+    } else {
+        settingsListeners.set(setting, [callback]);
+    }
+}
+
+export function unregisterSettingListener(setting: string, callback: (value: any) => void) {
+    const array = settingsListeners.get(setting);
+    if (!array) return;
+    const index = array.indexOf(callback);
+    if (index >= 0) {
+        array.splice(index, 1);
+    }
 }

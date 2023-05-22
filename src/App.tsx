@@ -14,7 +14,7 @@ import NotificationManager from "./components/NotificationManager";
 import TrackPage from "./pages/TrackPage";
 import Volume from "./components/Volume";
 import CastButton from "./components/CastButton";
-import { Button } from "@nextui-org/react";
+import { Button, NextUIProvider } from "@nextui-org/react";
 import { VscLayoutSidebarRight } from "react-icons/vsc"
 import { useEffect, useState } from "react";
 import UserPage from "./pages/UserPage";
@@ -28,6 +28,9 @@ import LoginPage from "./pages/LoginPage";
 import LoadingPage from "./pages/LoadingPage";
 import SettingsPage from "./pages/SettingsPage";
 import { getSetting, setSetting } from "./logic/SettingsIndex";
+import Theme from "./logic/ThemeIndex";
+
+const theme = Theme.getTheme(getSetting("theme", "Classic"));
 
 function App() {
     const navigate = useNavigate();
@@ -100,7 +103,7 @@ function App() {
     }
 
     return (
-        <>
+        <NextUIProvider theme={theme}>
             <NotificationManager />
             <BackgroundGlow />
             <Routes>
@@ -133,7 +136,7 @@ function App() {
                     )
                 } />
             </Routes>
-        </>
+        </NextUIProvider>
     )
 }
 

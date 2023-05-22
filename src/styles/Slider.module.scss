@@ -1,0 +1,81 @@
+.container {
+    transition: opacity 0.5s;
+    opacity: 1;
+    position: relative;
+    width: var(--length);
+    height: 30px;
+
+    input {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: calc(var(--length) - 10px);
+        height: 30px;
+        background: transparent;
+        cursor: pointer;
+        z-index: 1;
+        -webkit-appearance: none;
+
+        &.enabled {
+            &::-webkit-slider-thumb {
+                appearance: none;
+                -webkit-appearance: none;
+                width: 5px;
+                height: 5px;
+                background: var(--nextui-colors-primary);
+                border: none;
+                transform: scale(3);
+                transition: transform 0.2s;
+                border-radius: 50%;
+            }
+              
+            &::-moz-range-thumb {
+                width: 5px;
+                height: 5px;
+                background: var(--nextui-colors-primary);
+                border: none;
+                transform: scale(3);
+                transition: transform 0.2s;
+                border-radius: 50%;
+            }
+        }
+
+        &.disabled {
+            &::-webkit-slider-thumb {
+                appearance: none;
+                -webkit-appearance: none;
+            }
+              
+            &::-moz-range-thumb {
+                appearance: none;
+            }
+        }
+    }
+
+    &.vertical {
+        width: 30px;
+        height: var(--length);
+
+        &::after {
+            transform: translate(-50%, -50%) rotate(-90deg);
+        }
+
+        input {
+            transform: translate(-50%, -50%) rotate(-90deg);
+        }
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: calc(var(--length) - 10px);
+        height: 4px;
+        background: var(--gradient);
+        border-radius: 2px;
+        transition: opacity 0.2s;
+    }
+}
