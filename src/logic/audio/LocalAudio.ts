@@ -15,7 +15,7 @@ export interface EqNode {
 
 export default class LocalAudio extends AudioType {
     private audio = new Audio();
-    private audioContext: AudioContext;
+    private audioContext: AudioContext = null;
     private gain: GainNode;
     private buffering = false;
     private lastBuffer = 0;
@@ -85,12 +85,17 @@ export default class LocalAudio extends AudioType {
         }
     }
 
+    public getAudioContext() {
+        return this.audioContext;
+    }
+
     public getFrequencyResponse(response: Float32Array) {
         const magCombined = new Float32Array(response.length);
-        const magCurr = new Float32Array(this.eqNodes.length);
-        const phaseCurr = new Float32Array(this.eqNodes.length);
+        const magCurr = new Float32Array(response.length);
+        const phaseCurr = new Float32Array(response.length);
 
         for (let node of this.eqNodes) {
+            
             node.node.getFrequencyResponse(response, magCurr, phaseCurr);
 
             for (let j = 0; j < response.length; j++) {
@@ -131,7 +136,7 @@ export default class LocalAudio extends AudioType {
         source.connect(this.gain);
 
 
-        const frequencies = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000];
+        const frequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
         let storedEqSettings: any[];
         try {
             storedEqSettings = JSON.parse(getSetting("eq", []));
@@ -150,6 +155,7 @@ export default class LocalAudio extends AudioType {
             }
             
             filter.frequency.value = frequency;
+            filter.Q.setValueAtTime(1, this.audioContext.currentTime);
             let gainValue = 0;
 
             for (let eqSetting of storedEqSettings) {
@@ -157,7 +163,7 @@ export default class LocalAudio extends AudioType {
                     storedEqSettings.splice(storedEqSettings.indexOf(eqSetting), 1);
                 } else if (eqSetting.frequency == frequency) {
                     const value = eqSetting.value as number;
-                    if (value >= -60 && value <= 30) {
+                    if (value >= -30 && value <= 20) {
                         filter.gain.setValueAtTime(value, this.audioContext.currentTime);
                         gainValue = value;
                     } else {
@@ -176,7 +182,7 @@ export default class LocalAudio extends AudioType {
                 node: filter,
                 frequency,
                 setGain: (gain: number) => {
-                    if (gain < -60 || gain > 30) return;
+                    if (gain < -30 || gain > 20) return;
                     filter.gain.setValueAtTime(gain, this.audioContext.currentTime);
                     gainValue = gain;
                     localAudio.calculateEqGain();

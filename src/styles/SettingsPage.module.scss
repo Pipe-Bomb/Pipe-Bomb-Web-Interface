@@ -8,3 +8,34 @@
         align-items: center;
     }
 }
+
+.eqGraph {
+    max-width: 1000px;
+    height: 200px;
+    margin-bottom: 20px;
+
+    --mask-height: 10px;
+    overflow-y: hidden;
+    
+    --mask-image-content: linear-gradient(
+        to bottom,
+        transparent,
+        black var(--mask-height),
+        black calc(100% - var(--mask-height)),
+        transparent
+    );
+
+    --mask-size-content: calc(100% - var(--scrollbar-width)) 100%;
+    --mask-image-scrollbar: linear-gradient(black, black);
+
+    mask-image: var(--mask-image-content);
+    -webkit-mask-image: var(--mask-image-content);
+    mask-size: var(--mask-size-content);
+    -webkit-mask-size: var(--mask-size-content);
+
+    mask-position: 0 0, 100% 0;
+    -webkit-mask-position: 0 0, 100% 0;
+
+    mask-repeat: no-repeat, no-repeat;
+    -webkit-mask-repeat: no-repeat, no-repeat;
+}
