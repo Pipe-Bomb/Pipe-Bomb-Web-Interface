@@ -1,13 +1,14 @@
 import Playlist from "pipebomb.js/dist/collection/Playlist";
 import styles from "../styles/PlaylistCollection.module.scss"
 import ListPlaylist from "./ListPlaylist";
+import React from "react";
 
 export interface PlaylistCollectionProps {
     playlists?: Playlist[],
     children?: JSX.Element | JSX.Element[]
 }
 
-export default function PlaylistCollection({ playlists, children }: PlaylistCollectionProps) {
+const PlaylistCollection = React.memo(function PlaylistCollection({ playlists, children }: PlaylistCollectionProps) {
     return (
         <div className={styles.container}>
             {playlists && playlists.map((playlist, index) => (
@@ -16,4 +17,6 @@ export default function PlaylistCollection({ playlists, children }: PlaylistColl
             { children }
         </div>
     )
-}
+});
+
+export default PlaylistCollection;

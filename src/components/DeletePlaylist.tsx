@@ -5,6 +5,7 @@ import PlaylistIndex from '../logic/PlaylistIndex';
 import styles from "../styles/AddToPlaylist.module.scss";
 import { openCreatePlaylist } from "./CreatePlaylist";
 import Playlist from 'pipebomb.js/dist/collection/Playlist';
+import React from 'react';
 
 let openModal = () => {};
 let addToPlaylist = (playlist: Playlist) => {};
@@ -20,7 +21,7 @@ interface lastButton {
     value: string | JSX.Element
 }
 
-export default function AddToPlaylist() {
+const AddToPlaylist = React.memo(function AddToPlaylist() {
     const [visible, setVisible] = useState(false);
     const [playlists, setPlaylists] = useState(PlaylistIndex.getInstance().getPlaylists());
     const [lastTrackButton, setLastTrackButton] = useState<lastButton>({
@@ -90,4 +91,6 @@ export default function AddToPlaylist() {
             </Grid.Container>
         </Modal>
     )
-}
+});
+
+export default AddToPlaylist;

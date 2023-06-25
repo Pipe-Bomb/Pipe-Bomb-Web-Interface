@@ -8,6 +8,7 @@ import CustomModal from './CustomModal';
 import Loader from './Loader';
 import Playlist from 'pipebomb.js/dist/collection/Playlist';
 import { createNotification } from './NotificationManager';
+import React from 'react';
 
 let openModal = () => {};
 let addToPlaylist = (playlistID: string) => {};
@@ -27,7 +28,7 @@ interface lastButton {
     value: string | JSX.Element
 }
 
-export default function AddToPlaylist() {
+const AddToPlaylist = React.memo(function AddToPlaylist() {
     const [visible, setVisible] = useState(false);
     const [playlists, setPlaylists] = useState(PlaylistIndex.getInstance().getPlaylists());
     const [lastTrackButton, setLastTrackButton] = useState<lastButton>({
@@ -116,4 +117,6 @@ export default function AddToPlaylist() {
             </CustomModal>
         </>
     )
-}
+});
+
+export default AddToPlaylist;

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "../styles/ContextMenu.module.scss"
 import { Dropdown } from "@nextui-org/react";
+import React from "react";
 
 let privateSetContent: (content: JSX.Element) => void;
 let mouseEvent: React.MouseEvent;
@@ -11,7 +12,7 @@ export function openContextMenu(e: React.MouseEvent, content: JSX.Element) {
     if (privateSetContent) privateSetContent(content);
 }
 
-export default function ContextMenu() {
+const ContextMenu = React.memo(function ContextMenu() {
     const [content, setContent] = useState<JSX.Element>(null);
     const container = useRef<HTMLDivElement>();
     const button = useRef(null);
@@ -46,4 +47,6 @@ export default function ContextMenu() {
             </Dropdown>
         </div>
     )
-}
+});
+
+export default ContextMenu;

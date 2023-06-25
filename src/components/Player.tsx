@@ -12,12 +12,13 @@ import { Link } from "react-router-dom";
 import { openContextMenu } from "./ContextMenu";
 import { openAddToPlaylist } from "./AddToPlaylist";
 import PipeBombConnection from "../logic/PipeBombConnection";
+import React from "react";
 
 interface PlayerProps {
     children?: JSX.Element | JSX.Element[]
 }
 
-export default function Player({ children }: PlayerProps) {
+const Player = React.memo(function Player({ children }: PlayerProps) {
     const audioPlayer = AudioPlayer.getInstance();
     const [currentlyPlaying, setCurrentlyPlaying] = useState(audioPlayer.getCurrentTrack()?.track);
     const [dummyReload, setDummyReload] = useState(false);
@@ -159,4 +160,6 @@ export default function Player({ children }: PlayerProps) {
             </div>
         </div>
     )
-}
+});
+
+export default Player;

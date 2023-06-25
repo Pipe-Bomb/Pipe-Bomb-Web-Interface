@@ -29,10 +29,11 @@ import LoadingPage from "./pages/LoadingPage";
 import SettingsPage from "./pages/SettingsPage";
 import { getSetting, setSetting } from "./logic/SettingsIndex";
 import Theme from "./logic/ThemeIndex";
+import React from "react";
 
 const theme = Theme.getTheme(getSetting("theme", "Classic"));
 
-function App() {
+const App = React.memo(function App() {
     const navigate = useNavigate();
     const location = useLocation();
     const [sidebarEnabled, setSidebarEnabled] = useState(getSetting("sidebarOpen", true));
@@ -138,6 +139,6 @@ function App() {
             </Routes>
         </NextUIProvider>
     )
-}
+});
 
 export default App;

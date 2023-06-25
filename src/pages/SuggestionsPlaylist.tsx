@@ -11,10 +11,9 @@ import { MdPlayArrow, MdShuffle } from "react-icons/md";
 import TrackList from "pipebomb.js/dist/collection/TrackList";
 import useTrack from "../hooks/TrackHook";
 import useTrackMeta from "../hooks/TrackMetaHook";
+import React from "react";
 
-let lastPlaylistID = "";
-
-export default function SuggestionsPlaylist() {
+const SuggestionsPlaylist = React.memo(function SuggestionsPlaylist() {
     let paramID: any = useParams().ID;
     const track = useTrack(paramID);
     const trackMeta = useTrackMeta(track);
@@ -103,4 +102,6 @@ export default function SuggestionsPlaylist() {
             { generateListHTML() }
         </>
     )
-}
+});
+
+export default SuggestionsPlaylist;

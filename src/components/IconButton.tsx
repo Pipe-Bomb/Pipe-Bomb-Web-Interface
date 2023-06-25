@@ -1,4 +1,5 @@
 import { Button } from "@nextui-org/react"
+import React from "react"
 import { IconContext } from "react-icons"
 
 export interface IconButtonProps {
@@ -10,22 +11,22 @@ export interface IconButtonProps {
     bordered?: boolean
 }
 
-export default function IconButton(props: IconButtonProps) {
-    const size = props.size || "md";
-
+const IconButton = React.memo(function IconButton({ children, onClick, size, color, light, bordered}: IconButtonProps) {
     const iconSize = {
         xs: 15,
         sm: 20,
         md: 25,
         lg: 30,
         xl: 35
-    }[size];
+    }[size || "md"];
 
     return (
-        <Button light={props.light} bordered={props.bordered} onPress={() => { props.onClick ? props.onClick() : null }} size={size} auto color={props.color}>
+        <Button light={light} bordered={bordered} onPress={onClick} size={size || "md"} auto color={color}>
             <IconContext.Provider value={{size: iconSize + "px"}}>
-                { props.children }
+                { children }
             </IconContext.Provider>
         </Button>
     )
-}
+});
+
+export default IconButton;

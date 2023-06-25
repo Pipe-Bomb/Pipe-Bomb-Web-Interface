@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "../styles/ImageWrapper.module.scss"
 import { Loading } from "@nextui-org/react";
+import React from "react";
 
 export interface ImageWrapperProps {
     src: string,
@@ -8,7 +9,7 @@ export interface ImageWrapperProps {
     loadingSize?: "xs" | "sm" | "md" | "lg" | "xl"
 }
 
-export default function ImageWrapper({src, fallback, loadingSize}: ImageWrapperProps) {
+const ImageWrapper = React.memo(function ImageWrapper({src, fallback, loadingSize}: ImageWrapperProps) {
     const image = useRef<HTMLImageElement>(null);
     const [loading, setLoading] = useState(true);
     const [activeSrc, setActiveSrc] = useState("");
@@ -42,4 +43,6 @@ export default function ImageWrapper({src, fallback, loadingSize}: ImageWrapperP
         </div>
         
     )
-}
+});
+
+export default ImageWrapper;

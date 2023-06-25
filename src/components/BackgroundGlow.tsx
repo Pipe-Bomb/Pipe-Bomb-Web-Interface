@@ -1,8 +1,9 @@
 import GlowEffect from "./GlowEffect";
 import styles from "../styles/BackgroundGlow.module.scss"
 import useCurrentTrack from "../hooks/CurrentTrackHook";
+import React from "react";
 
-export default function BackgroundGlow() {
+const BackgroundGlow = React.memo(function BackgroundGlow() {
     const currentTrack = useCurrentTrack();
 
     return (
@@ -20,4 +21,6 @@ export default function BackgroundGlow() {
             <GlowEffect active={true} durationMultiplier={10} spread={40} staticBrightness={true} image={currentTrack?.getThumbnailUrl()} />
         </div>
     )
-}
+});
+
+export default BackgroundGlow;

@@ -4,12 +4,13 @@ import Queue from "./Queue";
 import styles from "../styles/Sidebar.module.scss"
 import { Button } from "@nextui-org/react";
 import { MdOutlineLyrics, MdQueueMusic } from "react-icons/md";
+import React from "react";
 
 export interface SidebarProps {
     enabled: boolean
 }
 
-export default function Sidebar({ enabled }: SidebarProps) {
+const Sidebar = React.memo(function Sidebar({ enabled }: SidebarProps) {
     const [state, setState] = useState("queue");
 
 
@@ -35,4 +36,6 @@ export default function Sidebar({ enabled }: SidebarProps) {
             </div>
         </div>
     )
-} 
+});
+
+export default Sidebar;

@@ -5,6 +5,7 @@ import PipeBombConnection from '../logic/PipeBombConnection';
 import PlaylistIndex from '../logic/PlaylistIndex';
 import { addTrack } from './AddToPlaylist';
 import CustomModal from './CustomModal';
+import React from 'react';
 
 let openModal = () => {};
 let currentTrack: Track | null = null;
@@ -14,7 +15,7 @@ export function openCreatePlaylist(track?: Track) {
     openModal();
 }
 
-export default function CreatePlaylist() {
+const CreatePlaylist = React.memo(function CreatePlaylist() {
     const input = useRef<HTMLInputElement>(null);
     const [visible, setVisible] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -75,4 +76,6 @@ export default function CreatePlaylist() {
             </Grid.Container>
         </CustomModal>
     )
-}
+});
+
+export default CreatePlaylist;

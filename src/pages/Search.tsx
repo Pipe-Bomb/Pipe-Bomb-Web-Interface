@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { TbMoodEmpty } from "react-icons/tb";
 import CenterIcon from "../components/CenterIcon";
 import PlaylistCollection from "../components/PlaylistCollection";
+import React from "react";
 
 interface storedResults {
     tracks: Track[],
@@ -25,7 +26,7 @@ let storedTrackList: storedResults = {
 };
 let storedPlatform = "Youtube Music";
 
-export default function Search() {
+const SearchPage = React.memo(function SearchPage() {
     const input = useRef<HTMLInputElement>(null);
     const [currentPlatform, setCurrentPlatform] = useState(storedPlatform);
     const [services, setServices] = useState<ServiceInfo[] | null>(null);
@@ -188,4 +189,6 @@ export default function Search() {
         { generateServices() }
     </>
   );
-}
+});
+
+export default SearchPage;

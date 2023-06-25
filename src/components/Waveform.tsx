@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "../styles/Waveform.module.scss"
 import { lerp } from "../logic/Utils";
+import React from "react";
 
 
 export interface WaveformProps {
@@ -13,7 +14,7 @@ export interface WaveformProps {
 const anyWindow: any = window;
 window.AudioContext = window.AudioContext || anyWindow.webkitAudioContext;
 
-export default function Waveform({ url, active, percent, segments }: WaveformProps) {
+const Waveform = React.memo(function Waveform({ url, active, percent, segments }: WaveformProps) {
     const [audioBuffer, setAudioBuffer] = useState<AudioBuffer>(null);
     const [currentBuffer, setCurrentBuffer] = useState<null | number[]>(null);
     const loaded = useRef(false);
@@ -195,4 +196,6 @@ export default function Waveform({ url, active, percent, segments }: WaveformPro
     return (
         <canvas ref={canvas} className={styles.canvas}></canvas>
     )
-}
+});
+
+export default Waveform;

@@ -10,12 +10,13 @@ import { ViewportList } from "react-viewport-list";
 import useCurrentTrack from "../hooks/CurrentTrackHook";
 import IconButton from "./IconButton";
 import ScrollFade from "./ScrollFade";
+import React from "react";
 
 interface ItemInterface {
     id: number
 }
 
-export default function Queue() {
+const Queue = React.memo(function Queue() {
     const audioPlayer = AudioPlayer.getInstance();
     const [trackList, setTrackList] = useState(audioPlayer.getQueue());
     const [history, setHistory] = useState(audioPlayer.getHistory());
@@ -149,4 +150,6 @@ export default function Queue() {
             </div>
         </div>
     )
-}
+});
+
+export default Queue;

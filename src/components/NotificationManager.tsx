@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "../styles/NotificationManager.module.scss"
 import Notification from "./Notification";
+import React from "react";
 
 let lastNotificationTime = 0;
 let notificationDupeCount = 0;
@@ -89,7 +90,7 @@ function mouseExit() {
     }
 }
 
-export default function NotificationManager() {
+const NotificationManager = React.memo(function NotificationManager() {
     const [notificationList, setNotifications] = useState(Array.from(notifications));
     setNotificationsUpdate = setNotifications;
     const container = useRef<HTMLDivElement>(null);
@@ -118,4 +119,6 @@ export default function NotificationManager() {
             ))}
         </div>
     )
-}
+});
+
+export default NotificationManager;

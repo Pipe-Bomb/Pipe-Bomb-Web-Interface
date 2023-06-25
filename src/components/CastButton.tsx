@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
 import styles from "../styles/CastButton.module.scss";
+import React from "react";
 
-export default function CastButton() {
+const CastButton = React.memo(function CastButton() {
     const container = useRef<HTMLDivElement>();
 
     useEffect(() => {
@@ -17,4 +18,6 @@ export default function CastButton() {
             <div ref={container} className={styles.sizer}></div>
         </div>
     )
-}
+});
+
+export default CastButton;

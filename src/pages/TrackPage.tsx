@@ -19,8 +19,9 @@ import { openAddToPlaylist } from "../components/AddToPlaylist";
 import { useResizeDetector } from "react-resize-detector";
 import { BiPlus } from "react-icons/bi";
 import PipeBombConnection from "../logic/PipeBombConnection";
+import React from "react";
 
-export default function TrackPage() {
+const TrackPage = React.memo(function TrackPage() {
     let paramID: any = useParams().ID;
     const waveformRef = useResizeDetector();
     
@@ -244,4 +245,6 @@ export default function TrackPage() {
             </div>
         </>
     )
-}
+});
+
+export default TrackPage;

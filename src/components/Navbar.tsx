@@ -11,8 +11,9 @@ import { MdHome, MdSearch, MdOutlinePlaylistPlay } from "react-icons/md";
 import { IoServer } from "react-icons/io5";
 import Loader from "./Loader";
 import Playlist from "pipebomb.js/dist/collection/Playlist";
+import React from "react";
 
-export default function Navbar() {
+const Navbar = React.memo(function Navbar() {
     const playlistIndex = PlaylistIndex.getInstance();
     const [playlists, setPlaylists] = useState(playlistIndex.getPlaylists());
     const navigate = useNavigate();
@@ -25,20 +26,6 @@ export default function Navbar() {
 
     useEffect(() => {
         playlistIndex.registerUpdateCallback(playlistsUpdated);
-        if (!PipeBombConnection.getInstance().getUrl()) {
-            // const host = localStorage.getItem("host");
-            // let connected = false;
-            // if (host) {
-            //     const hostInfo = ServerIndex.getInstance().getServer(host);
-            //     if (hostInfo) {
-            //         connectToHost(hostInfo, "secure");   
-            //         connected = true;
-            //     }
-            // }
-            // if (!connected) {
-            //     navigate("/connect");
-            // }
-        }
 
         return () => {
             playlistIndex.unregisterUpdateCallback(playlistsUpdated);
@@ -89,4 +76,6 @@ export default function Navbar() {
             { generatePlaylistHTML() }
         </div>
     </div>
-}
+});
+
+export default Navbar;
