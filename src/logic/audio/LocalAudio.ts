@@ -268,24 +268,46 @@ export default class LocalAudio extends AudioType {
     }
 
     public async setVolume(volume: number) {
+        let actualVolume = LocalAudio.visualVolumeToActual(volume);
+
         if (this.gain) {
-            this.gain.gain.setValueAtTime(volume / 100, this.audioContext.currentTime);
+            this.gain.gain.setValueAtTime(actualVolume, this.audioContext.currentTime);
         } else {
-            this.audio.volume = volume / 100;
+            this.audio.volume = actualVolume;
         }
-        setSetting("volume", volume / 100);
+        setSetting("volume", actualVolume);
         this.update();
     }
 
     public getVolume() {
         if (this.gain) {
-            return this.gain.gain.value * 100;
+            return LocalAudio.actualVolumeToVisual(this.gain.gain.value);
         }
-        return this.audio.volume * 100;
+        return LocalAudio.actualVolumeToVisual(this.audio.volume);
     }
 
     public isVolumeEnabled() {
         return true;
+    }
+
+    /**
+     * Convert the displayed volume to the actual volume used in the audio player.
+     * This is based on the square of the displayed volume to account for how human hearing works.
+     * @param volume the volume as seen on the slider, between 0 and 100.
+     * @returns the actual volume to use, between 0 and 1.
+     */
+    private static visualVolumeToActual(volume: number): number {
+        let scaled = volume / 100;
+        return scaled * scaled;
+    }
+
+    /**
+     * Convert the actual volume to use to the volume to display in the volume slider.
+     * @param volume the actual volume used in the audio player, between 0 and 1.
+     * @returns the volume to display on the slider, between 0 and 100.
+     */
+    private static actualVolumeToVisual(volume: number): number {
+        return 100 * Math.sqrt(volume);
     }
 
     public async setMuted(muted: boolean) {
