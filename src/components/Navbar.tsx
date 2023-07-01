@@ -1,13 +1,9 @@
-import { Link, NavLink } from "react-router-dom";
-import styles from "../styles/SideBar.module.scss";
-import logo from "../assets/Pipe Bomb logo no background.png";
+import { Link } from "react-router-dom";
+import styles from "../styles/Navbar.module.scss";
 import PlaylistIndex from "../logic/PlaylistIndex";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import { useNavigate } from 'react-router-dom';
-import { connectToHost } from "../pages/Connect";
-import ServerIndex from "../logic/ServerIndex";
-import Account from "../logic/Account";
 import { Button } from "@nextui-org/react";
 import { openCreatePlaylist } from "./CreatePlaylist";
 import { GoPlus } from "react-icons/go";
@@ -16,32 +12,32 @@ import { IoServer } from "react-icons/io5";
 import Loader from "./Loader";
 import Playlist from "pipebomb.js/dist/collection/Playlist";
 
-export default function SideBar() {
+export default function Navbar() {
     const playlistIndex = PlaylistIndex.getInstance();
     const [playlists, setPlaylists] = useState(playlistIndex.getPlaylists());
     const navigate = useNavigate();
+    const logoID = getComputedStyle(document.body).getPropertyValue("--nextui-colors-logoID") || "main";
+    const logo = useRef(null);
 
     function playlistsUpdated(playlists: Playlist[]) {
         setPlaylists(playlists);
     }
 
-    Account.getInstance();
-
     useEffect(() => {
         playlistIndex.registerUpdateCallback(playlistsUpdated);
         if (!PipeBombConnection.getInstance().getUrl()) {
-            const host = localStorage.getItem("host");
-            let connected = false;
-            if (host) {
-                const hostInfo = ServerIndex.getInstance().getServer(host);
-                if (hostInfo) {
-                    connectToHost(hostInfo, "secure");   
-                    connected = true;
-                }
-            }
-            if (!connected) {
-                navigate("/connect");
-            }
+            // const host = localStorage.getItem("host");
+            // let connected = false;
+            // if (host) {
+            //     const hostInfo = ServerIndex.getInstance().getServer(host);
+            //     if (hostInfo) {
+            //         connectToHost(hostInfo, "secure");   
+            //         connected = true;
+            //     }
+            // }
+            // if (!connected) {
+            //     navigate("/connect");
+            // }
         }
 
         return () => {
@@ -65,8 +61,7 @@ export default function SideBar() {
 
     return <div className={styles.sideBar}>
         <Link to="/" className={styles.logo}>
-            <img src={logo} className={styles.image} />
-            <div className={styles.spacer} />
+            <img src={`/logos/${logoID}.png`} className={styles.image} ref={logo} style={{opacity: logo.current ? 1 : 0}} />
         </Link>
         <div className={styles.topLinks}>
             <Button className={styles.topLink} onPress={() => navigate("/")}>

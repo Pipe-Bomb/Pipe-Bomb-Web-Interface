@@ -1,11 +1,11 @@
 .container {
     position: relative;
     display: block;
-    height: 100px;
-    background: var(--nextui-colors-backgroundSecondary);
+    background: var(--nextui-colors-background);
     border-radius: var(--nextui-radii-base);
-    max-width: 800px;
+    width: 200px;
     transition: background 0.2s;
+    box-shadow: var(--nextui-shadows-md);
 
     &:hover {
         background: var(--nextui-colors-secondaryLightHover);
@@ -15,22 +15,21 @@
 .link {
     width: 100%;
     display: flex;
-    align-items: start;
+    flex-direction: column;
+    align-items: stretch;
 }
 
 .imageContainer {
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    aspect-ratio: 1;
     background: var(--nextui-colors-waitingBackground);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     flex-shrink: 0;
-    margin-right: var(--nextui-space-8);
     position: relative;
     overflow: hidden;
     border-radius: var(--nextui-radii-base);
-    border: 2px solid var(--nextui-colors-border);
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -45,37 +44,43 @@
         z-index: 1;
     }
 
-    .quarterImage {
-        display: inline-block;
-        margin-bottom: -6px;
-        width: 50%;
-        height: 50%;
+    .image {
+        box-sizing: border-box;
+        border: 2px solid var(--nextui-colors-border);
+        border-radius: var(--nextui-radii-base);
         overflow: hidden;
-        object-fit: cover;
-    }
-
-    .singleImage {
-        height: 100%;
-        width: 100%;
         position: absolute;
         top: 0;
+        bottom: 0;
         left: 0;
-        object-fit: cover;
+        right: 0;
     }
 }
 
-.title {
+.info {
     display: block;
-    margin-top: 10px;
-    font-size: var(--nextui-fontSizes-2xl);
-    font-weight: var(--nextui-fontWeights-semibold);
-    word-wrap: break-word;
-    width: 90%;
-    min-width: auto;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
     overflow: hidden;
-    margin-right: var(--nextui-space-8);
+    margin: 0.5rem 1rem;
+    
+    .title {
+        font-size: var(--nextui-fontSizes-xl);
+        font-weight: var(--nextui-fontWeights-semibold);
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        
+    }
+    
+    .subtitle {
+        color: var(--nextui-colors-text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        max-width: 100%;
+        opacity: 0.5;
+        font-weight: var(--nextui-fontWeights-normal);
+    }
 }
+

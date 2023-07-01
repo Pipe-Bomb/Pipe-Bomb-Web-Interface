@@ -8,13 +8,15 @@ import Loader from "../components/Loader";
 import Track from "pipebomb.js/dist/music/Track";
 import ListTrack from "../components/ListTrack";
 import AudioPlayer from "../logic/AudioPlayer";
-import { convertTracklistToM3u, shuffle } from "../logic/Utils";
-import { MdShuffle, MdPlayArrow, MdMoreHoriz } from "react-icons/md";
+import { convertTracklistToM3u } from "../logic/Utils";
+import { MdPlayArrow } from "react-icons/md";
 import PlaylistIndex from "../logic/PlaylistIndex";
 import { useNavigate } from "react-router-dom";
-import Account, { UserDataFormat } from "../logic/Account";
 import CompactTrack from "../components/CompactTrack";
 import PipeBombPlaylist from "pipebomb.js/dist/collection/Playlist";
+import PlaylistTop from "../components/PlaylistTop";
+import useIsSelf from "../hooks/IsSelfHook";
+import { ViewportList } from "react-viewport-list";
 
 let lastPlaylistID = "";
 
@@ -24,21 +26,21 @@ export default function Playlist() {
     const [playlist, setPlaylist] = useState<PipeBombPlaylist | null>(null);
     const [trackList, setTrackList] = useState<Track[] | null | false>(false);
     const [errorCode, setErrorCode] = useState(0);
-    const [selfInfo, setSelfInfo] = useState<UserDataFormat | null>(null);
     const [suggestions, setSuggestions] = useState<Track[] | null>(null);
     const navigate = useNavigate();
+    const self = useIsSelf(playlist?.owner);
 
 
     const playlistID: string = paramID;
 
     const callback = (collection: PipeBombPlaylist) => {
         if (!collection) return;
-        collection.getTrackList(PipeBombConnection.getInstance().getApi().trackCache)
+        collection.getTrackList()
         .then(tracks => {
             if (lastPlaylistID != paramID) return;
             setTrackList(tracks);
 
-            collection.getSuggestedTracks(PipeBombConnection.getInstance().getApi().trackCache)
+            collection.getSuggestedTracks()
             .then(newSuggestions => {
                 if (lastPlaylistID != paramID) return;
                 setSuggestions(newSuggestions);
@@ -73,10 +75,6 @@ export default function Playlist() {
     }, [paramID]);
 
     useEffect(() => {
-        if (!selfInfo) {
-            Account.getInstance().getUserData().then(setSelfInfo);
-        }
-
         if (playlist) {
             playlist.registerUpdateCallback(callback);
         }
@@ -97,7 +95,7 @@ export default function Playlist() {
         )
     }
 
-    if (paramID === undefined || isNaN(parseInt(paramID)) || errorCode != 0) {
+    if (paramID === undefined || errorCode != 0) {
         return (
             <>
                 <Text h1>Error 500</Text>
@@ -107,14 +105,14 @@ export default function Playlist() {
     }
 
     if (!playlist) {
-        return <Loader text="Loading..."></Loader>
+        return <Loader text="Loading"></Loader>
     }
 
     if (trackList === false) {
         return (
             <>
                 <Text h1>{playlist.getName()}</Text>
-                <Loader text="Loading Tracks..."></Loader>
+                <Loader text="Loading Tracks"></Loader>
             </>
         )
     }
@@ -124,19 +122,28 @@ export default function Playlist() {
 
     function playPlaylist() {
         if (!trackList) return;
-        audioPlayer.addToQueue(trackList, 0);
+        audioPlayer.clearQueue();
+        audioPlayer.addToQueue(trackList, false, 0);
         audioPlayer.nextTrack();
+        audioPlayer.setAutoplayTracks("playlist", playlist.collectionID, async () => {
+            return await playlist.getSuggestedTracks();
+        });
     }
 
     function shufflePlaylist() {
         if (!trackList) return;
-        audioPlayer.addToQueue(shuffle(trackList), 0);
+        audioPlayer.clearQueue();
+        audioPlayer.addToQueue(trackList, true, 0);
         audioPlayer.nextTrack();
+        audioPlayer.setAutoplayTracks("playlist", playlist.collectionID, async () => {
+            return await playlist.getSuggestedTracks();
+        });
     }
 
     function playSuggestions() {
         if (!suggestions) return;
-        audioPlayer.addToQueue(suggestions, 0);
+        audioPlayer.clearQueue();
+        audioPlayer.addToQueue(suggestions, false, 0);
         audioPlayer.nextTrack();
     }
 
@@ -154,15 +161,23 @@ export default function Playlist() {
                     convertTracklistToM3u(PipeBombConnection.getInstance().getUrl(), trackList, false, true);
                 }
                 break;
+            case "queue":
+                if (trackList) {
+                    audioPlayer.addToQueue(trackList);
+                }
+                break;
+            case "share":
+                PipeBombConnection.getInstance().copyLink("playlist", playlist.collectionID);
+                break;
         }
     }
 
-    const isOwnPlaylist = selfInfo && selfInfo.userID == playlist.owner.userID;
-
     function generateContextMenu() {
-        if (isOwnPlaylist) {
+        if (self) {
             return (
                 <Dropdown.Menu onAction={contextMenu} disabledKeys={["rename"]}>
+                    <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
+                    <Dropdown.Item key="share">Copy Link</Dropdown.Item>
                     <Dropdown.Item key="rename">Rename Playlist</Dropdown.Item>
                     <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
                     <Dropdown.Item key="delete" color="error">Delete Playlist</Dropdown.Item>
@@ -171,6 +186,8 @@ export default function Playlist() {
         } else {
             return (
                 <Dropdown.Menu onAction={contextMenu} disabledKeys={["like"]}>
+                    <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
+                    <Dropdown.Item key="share">Copy Link</Dropdown.Item>
                     <Dropdown.Item key="like">Like Playlist</Dropdown.Item>
                     <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
                 </Dropdown.Menu>
@@ -181,7 +198,7 @@ export default function Playlist() {
 
     function generateSuggestions() {
         if (!suggestions || !playlist || !trackList) {
-            return <Loader text="Loading Suggestions..." />;
+            return <Loader text="Loading Suggestions" />;
         }
 
         if (!suggestions.length) {
@@ -209,34 +226,12 @@ export default function Playlist() {
 
     return (
         <>
-            <Text h1>{playlist.getName()}</Text>
-            {!isOwnPlaylist && (
-                <Text h4 className={styles.playlistAuthor}>by {playlist.owner.username}</Text>
-            )}
-            {trackList && (
-                <Text h5 className={styles.trackCount}>{trackList.length} song{trackList.length == 1 ? "" : "s"}</Text>
-            )}
-            <Grid.Container gap={2} alignItems="center" className={styles.top}>
-                <Grid>
-                    <Button size="xl" auto onPress={playPlaylist} className={styles.roundButton} color="gradient"><MdPlayArrow /></Button>
-                </Grid>
-                <Grid>
-                    <Button size="lg" auto onPress={shufflePlaylist} className={styles.roundButton} bordered><MdShuffle /></Button>
-                </Grid>
-                <Grid>
-                    <Dropdown>
-                        <Dropdown.Trigger>
-                            <Button light size="xl" className={styles.contextButton}>
-                                <MdMoreHoriz />
-                            </Button>
-                        </Dropdown.Trigger>
-                        { generateContextMenu() }
-                    </Dropdown>
-                </Grid>
-            </Grid.Container>
-            {newTrackList.map((track, index) => (
-                <ListTrack key={index} track={track} parentPlaylist={playlist} />
-            ))}
+            <PlaylistTop name={playlist.getName()} trackCount={trackList ? trackList.length : undefined} onPlay={playPlaylist} onShuffle={shufflePlaylist} owner={playlist.owner} image={playlist.getThumbnailUrl()} contextMenu={generateContextMenu()} />
+            <ViewportList items={newTrackList}>
+                {(track, index) => (
+                    <ListTrack key={index} track={track} parentPlaylist={playlist} />
+                )}
+            </ViewportList>
             <div className={styles.suggestions}>
                 { generateSuggestions() }
             </div>

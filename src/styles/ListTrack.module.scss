@@ -1,15 +1,21 @@
 .container {
-    display: flex;
     margin: 0 0 var(--nextui-space-8) 0;
-    background: var(--nextui-colors-backgroundSecondary);
     border-radius: var(--nextui-radii-base);
-    color: var(--nextui-colors-text);
-    transition: background 0.2s;
-    overflow: hidden;
+    position: relative;
     max-width: 1400px;
+    background: var(--nextui-colors-background);
+    transition: background 0.2s;
+    box-shadow: var(--nextui-shadows-md);
 
     &:hover {
         background: var(--nextui-colors-secondaryLightHover);
+    }
+
+    .box {
+        display: flex;
+        color: var(--nextui-colors-text);
+        overflow: hidden;
+        position: relative;
     }
 }
 
@@ -41,23 +47,30 @@
 
 .info {
     width: calc(100% - 100px - var(--nextui-space-8));
+    overflow: hidden;
     display: block;
 }
 
 .trackName {
     font-size: var(--nextui-fontSizes-2xl);
-    margin-top: -2px;
     font-weight: var(--nextui-fontWeights-semibold);
-    word-wrap: break-word;
+    white-space: nowrap;
     min-width: auto;
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    margin-top: 0.5rem;
+    max-width: 100%;
 }
 
 .artists {
-    display: block;
     color: var(--nextui-colors-text);
-    margin-bottom: var(--nextui-space-12);
-    word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    max-width: 100%;
 }
 
 .contextButton {
@@ -76,4 +89,20 @@
     border-radius: var(--nextui--dropdownItemBorderRadius);
     display: flex;
     align-items: center;
+}
+
+@media only screen and (max-width: 1500px) {
+    .image {
+        height: 80px;
+        width: 80px;
+        margin-right: var(--nextui-space-4)
+    }
+
+    .trackName {
+        font-size: var(--nextui-fontSizes-lg);
+    }
+
+    .artists {
+        font-size: var(--nextui-fontSizes-md);
+    }
 }

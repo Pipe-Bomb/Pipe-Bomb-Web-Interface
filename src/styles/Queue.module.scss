@@ -1,27 +1,3 @@
-.queueContainer {
-    text-align: right;
-
-    .queueButton {
-        display: inline-block;
-        margin: 10px 10px 0 0;
-    }
-}
-
-.queuePopover {
-    padding: 1rem;
-    transform: translate(-1rem, -12px) !important;
-    width: 500px;
-    max-height: calc(100vh - 200px) !important;
-
-    .queueTitle {
-        margin: var(--nextui-space-8);
-    }
-
-    h3 {
-        margin: 0 !important;
-    }
-}
-
 .roundButton {
     svg {
         height: 30px;
@@ -29,6 +5,27 @@
     }
 }
 
-.rightSideContainer {
-    margin: 1rem 1rem 1rem 0;
+.container {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+
+    .scroll {
+        height: 100%;
+        overflow-y: auto;
+        padding-top: 20px;
+
+        .space {
+            height: 50px;
+        }
+    }
+}
+
+.topButtons {
+    padding: 0 !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
 }

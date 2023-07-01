@@ -6,62 +6,39 @@ import PipeBombConnection from "../logic/PipeBombConnection";
 import Loader from "../components/Loader";
 import ListTrack from "../components/ListTrack";
 import AudioPlayer from "../logic/AudioPlayer";
-import { shuffle } from "../logic/Utils";
 import styles from "../styles/Playlist.module.scss";
 import { MdPlayArrow, MdShuffle } from "react-icons/md";
 import TrackList from "pipebomb.js/dist/collection/TrackList";
+import useTrack from "../hooks/TrackHook";
+import useTrackMeta from "../hooks/TrackMetaHook";
 
 let lastPlaylistID = "";
 
 export default function SuggestionsPlaylist() {
     let paramID: any = useParams().ID;
-    const [trackMeta, setTrackMeta] = useState<TrackMeta | null | false>(null);
+    const track = useTrack(paramID);
+    const trackMeta = useTrackMeta(track);
     const [suggestions, setSuggestions] = useState<TrackList | null | false>(null);
 
     const api = PipeBombConnection.getInstance().getApi();
     const audioPlayer = AudioPlayer.getInstance();
 
     useEffect(() => {
-        setTrackMeta(null);
-        setSuggestions(null);
-        lastPlaylistID = paramID;
-
-        api.trackCache.getTrack(paramID)
-        .then(track => {
-            if (lastPlaylistID != paramID) return;
-            track.getMetadata()
-            .then(meta => {
-                if (lastPlaylistID != paramID) return;
-                setTrackMeta(meta);
-
-                track.getSuggestedTracks(api.collectionCache, api.trackCache)
-                .then(suggestions => {
-                    if (lastPlaylistID != paramID) return;
-                    if (!suggestions) {
-                        setSuggestions(false);
-                    } else {
-                        setSuggestions(suggestions);
-                    }
-                }).catch(e => {
-                    console.error(e);
-                    if (lastPlaylistID != paramID) return;
-                    setSuggestions(false); 
-                });
-            }).catch(e => {
-                console.error(e);
-                if (lastPlaylistID != paramID) return;
-                setTrackMeta(false);
-            })
-        }).catch(e => {
-            console.error(e);
-            if (lastPlaylistID != paramID) return;
-            setTrackMeta(false);
-        });
+        if (track) {
+            setSuggestions(null);
+            track.getSuggestedTracks()
+            .then(setSuggestions)
+            .catch(() => {
+                setSuggestions(false);
+            });
+        } else {
+            setSuggestions(false);
+        }
         
-    }, [paramID]);
+    }, [track]);
 
     if (trackMeta === null) {
-        return <Loader text="Loading..." />
+        return <Loader text="Loading" />
     }
 
     if (!trackMeta) {
@@ -77,7 +54,7 @@ export default function SuggestionsPlaylist() {
                 {trackMeta && (
                     <Text h4>A collection of tracks similar to <span className={styles.underline}>{trackMeta.title}</span></Text>
                 )}
-                <Loader text="Loading Tracks..." />
+                <Loader text="Loading Tracks" />
             </>
         }
 
@@ -108,20 +85,21 @@ export default function SuggestionsPlaylist() {
 
     function playPlaylist() {
         if (!suggestions) return;
-        audioPlayer.addToQueue(suggestions.getTrackList(), 0);
+        audioPlayer.clearQueue();
+        audioPlayer.addToQueue(suggestions.getTrackList(), false, 0);
         audioPlayer.nextTrack();
     }
 
     function shufflePlaylist() {
         if (!suggestions) return;
-        audioPlayer.addToQueue(shuffle(suggestions.getTrackList()), 0);
+        audioPlayer.clearQueue();
+        audioPlayer.addToQueue(suggestions.getTrackList(), true, 0);
         audioPlayer.nextTrack();
     }
 
     return (
         <>
             <Text h1>Suggestions</Text>
-            
             { generateListHTML() }
         </>
     )

@@ -1,6 +1,6 @@
 .user {
     img {
-        transform: scale(1.2);
+        transform: scale(1.3);
     }
 }
 
@@ -10,4 +10,18 @@
 
 .container {
     margin-right: 1rem;
+}
+
+.dropdownLink {
+    color: inherit;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding-left: var(--nextui-space-6);
+    padding-right: var(--nextui-space-6);
+    border-radius: var(--nextui--dropdownItemBorderRadius);
+    display: flex;
+    align-items: center;
 }

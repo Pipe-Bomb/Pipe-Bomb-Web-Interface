@@ -8,7 +8,7 @@ interface Props {
 export default function Loader({ text }: Props) {
     return (
         <div className={styles.loading}>
-            <Loading color="primary" size="xl">{text}</Loading>
+            <Loading color="primary" size="xl" className={styles.text}>{text}</Loading>
         </div>
     )
 }

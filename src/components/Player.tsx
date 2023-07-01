@@ -1,54 +1,65 @@
-import { Button, Grid, Progress, Loading, Text, Popover } from "@nextui-org/react";
+import { Button, Dropdown, Grid, Progress, Text } from "@nextui-org/react";
 import styles from "../styles/Player.module.scss";
 import { MdSkipNext, MdSkipPrevious, MdPlayArrow, MdPause } from "react-icons/md";
 import { useEffect, useRef, useState } from "react";
 import AudioPlayer from "../logic/AudioPlayer";
-import AudioPlayerStatus from "../logic/AudioPlayerStatus";
-import { convertArrayToString, formatTime } from "../logic/Utils";
-import Queue from "./Queue";
+import { convertArrayToString, downloadFile, formatTime } from "../logic/Utils";
 import KeyboardShortcuts from "../logic/KeyboardShortcuts";
-import Volume from "./Volume";
+import ImageWrapper from "./ImageWrapper";
+import useTrackMeta from "../hooks/TrackMetaHook";
+import usePlayerUpdate from "../hooks/PlayerUpdateHook";
+import { Link } from "react-router-dom";
+import { openContextMenu } from "./ContextMenu";
+import { openAddToPlaylist } from "./AddToPlaylist";
+import PipeBombConnection from "../logic/PipeBombConnection";
 
 interface PlayerProps {
-    showQueue: boolean
+    children?: JSX.Element | JSX.Element[]
 }
 
-
-export default function Player({ showQueue }: PlayerProps) {
+export default function Player({ children }: PlayerProps) {
     const audioPlayer = AudioPlayer.getInstance();
+    const [currentlyPlaying, setCurrentlyPlaying] = useState(audioPlayer.getCurrentTrack()?.track);
+    const [dummyReload, setDummyReload] = useState(false);
 
     const progressValue = useRef(-1);
     const slider = useRef<HTMLInputElement>(null);
 
-    const thumbnail = useRef(null);
-    const [title, setTitle] = useState("");
-    const [artist, setArtist] = useState("");
+    const status = usePlayerUpdate({
+        currentTime: true,
+        duration: true,
+        paused: true,
+        buffering: true
+    });
 
-    const [hasImage, setHasImage] = useState<boolean | null>(null);
-
-    let [audioStatus, setAudioStatus] = useState(audioPlayer.getStatus());
-
-    const callback = (newStatus: AudioPlayerStatus) => {
+    useEffect(() => {
         if (slider.current != null && progressValue.current == -1) {
             const sliderElement: any = slider.current;
-            sliderElement.value = newStatus.time / newStatus.duration * 100;
+            sliderElement.value = status.currentTime / status.duration * 100;
         }
-        setAudioStatus(newStatus);
+    }, [status]);
+
+    const metadata = useTrackMeta(currentlyPlaying);
+
+    const queueCallback = () => {
+        setCurrentlyPlaying(audioPlayer.getCurrentTrack()?.track);
     }
 
-    let mouseUpHandler = () => {
+    const mouseUpHandler = () => {
         if (progressValue.current != -1) {
             audioPlayer.setTime(progressValue.current);
         }
         progressValue.current = -1;
     }
 
+
+
     useEffect(() => {
-        audioPlayer.registerCallback(callback);
+        audioPlayer.registerQueueCallback(queueCallback);
         document.addEventListener("mouseup", mouseUpHandler);
 
         return () => {
-            audioPlayer.unregisterCallback(callback);
+            audioPlayer.unregisterQueueCallback(queueCallback);
             document.removeEventListener("mouseup", mouseUpHandler);
         }
     }, []);
@@ -57,45 +68,6 @@ export default function Player({ showQueue }: PlayerProps) {
         KeyboardShortcuts.getInstance().keypress(e.nativeEvent);
     }
 
-    useEffect(() => {
-        audioStatus.track?.getMetadata()
-        .then(data => {
-
-            if (!data.image) {
-                const element: any = thumbnail.current;
-                if (element) {
-                    element.onload = () => {
-                        setHasImage(true);
-                    }
-                    element.src = "/no-album-art.png";
-                }
-            } else {
-                const icon = data.image || "/no-album-art.png";
-            
-                const element: any = thumbnail.current;
-                if (element) {
-                    element.onload = () => {
-                        setHasImage(true);
-                    }
-                    element.src = icon;
-                }
-            }
-
-            setTitle(data.title);
-            setArtist(convertArrayToString(data.artists));
-        }).catch(error => {
-            console.error(error);
-            const element: any = thumbnail.current;
-            if (!element) return;
-            element.onload = () => {
-                setHasImage(true);
-            }
-            element.src = "/no-album-art.png";
-        });
-
-        return () => {}
-    }, [audioStatus.track]);
-
     
 
     
@@ -103,23 +75,50 @@ export default function Player({ showQueue }: PlayerProps) {
     function progressChange(event: React.FormEvent) {
         const anyTarget: any = event.target;
         progressValue.current = anyTarget.valueAsNumber;
-        setAudioStatus({
-            ...audioStatus,
-            key: ((audioStatus.key || 0) + 1) % 10
-        });
+        setDummyReload(!dummyReload);
     }
+
+    function contextMenuOpened(button: React.Key) {
+        switch (button) {
+            case "playlist":
+                openAddToPlaylist(currentlyPlaying);
+                break;
+            case "download":
+                const filename = (metadata ? metadata.title : currentlyPlaying.trackID) + ".mp3";
+                downloadFile(currentlyPlaying.getAudioUrl(), filename);
+                break;
+            case "share":
+                PipeBombConnection.getInstance().copyLink("track", currentlyPlaying.trackID);
+                break;
+        }
+    }
+
+    const contextMenu = (
+        <Dropdown.Menu onAction={contextMenuOpened}>
+            <Dropdown.Item key="track"><Link className={styles.dropdownLink} to={`/track/${currentlyPlaying?.trackID}`}>See Track Page</Link></Dropdown.Item>
+            <Dropdown.Item key="share">Copy Link</Dropdown.Item>
+            <Dropdown.Item key="playlist">Add to Playlist</Dropdown.Item>
+            <Dropdown.Item key="suggestions"><Link className={styles.dropdownLink} to={`/track/${currentlyPlaying?.trackID}/suggestions`}>See Suggested Tracks</Link></Dropdown.Item>
+            <Dropdown.Item key="download">Download as MP3</Dropdown.Item>
+        </Dropdown.Menu>
+    )
 
     return (
         <div className={styles.container}>
             <div className={styles.currentTrackContainer}>
-                <div className={styles.image}>
-                    <img ref={thumbnail} className={styles.thumbnail} style={{display: hasImage ? "block" : "none"}} />
-                    {hasImage === false && (<Loading loadingCss={{ $$loadingSize: "80px", $$loadingBorder: "10px" }} css={{margin: "10px"}} />)}
-                </div>
-                <div className={styles.content}>
-                    <Text className={styles.title}>{title}</Text>
-                    <Text className={styles.artist}>{artist}</Text>
-                </div>
+                {currentlyPlaying && (
+                    <>
+                        <div className={styles.image}>
+                            <Link to={`/track/${currentlyPlaying.trackID}`} onContextMenu={e => openContextMenu(e, contextMenu)}>
+                                <ImageWrapper src={currentlyPlaying.getThumbnailUrl()} />
+                            </Link>
+                        </div>
+                        <div className={styles.content}>
+                            <Link to={`/track/${currentlyPlaying.trackID}`} onContextMenu={e => openContextMenu(e, contextMenu)}><Text className={styles.title}>{metadata ? metadata.title : currentlyPlaying.trackID}</Text></Link>
+                            <Text className={styles.artist}>{convertArrayToString(metadata ? metadata.artists : [])}</Text>
+                        </div>
+                    </>
+                )}
             </div>
 
             <div className={styles.progressContainer}>
@@ -129,7 +128,7 @@ export default function Player({ showQueue }: PlayerProps) {
                             <Button tabIndex={-1} auto rounded className={styles.roundButton} light onPress={() => audioPlayer.previousTrack()}><MdSkipPrevious /></Button>
                         </Grid>
                         <Grid>
-                            {audioStatus.paused || !audioStatus.track ? (<Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.play()}><MdPlayArrow /></Button>) : (<Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.pause()}><MdPause /></Button>)}
+                            {status.paused || !currentlyPlaying ? (<Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.play()}><MdPlayArrow /></Button>) : (<Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.pause()}><MdPause /></Button>)}
                         </Grid>
                         <Grid>
                             <Button tabIndex={-1} auto rounded light className={styles.roundButton} onPress={() => audioPlayer.nextTrack()}><MdSkipNext /></Button>
@@ -137,29 +136,26 @@ export default function Player({ showQueue }: PlayerProps) {
                     </Grid.Container>
                 </div>
 
-                <span className={styles.time}>{audioStatus.track && audioStatus.duration != -1 ? formatTime(progressValue.current == -1 ? audioStatus.time : (progressValue.current / 100 * audioStatus.duration)) : ""}</span>
+                <span className={styles.time}>{currentlyPlaying && status.duration != -1 ? formatTime(progressValue.current == -1 ? status.currentTime : (progressValue.current / 100 * status.duration)) : ""}</span>
                 <div className={styles.progressBar}>
-                    {audioStatus.loading || !audioStatus.track ? null : (
+                    {status.buffering || !currentlyPlaying ? null : (
                         <input ref={slider} tabIndex={-1} min={0} max={100} step={0.1} type="range" className={styles.progressRange + (progressValue.current == -1 ? "" : ` ${styles.progressActive}`)} onInput={e => progressChange(e)} onKeyDown={sliderKeyDown} />
                     )}
                     <div className={styles.progress}>
                         <Progress
                             color="primary"
-                            value={progressValue.current == -1 ? (audioStatus.time / audioStatus.duration * 100) : (progressValue.current)}
+                            value={progressValue.current == -1 ? (status.currentTime / status.duration * 100) : (progressValue.current)}
                             size="xs"
-                            indeterminated={audioStatus.loading}
+                            indeterminated={status.buffering}
                             animated={false}
                             max={100}
                         />
                     </div>
                 </div>
-                <span className={styles.time}>{audioStatus.track && audioStatus.duration != -1 ? formatTime(audioStatus.duration) : ""}</span>
+                <span className={styles.time}>{currentlyPlaying && status.duration != -1 ? formatTime(status.duration) : ""}</span>
             </div>
             <div className={styles.rightContainer}>
-                <Volume />
-                {showQueue && (
-                    <Queue />
-                )}
+                { children }
             </div>
         </div>
     )

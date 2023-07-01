@@ -5,13 +5,14 @@ import { useEffect, useState } from "react";
 import ChartIndex from "../logic/ChartIndex";
 import Loader from "../components/Loader";
 import { Button, Dropdown, Grid, Text } from "@nextui-org/react";
-import { convertTracklistToM3u, shuffle } from "../logic/Utils";
+import { convertTracklistToM3u } from "../logic/Utils";
 import styles from "../styles/Chart.module.scss";
 import { MdMoreHoriz, MdPlayArrow, MdShuffle } from "react-icons/md";
 import ListTrack from "../components/ListTrack";
 import NumberWrapper from "../components/NumberWrapper";
 import Track from "pipebomb.js/dist/music/Track";
 import PipeBombConnection from "../logic/PipeBombConnection";
+import { ViewportList } from "react-viewport-list";
 
 export default function Chart() {
     let paramID: any = useParams().chartID;
@@ -29,26 +30,26 @@ export default function Chart() {
                 const newTrackList = chart.getTrackList();
                 if (newTrackList) {
                     setTrackList(newTrackList);
-                } else {
-                    console.log("NOT TRACK LSIT!!!");
                 }
             }
         });
     }, []);
 
     if (!chart || !trackList) {
-        return <Loader text="Loading..."></Loader>
+        return <Loader text="Loading"></Loader>
     }
 
     function playChart() {
         if (!trackList) return;
-        audioPlayer.addToQueue(trackList, 0);
+        audioPlayer.clearQueue();
+        audioPlayer.addToQueue(trackList, false, 0);
         audioPlayer.nextTrack();
     }
 
     function shuffleChart() {
         if (!trackList) return;
-        audioPlayer.addToQueue(shuffle(trackList), 0);
+        audioPlayer.clearQueue();
+        audioPlayer.addToQueue(trackList, true, 0);
         audioPlayer.nextTrack();
     }
 
@@ -59,12 +60,20 @@ export default function Chart() {
                     convertTracklistToM3u(PipeBombConnection.getInstance().getUrl(), trackList, false, true);
                 }
                 break;
+            case "queue":
+                if (trackList) {
+                    audioPlayer.addToQueue(trackList);
+                }
+                break;
+            case "share":
+                PipeBombConnection.getInstance().copyLink("chart", chart.collectionID.split("/")[1]);
+                break;
         }
     }
 
     return (
         <>
-            <Text h1>{chart.collectionName}</Text>
+            <Text h1>{chart.getName()}</Text>
             <Grid.Container gap={2} alignItems="center" className={styles.top}>
                 <Grid>
                     <Button size="xl" auto onPress={playChart} className={styles.roundButton} color="gradient"><MdPlayArrow /></Button>
@@ -80,17 +89,21 @@ export default function Chart() {
                             </Button>
                         </Dropdown.Trigger>
                         <Dropdown.Menu onAction={contextMenu}>
+                            <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
+                            <Dropdown.Item key="share">Copy Link</Dropdown.Item>
                             <Dropdown.Item key="m3u">Download as M3U</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
                     
                 </Grid>
             </Grid.Container>
-            {trackList.map((track, index) => (
-                <NumberWrapper key={index} number={index + 1}>
-                    <ListTrack track={track} />
-                </NumberWrapper>
-            ))}
+            <ViewportList items={trackList}>
+                {(track, index) => (
+                    <NumberWrapper key={index} number={index + 1}>
+                        <ListTrack track={track} />
+                    </NumberWrapper>
+                )}
+            </ViewportList>
         </>
     )
 }

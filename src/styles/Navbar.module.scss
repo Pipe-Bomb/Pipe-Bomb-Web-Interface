@@ -4,7 +4,6 @@
     top: 0;
     bottom: 0;
     width: 250px;
-    background: var(--nextui-colors-backgroundContrast);
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -16,17 +15,11 @@
     .image {
         max-height: 120px;
         max-width: 100%;
-        margin: 2rem auto 0 auto;
+        margin: 2rem auto;
         display: block;
-    }
-    
-    .spacer {
-        height: 1px;
-        margin: 0 auto;
-        width: 60%;
-        max-width: 80px;
-        background: var(--nextui-colors-accents8);
-        margin-bottom: 2rem;
+        transition: opacity 1s;
+        opacity: 0;
+        transition-delay: 1s;
     }
 }
 

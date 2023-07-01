@@ -1,0 +1,120 @@
+.top {
+    .topFlex {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .topImage {
+        width: 200px;
+        height: 200px;
+        flex-shrink: 0;
+        border-radius: 20px;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .topInfo {
+        flex-grow: 1;
+        overflow: hidden;
+
+        .titleContainer {
+            margin: 0;
+            padding: 0 !important;
+            height: 75px;
+            overflow-x: hidden;
+            position: relative;
+            padding: 0;
+            width: 100%;
+            display: flex;
+            gap: 2rem;
+
+            .title {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: block;
+                flex-grow: 0;
+            }
+
+            .buttons {
+                display: flex;
+                height: 100%;
+                align-items: center;
+                flex-shrink: 0;
+                gap: 2rem;
+            }
+        }
+
+        .artist {
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .waveform {
+            height: 90px;
+            cursor: pointer;
+        }
+    }
+}
+
+.roundButton {
+    svg {
+        height: 30px;
+        width: 30px;
+    }
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+.suggestions {
+    margin-top: 100px;
+
+    .suggestionsLoader {
+        width: 200px;
+        position: relative;
+        height: 100px;
+    }
+}
+
+.contextButton {
+    width: 64px !important;
+    min-width: 0 !important;
+
+    svg {
+        height: 30px;
+        width: 30px;
+    }
+}
+
+@media only screen and (max-width: 1000px) {
+    .top {
+        .topImage {
+            width: 100px;
+            height: 100px;
+        }
+
+        .topInfo {
+            .titleContainer {
+                height: 50px;
+                overflow: initial;
+                margin-top: 10px;
+
+                .title {
+                    font-size: var(--nextui-fontSizes-3xl);
+                }
+            }
+
+            .artist {
+                font-size: var(--nextui-fontSizes-lg);
+            }
+        }
+    }
+    
+    .waveform {
+        display: none;
+    }
+}

@@ -15,6 +15,28 @@ export function convertArrayToString(items: string[]) {
     return out;
 }
 
+export function formatTimeWords(time: number) {
+    if (time < 60) return "moments";
+    if (time < 120) return "a minute";
+    const minutes = Math.floor(time / 60);
+    if (minutes < 60) return minutes + " minutes";
+    if (minutes < 120) return "an hour";
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return hours + " hours";
+    if (hours < 48) return "a day";
+    const days = Math.floor(hours / 24);
+    if (days < 7) return days + " days";
+    if (days < 14) return "a week";
+    const weeks = Math.floor(days / 7);
+    if (days < 30) return weeks + " weeks";
+    if (days < 60) return "a month";
+    const months = Math.floor(days / 30);
+    if (months < 12) return months + " months";
+    const years = Math.floor(months / 12);
+    if (years == 1) return "a year";
+    return years + " years";
+}
+
 export function formatTime(time: number) {
     let seconds: number | string = Math.floor(time);
     let minutes: number | string = Math.floor(seconds / 60);
@@ -123,7 +145,7 @@ export function convertTracklistToM3u(pipeBombUrl: string, tracks: Track[], m3u8
         let loadedCount = 0;
     
         function loadTrackMeta(index: number, track: Track) {
-            track.getMetadata()
+            track.loadMetadata()
             .then(meta => {
                 trackMetas[index] = meta;
             }).catch(e => {
@@ -138,10 +160,8 @@ export function convertTracklistToM3u(pipeBombUrl: string, tracks: Track[], m3u8
                         for (let i = 0; i < trackListLength; i++) {
                             if (trackMetas[i]) {
                                 lines.push(`#EXTINF:-1,${convertArrayToString(trackMetas[i].artists)} - ${trackMetas[i].title}`)
-                                if (trackMetas[i].image) {
-                                    lines.push(`#EXT-X-THUMBNAIL:${trackMetas[i].image}`);
-                                }
-                                lines.push(`${pipeBombUrl}/v1/audio/${originalTrackList[i].trackID}`);
+                                lines.push(`#EXT-X-THUMBNAIL:${originalTrackList[i].getThumbnailUrl()}`);
+                                lines.push(originalTrackList[i].getAudioUrl());
                             }
                         }
                         lines.push("#EXT-X-ENDLIST");
@@ -150,7 +170,7 @@ export function convertTracklistToM3u(pipeBombUrl: string, tracks: Track[], m3u8
                         for (let i = 0; i < trackListLength; i++) {
                             if (trackMetas[i]) {
                                 lines.push(`#EXTINF:-1,${convertArrayToString(trackMetas[i].artists)} - ${trackMetas[i].title}`)
-                                lines.push(`${pipeBombUrl}/v1/audio/${originalTrackList[i].trackID}`);
+                                lines.push(originalTrackList[i].getAudioUrl());
                             }
                         }
                     }
@@ -175,4 +195,81 @@ export function convertTracklistToM3u(pipeBombUrl: string, tracks: Track[], m3u8
             loadTrackMeta(i, track);
         }
     });
+}
+
+export function wait(milliseconds: number) {
+    return new Promise(resolve => {
+        setTimeout(resolve, milliseconds);
+    });
+}
+
+export function generateNumberHash(input: string) {
+    let hash = 0;
+    if (!input.length) return 0;
+
+    for (let i = 0; i < input.length; i++) {
+        let chr = input.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+};
+
+export function generateRandomString(length: number) {
+    let result = "";
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+}
+
+export function preciseTime() {
+    return performance.now() || Date.now();
+}
+
+export function lerp(start: number, end: number, time: number, callback: (value: number) => void) {
+    const delta = end - start;
+    let ended = false;
+    const startTime = preciseTime();
+
+    function loop() {
+        if (ended) return;
+        requestAnimationFrame(loop);
+        const newTime = preciseTime();
+        const timeDifference = (newTime - startTime) / time;
+
+        if (timeDifference >= 1) {
+            ended = true;
+            callback(end);
+            return;
+        }
+
+        callback(start + delta * timeDifference);
+    }
+    loop();
+
+    setTimeout(() => {
+        if (ended) return;
+        ended = true;
+        callback(end);
+    }, time);
+
+    function prematureEnd() {
+        ended = true;
+        
+        const newTime = preciseTime();
+        const timeDifference = (newTime - startTime) / time;
+
+        if (timeDifference >= 1) {
+            return end;
+        }
+        return start + delta * timeDifference;
+    }
+
+    return prematureEnd;
+}
+
+export function copyTextToClipboard(text: string) {
+    navigator.clipboard.writeText(text);
 }

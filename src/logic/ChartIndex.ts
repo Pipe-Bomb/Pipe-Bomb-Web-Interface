@@ -14,8 +14,10 @@ export default class ChartIndex {
         }, 30_000);
 
         PipeBombConnection.getInstance().registerUpdateCallback(() => {
-            this.charts = null;
-            this.checkCharts();
+            if (PipeBombConnection.getInstance().getStatus() == "authenticated") {
+                this.charts = null;
+                this.checkCharts();
+            }
         });
     }
 
@@ -39,6 +41,7 @@ export default class ChartIndex {
     }
 
     private async checkCharts() {
+        if (PipeBombConnection.getInstance().getStatus() != "authenticated") return;
         try {
             const newCharts = await PipeBombConnection.getInstance().getApi().v1.getCharts();
             for (let chart of newCharts) {
@@ -63,7 +66,6 @@ export default class ChartIndex {
             const newChart = await PipeBombConnection.getInstance().getApi().v1.getChart(chartID);
             return this.setChart(newChart);
         }
-        console.log("using cached tracklist");
         return chart;
     }
 }

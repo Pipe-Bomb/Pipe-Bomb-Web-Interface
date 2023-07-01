@@ -1,12 +1,73 @@
+.container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 5rem 0 0 0;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+}
+
 .title {
     text-align: center;
-    margin: 5rem 0;
+    margin-bottom: 5rem;
+    flex-shrink: 0;
 }
 
 .addContainer {
     max-width: min(1400px, calc(100% - 4rem));
+    width: 100%;
     margin: 0 auto !important;
-    background: var(--nextui-colors-backgroundSecondary);
-    border-radius: var(--nextui-radii-base);
+    border-radius: var(--nextui-radii-2xl);
     padding: 2rem 1rem !important;
+    flex-grow: 0;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    isolation: isolate;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--nextui-colors-backgroundSecondary);
+        z-index: -1;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+    }
+
+    &:hover::before {
+        opacity: 0.8;
+    }
+
+    &:has(:focus)::before {
+        opacity: 0.8;
+    }
+}
+
+.loader {
+    position: relative;
+    height: 80px;
+}
+
+.servers {
+    gap: 2rem;
+    width: 100%;
+    max-width: min(1400px, calc(100% - 4rem));
+    display: flex;
+    flex-direction: column;
+    margin: 2rem 0;
+}
+
+.publicServers {
+    gap: 1rem;
+    width: 100%;
+    max-width: min(1400px, calc(100% - 4rem));
+    display: flex;
+    flex-direction: column;
+    margin: 2rem 0;
 }

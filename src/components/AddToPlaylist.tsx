@@ -7,6 +7,7 @@ import { openCreatePlaylist } from "./CreatePlaylist";
 import CustomModal from './CustomModal';
 import Loader from './Loader';
 import Playlist from 'pipebomb.js/dist/collection/Playlist';
+import { createNotification } from './NotificationManager';
 
 let openModal = () => {};
 let addToPlaylist = (playlistID: string) => {};
@@ -63,13 +64,27 @@ export default function AddToPlaylist() {
             if (!selectedTrack) return;
     
             playlist.addTracks(selectedTrack)
-            .then(() => {
+            .then(async () => {
+                let trackName = "track";
+                if (selectedTrack && !selectedTrack.isUnknown()) {
+                    trackName = (await selectedTrack.loadMetadata()).title;
+                }
+                createNotification({
+                    text: `Added ${trackName} to ${playlist.getName()}`
+                });
                 setLastTrackButton({
                     playlistID: playlist.collectionID,
                     value: "Added"
                 });
-            }).catch((error: any) => {
+            }).catch(async (error: any) => {
                 console.error(error);
+                let trackName = "track";
+                if (selectedTrack && !selectedTrack.isUnknown()) {
+                    trackName = (await selectedTrack.loadMetadata()).title;
+                }
+                createNotification({
+                    text: `Failed to add ${trackName} to ${playlist.getName()}`
+                });
                 setLastTrackButton({
                     playlistID: playlist.collectionID,
                     value: "Error"
@@ -79,7 +94,7 @@ export default function AddToPlaylist() {
     }
 
     function generatePlaylistHTML() {
-        if (!playlists) return <Loader text="Loading Playlists..." />;
+        if (!playlists) return <Loader text="Loading Playlists" />;
 
         return playlists.map(playlist => (
             <div key={playlist.collectionID} className={styles.playlist}>

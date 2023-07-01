@@ -4,4 +4,10 @@
 
 .contents {
     padding: 1rem 0;
+
+    p {
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: var(--nextui-fontSizes-lg);
+    }
 }

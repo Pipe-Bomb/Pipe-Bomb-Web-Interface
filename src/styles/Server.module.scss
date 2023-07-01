@@ -1,16 +1,27 @@
 .container {
+    width: 100%;
     display: flex;
-    margin: var(--nextui-space-12) auto !important;
     transition: opacity 0.2s;
-    background: var(--nextui-colors-backgroundSecondary);
-    border-radius: var(--nextui-radii-base);
+    border-radius: var(--nextui-radii-2xl);
     color: var(--nextui-colors-text);
     transition: background 0.2s;
     overflow: hidden;
-    max-width: min(1400px, calc(100% - 4rem));
+    position: relative;
+    flex-shrink: 0;
+    isolation: isolate;
 
-    &:hover {
-        background: var(--nextui-colors-secondaryLightHover);
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--nextui-colors-backgroundSecondary);
+        z-index: -1;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+    }
+
+    &:hover::before {
+        opacity: 0.8;
     }
 
     .content {
@@ -24,6 +35,7 @@
 
     .button {
         margin: 0 1rem 1rem 0;
+        width: 130px;
     }
 
     .smallButton {
@@ -52,4 +64,8 @@
         width: 30px;
         height: 30px;
     }
+}
+
+.underline {
+    text-decoration: underline;
 }

@@ -3,6 +3,7 @@ import { MdVolumeDown, MdVolumeMute, MdVolumeOff, MdVolumeUp } from "react-icons
 import { Button } from "@nextui-org/react";
 import { useEffect, useRef, useState } from "react";
 import AudioPlayer from "../logic/AudioPlayer";
+import Slider from "./Slider";
 
 export default function Volume() {
     const audioPlayer = AudioPlayer.getInstance();
@@ -18,19 +19,15 @@ export default function Volume() {
         }
     });
 
-    function volumeChange(e: React.FormEvent<HTMLInputElement>) {
-        const newVolume = parseInt(e.currentTarget.value);
-        audioPlayer.setVolume(newVolume);
-        audioPlayer.setMuted(false);
+    function volumeChange(value: number) {
+        audioPlayer.audio.activeType.setVolume(value);
+        audioPlayer.audio.activeType.setMuted(false);
+        setVolume(audioPlayer.getVolume());
     }
 
     function toggleMute() {
-        audioPlayer.setMuted(!volume.muted);
+        audioPlayer.audio.activeType.setMuted(!volume.muted);
     }
-
-    const css: any = {
-        "--gradient": `linear-gradient(90deg, var(--nextui-colors-primary) 0%, var(--nextui-colors-primary) ${volume.volume}%, var(--nextui-colors-accents2) ${volume.volume}%, var(--nextui-colors-accents2) 100%)`
-    };
 
     function generateButton() {
         if (volume.muted) {
@@ -50,9 +47,11 @@ export default function Volume() {
             <Button auto rounded className={styles.roundButton} light onPress={toggleMute}>
                 { generateButton() }
             </Button>
-            <div className={styles.popup} style={css}>
-                <div className={styles.content}>
-                    <input ref={input} type="range" min="0" max="100" value={volume.volume} onInput={volumeChange} />
+            <div className={styles.mouseEvents}>
+                <div className={styles.popup}>
+                    <div className={styles.content}>
+                    <Slider min={0} max={100} value={volume.volume} onChange={volumeChange} length={110} orientation="vertical" />
+                    </div>                    
                 </div>
             </div>
         </div>

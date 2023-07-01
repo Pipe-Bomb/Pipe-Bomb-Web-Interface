@@ -5,3 +5,22 @@
     height: 100%;
     padding: 0;
 }
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--nextui-colors-primary);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--nextui-colors-primarySolidHover);
+}

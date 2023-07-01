@@ -1,0 +1,63 @@
+.container {
+    background: var(--nextui-colors-secondaryLight);
+    transition: transform 0.3s, opacity 0.5s, background 0.5s;
+    height: 70px;
+    width: 350px;
+    overflow: hidden;
+    border-radius: var(--nextui-radii-lg);
+    margin-top: var(--nextui-space-4);
+    box-shadow: var(--nextui-shadows-lg);
+    transform: translateX(-100%);
+    position: relative;
+    right: 30px;
+    top: 10px;
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    box-sizing: border-box;
+
+    &.inactive {
+        opacity: 0;
+        height: 0px;
+        transition: opacity 0.3s, height 0.3s, transform 10s, margin 0.3s, background 0.2s;
+        transform: translateX(-50%);
+        margin-top: 0;
+
+        &.status-error {
+            background: var(--nextui-colors-errorLightContrast);
+        }
+    }
+
+    &:hover {
+        background: var(--nextui-colors-secondaryLightHover);
+    }
+
+    &.status-error {
+        background: var(--nextui-colors-errorLight);
+
+        &:hover {
+            background: var(--nextui-colors-errorLightActive);
+        }
+    }
+
+    &.status-warning {
+        background: var(--nextui-colors-warningLight);
+
+        &:hover {
+            background: var(--nextui-colors-warningLightHover);
+        }
+    }
+
+    .content {
+        .text {
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            font-size: var(--nextui-fontSizes-sm);
+        }
+    }
+}
