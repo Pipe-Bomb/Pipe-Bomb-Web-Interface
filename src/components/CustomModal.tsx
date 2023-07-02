@@ -11,6 +11,8 @@ interface Props {
 }
 
 export default function CustomModal(props: Props) {
+
+
     function close() {
         if (props.onClose) props.onClose();
     }
