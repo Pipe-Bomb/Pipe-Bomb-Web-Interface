@@ -17,6 +17,7 @@ import PipeBombPlaylist from "pipebomb.js/dist/collection/Playlist";
 import PlaylistTop from "../components/PlaylistTop";
 import useIsSelf from "../hooks/IsSelfHook";
 import { ViewportList } from "react-viewport-list";
+import { openRenamePlaylist } from "../components/RenamePlaylist"
 
 let lastPlaylistID = "";
 
@@ -166,6 +167,9 @@ const PlaylistPage = React.memo(function PlaylistPage() {
                     audioPlayer.addToQueue(trackList);
                 }
                 break;
+            case "rename":
+                openRenamePlaylist(playlist);
+                break;
             case "share":
                 PipeBombConnection.getInstance().copyLink("playlist", playlist.collectionID);
                 break;
@@ -175,7 +179,7 @@ const PlaylistPage = React.memo(function PlaylistPage() {
     function generateContextMenu() {
         if (self) {
             return (
-                <Dropdown.Menu onAction={contextMenu} disabledKeys={["rename"]}>
+                <Dropdown.Menu onAction={contextMenu}>
                     <Dropdown.Item key="queue">Add to Queue</Dropdown.Item>
                     <Dropdown.Item key="share">Copy Link</Dropdown.Item>
                     <Dropdown.Item key="rename">Rename Playlist</Dropdown.Item>
