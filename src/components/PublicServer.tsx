@@ -6,13 +6,14 @@ import { MdLockOpen, MdLockOutline, MdSignalWifiBad } from "react-icons/md";
 import { formatTimeWords } from "../logic/Utils";
 import { useState } from "react";
 import ServerIndex from "../logic/ServerIndex";
+import React from "react";
 
 export interface PublicServerProps {
     server: ServerInfo,
     connectCallback: (hostInfo: HostInfo, status: string) => void
 }
 
-export default function PublicServer({ server, connectCallback }: PublicServerProps) {
+const PublicServer = React.memo(function PublicServer({ server, connectCallback }: PublicServerProps) {
     const [ping, setPing] = useState<number | null | false>(false);
     const disabled = !!ServerIndex.getInstance().getServers().find(s => s.host == server.address);
 
@@ -87,4 +88,6 @@ export default function PublicServer({ server, connectCallback }: PublicServerPr
             </Grid.Container>
         </div>
     )
-}
+});
+
+export default PublicServer;

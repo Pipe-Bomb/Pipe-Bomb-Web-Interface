@@ -1,5 +1,6 @@
 import { useRef } from "react"
 import styles from "../styles/Slider.module.scss"
+import React from "react"
 
 export interface SliderProps {
     min: number
@@ -11,19 +12,21 @@ export interface SliderProps {
     length: number
 }
 
-export default function Slider(props: SliderProps) {
+const Slider = React.memo(function Slider({ min, max, value, onChange, disabled, orientation, length }: SliderProps) {
     const input = useRef<HTMLInputElement>(null);
 
-    const percentage = (props.value - props.min) / (props.max - props.min) * 100;
+    const percentage = (value - min) / (max - min) * 100;
 
     const css = {
         "--gradient": `linear-gradient(90deg, var(--nextui-colors-primary) 0%, var(--nextui-colors-primary) ${percentage}%, var(--nextui-colors-accents2) ${percentage}%, var(--nextui-colors-accents2) 100%)`,
-        "--length": props.length + "px"
+        "--length": length + "px"
     };
 
     return (
-        <div className={styles.container + " " + styles[props.orientation || "horizontal"]} style={css as any}>
-            <input ref={input} type="range" min={props.min} max={props.max} value={props.value} onInput={e => props.onChange(parseInt(e.currentTarget.value))} className={props.disabled ? styles.disabled : styles.enabled} />
+        <div className={styles.container + " " + styles[orientation || "horizontal"]} style={css as any}>
+            <input ref={input} type="range" min={min} max={max} value={value} onInput={e => onChange(parseInt(e.currentTarget.value))} className={disabled ? styles.disabled : styles.enabled} />
         </div>
     )
-}
+});
+
+export default Slider;

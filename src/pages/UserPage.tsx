@@ -8,8 +8,9 @@ import styles from "../styles/UserPage.module.scss"
 import ImageWrapper from "../components/ImageWrapper";
 import { Text } from "@nextui-org/react"
 import PlaylistCollection from "../components/PlaylistCollection";
+import React from "react";
 
-export default function UserPage() {
+const UserPage = React.memo(function UserPage() {
     const userID = useParams().userID;
 
     const [user, setUser] = useState<User | false>(null);
@@ -67,4 +68,6 @@ export default function UserPage() {
             )}
         </>
     )
-}
+});
+
+export default UserPage;

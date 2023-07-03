@@ -8,13 +8,14 @@ import PipeBombConnection from "../logic/PipeBombConnection";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import CustomModal from "./CustomModal";
+import React from "react";
 
 interface Props {
     hostInfo: HostInfo,
     status: "secure" | "insecure" | "offline" | "checking" | "unknown"
 }
 
-export default function Server({ hostInfo, status }: Props) {
+const Server = React.memo(function Server({ hostInfo, status }: Props) {
     const authState = useAuthenticationStatus();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -90,4 +91,6 @@ export default function Server({ hostInfo, status }: Props) {
             </CustomModal>
         </div>
     )
-}
+});
+
+export default Server;

@@ -9,10 +9,11 @@ import Slider from "../components/Slider";
 import useSetting from "../hooks/SettingHook";
 import styles from "../styles/SettingsPage.module.scss"
 import { useResizeDetector } from "react-resize-detector";
+import React from "react";
 
 const themeObject = Theme.getTheme(getSetting("theme", "Classic"));
 
-export default function SettingsPage() {
+const SettingsPage = React.memo(function SettingsPage() {
     const [theme, setTheme] = useState<string>(getSetting("theme", "Classic"));
     const [themeChanged, setThemeChanged] = useState(false);
     const eqReload = useSetting("eq", "");
@@ -141,4 +142,6 @@ export default function SettingsPage() {
             <Button color="error" onPress={logout}>Logout</Button>
         </>
     )
-}
+});
+
+export default SettingsPage;

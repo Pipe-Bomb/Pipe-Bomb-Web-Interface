@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import styles from "../styles/Playlist.module.scss";
 import compactTrackStyles from "../styles/CompactTrack.module.scss";
@@ -21,7 +21,7 @@ import { openRenamePlaylist } from "../components/RenamePlaylist"
 
 let lastPlaylistID = "";
 
-export default function Playlist() {
+const PlaylistPage = React.memo(function PlaylistPage() {
     let paramID: any = useParams().playlistID;
     const audioPlayer = AudioPlayer.getInstance();
     const [playlist, setPlaylist] = useState<PipeBombPlaylist | null>(null);
@@ -241,4 +241,6 @@ export default function Playlist() {
             </div>
         </>
     )
-}
+});
+
+export default PlaylistPage;

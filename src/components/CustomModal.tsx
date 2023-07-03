@@ -1,40 +1,36 @@
 import { Modal, Text } from "@nextui-org/react";
 import { MutableRefObject, ReactNode } from "react";
 import styles from "../styles/CustomModal.module.scss";
+import React from "react";
 
 interface Props {
     children: ReactNode,
     visible?: boolean,
     onClose?: () => void,
-    ref?: MutableRefObject<HTMLInputElement | null>,
     title: string
 }
 
-export default function CustomModal(props: Props) {
-
-
-    function close() {
-        if (props.onClose) props.onClose();
-    }
-
+const CustomModal = React.memo(function CustomModal({ children, visible, onClose, title}: Props) {
     return (
         <>
             <Modal
                 closeButton
-                open={props.visible || false}
-                onClose={close}
+                open={visible || false}
+                onClose={onClose}
                 width="600px"
                 scroll
             >
                 <Modal.Header>
-                    <Text h2 className={styles.title}>{props.title}</Text>
+                    <Text h2 className={styles.title}>{title}</Text>
                 </Modal.Header>
                 <Modal.Body>
                     <div className={styles.contents}>
-                        {props.children}
+                        {children}
                     </div>
                 </Modal.Body>
             </Modal>
         </>
     );
-}
+});
+
+export default CustomModal;

@@ -1,3 +1,4 @@
+import React from "react";
 import styles from "../styles/ScrollFade.module.scss"
 
 export interface ScrollFadeProps {
@@ -5,10 +6,12 @@ export interface ScrollFadeProps {
     ref?: React.LegacyRef<HTMLDivElement>
 }
 
-export default function ScrollFade({ children, ref }: ScrollFadeProps) {
+const ScrollFade = React.memo(function ScrollFade({ children, ref }: ScrollFadeProps) {
     return (
         <div className={styles.container} ref={ref}>
             { children }
         </div>
     )
-}
+});
+
+export default ScrollFade;

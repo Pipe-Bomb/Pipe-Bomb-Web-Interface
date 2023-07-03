@@ -13,8 +13,9 @@ import NumberWrapper from "../components/NumberWrapper";
 import Track from "pipebomb.js/dist/music/Track";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import { ViewportList } from "react-viewport-list";
+import React from "react";
 
-export default function Chart() {
+const ChartPage = React.memo(function ChartPage() {
     let paramID: any = useParams().chartID;
     const audioPlayer = AudioPlayer.getInstance();
     const [chart, setChart] = useState<TrackList | null>(null);
@@ -106,4 +107,6 @@ export default function Chart() {
             </ViewportList>
         </>
     )
-}
+});
+
+export default ChartPage;

@@ -4,8 +4,9 @@ import styles from "../styles/LoginPage.module.scss";
 import { useRef, useState } from "react";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import CustomModal from "../components/CustomModal";
+import React from "react";
 
-export default function LoginPage() {
+const LoginPage = React.memo(function LoginPage() {
     const authStatus = useAuthenticationStatus();
     const form = useRef<HTMLFormElement>();
 
@@ -96,4 +97,6 @@ export default function LoginPage() {
             </CustomModal>
         </>
     )
-}
+});
+
+export default LoginPage;

@@ -61,5 +61,10 @@ server {
 	location / {
 		try_files $uri /index.html;
 	}
+
+    location = /Config.json {
+        add_header Access-Control-Allow-Origin *;
+        try_files $uri =404;
+    }
 }
 ```

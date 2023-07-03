@@ -6,8 +6,9 @@ import styles from "../styles/Lyrics.module.scss"
 import AudioPlayer from "../logic/AudioPlayer";
 import Loader from "./Loader";
 import useWindowSize from "../hooks/WindowSizeHook";
+import React from "react";
 
-export default function Lyrics() {
+const Lyrics = React.memo(function Lyrics() {
     const track = useCurrentTrack();
     const [lyrics, setLyrics] = useState<PipeBombLyrics | null | false>(null);
     const [activeLyric, setActiveLyric] = useState(-1);
@@ -134,4 +135,6 @@ export default function Lyrics() {
             </div>
         </div>
     )
-}
+});
+
+export default Lyrics;

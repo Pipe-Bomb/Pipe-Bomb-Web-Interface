@@ -9,8 +9,9 @@ import PipeBombConnection, { UserData } from "../logic/PipeBombConnection";
 import ChartIndex from "../logic/ChartIndex";
 import SquareChart from "../components/SquareChart";
 import PlaylistCollection from "../components/PlaylistCollection";
+import React from "react";
 
-export default function Home() {
+const HomePage = React.memo(function HomePage() {
     const [playlists, setPlaylists] = useState(PlaylistIndex.getInstance().getPlaylists());
     const [charts, setCharts] = useState<TrackList[] | null>(null);
     const [userData, setUserData] = useState<UserData | null>(null);
@@ -101,4 +102,6 @@ export default function Home() {
         
         <div className={styles.bottom}></div>
     </>
-}
+});
+
+export default HomePage;

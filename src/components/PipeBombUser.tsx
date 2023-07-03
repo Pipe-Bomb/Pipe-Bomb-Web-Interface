@@ -3,12 +3,13 @@ import { useEffect, useState } from "react";
 import styles from "../styles/PipeBombUser.module.scss";
 import { Link } from "react-router-dom";
 import PipeBombConnection, { UserData } from "../logic/PipeBombConnection";
+import React from "react";
 
 export interface UserProps {
     userInfo?: UserData
 }
 
-export default function PipeBombUser({ userInfo }: UserProps) {
+const PipeBombUser = React.memo(function PipeBombUser({ userInfo }: UserProps) {
     const [userData, setUserData] = useState<UserData | null>(userInfo || null);
 
     useEffect(() => {
@@ -44,4 +45,6 @@ export default function PipeBombUser({ userInfo }: UserProps) {
             </Dropdown>            
         </div>
     )
-}
+});
+
+export default PipeBombUser;

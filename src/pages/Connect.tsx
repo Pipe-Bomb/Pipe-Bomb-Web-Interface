@@ -7,8 +7,9 @@ import PipeBombConnection from "../logic/PipeBombConnection";
 import ServerInfo from "pipebomb.js/dist/ServerInfo";
 import Loader from "../components/Loader";
 import PublicServer from "../components/PublicServer";
+import React from "react";
 
-export default function Connect() {
+const ConnectPage = React.memo(function ConnectPage() {
     const serverIndex = ServerIndex.getInstance();
     const [servers, setServers] = useState(serverIndex.getServers());
     const input = useRef<HTMLInputElement>(null);
@@ -86,4 +87,6 @@ export default function Connect() {
             { generateRegistryHTML() }
         </div>
     )
-}
+});
+
+export default ConnectPage;

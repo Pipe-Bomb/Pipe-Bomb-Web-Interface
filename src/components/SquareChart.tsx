@@ -3,12 +3,13 @@ import styles from "../styles/SquareChart.module.scss";
 import { Link } from "react-router-dom";
 import { Text } from "@nextui-org/react";
 import ImageWrapper from "./ImageWrapper";
+import React from "react";
 
 export interface SquareChartProps {
     chart: TrackList
 }
 
-export default function SquareChart({ chart }: SquareChartProps) {
+const SquareChart = React.memo(function SquareChart({ chart }: SquareChartProps) {
     return (
         <div className={styles.container}>
             <Link to={`/charts/${chart.collectionID.split("/").pop()}`} className={styles.link}>
@@ -21,4 +22,6 @@ export default function SquareChart({ chart }: SquareChartProps) {
             </Link>
         </div>
     )
-}
+});
+
+export default SquareChart;

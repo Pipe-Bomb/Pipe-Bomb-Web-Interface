@@ -15,6 +15,7 @@ import useIsSelf from "../hooks/IsSelfHook";
 import useCurrentTrack from "../hooks/CurrentTrackHook";
 import { openContextMenu } from "./ContextMenu";
 import PipeBombConnection from "../logic/PipeBombConnection";
+import React from "react";
 
 interface Props {
   track: Track,
@@ -22,7 +23,7 @@ interface Props {
   inverse?: boolean
 }
 
-export default function CompactTrack({ track, parentPlaylist, inverse }: Props) {
+const CompactTrack = React.memo(function CompactTrack({ track, parentPlaylist, inverse }: Props) {
     const metadata = useTrackMeta(track);
     const [currentlyAdding, setCurrentlyAdding] = useState(false);
     const isSelfOwned = useIsSelf(parentPlaylist?.owner);
@@ -138,4 +139,6 @@ export default function CompactTrack({ track, parentPlaylist, inverse }: Props) 
             </GlowEffect>
         </div>
     );
-}
+});
+
+export default CompactTrack;

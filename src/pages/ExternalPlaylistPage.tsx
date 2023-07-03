@@ -13,8 +13,9 @@ import AudioPlayer from "../logic/AudioPlayer";
 import { convertTracklistToM3u } from "../logic/Utils";
 import PlaylistTop from "../components/PlaylistTop";
 import { ViewportList } from "react-viewport-list";
+import React from "react";
 
-export default function ExternalPlaylistPage() {
+const ExternalPlaylistPage = React.memo(function ExternalPlaylistPage() {
     const collectionID = useParams().collectionID;
     const [collection, setCollection] = useState<ExternalCollection | false>(null);
     const [tracklist, setTracklist] = useState<Track[]>(null);
@@ -118,4 +119,6 @@ export default function ExternalPlaylistPage() {
             )}
         </>
     )
-}
+});
+
+export default ExternalPlaylistPage;

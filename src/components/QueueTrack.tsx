@@ -9,13 +9,14 @@ import ImageWrapper from "./ImageWrapper";
 import useTrackMeta from "../hooks/TrackMetaHook";
 import { openContextMenu } from "./ContextMenu";
 import PipeBombConnection from "../logic/PipeBombConnection";
+import React from "react";
 
 interface Props {
   track: TrackWrapper,
   index: number
 }
 
-export default function QueueTrack({ track, index }: Props) {
+const QueueTrack = React.memo(function QueueTrack({ track, index }: Props) {
     const metadata = useTrackMeta(track.track);
 
     let dropdownItems = null;
@@ -111,4 +112,6 @@ export default function QueueTrack({ track, index }: Props) {
             </GlowEffect>
         </div>
     );
-}
+});
+
+export default QueueTrack;

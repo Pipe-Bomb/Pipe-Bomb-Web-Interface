@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Track, { TrackMeta } from "pipebomb.js/dist/music/Track";
 import { convertArrayToString, downloadFile } from "../logic/Utils";
 import styles from "../styles/ListTrack.module.scss";
@@ -19,7 +19,7 @@ interface Props {
   parentPlaylist?: Playlist
 }
 
-export default function ListTrack({ track, parentPlaylist }: Props) {
+const ListTrack = React.memo(function ListTrack({ track, parentPlaylist }: Props) {
     const metadata = useTrackMeta(track);
     const currentTrack = useCurrentTrack();
 
@@ -106,4 +106,6 @@ export default function ListTrack({ track, parentPlaylist }: Props) {
             </GlowEffect>
         </div>
     );
-}
+});
+
+export default ListTrack;

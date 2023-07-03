@@ -1,12 +1,13 @@
 import { NotificationInfo } from "./NotificationManager"
 import styles from "../styles/Notification.module.scss"
+import React from "react";
 
 export interface NotificationProps {
     data: NotificationInfo,
     alive: boolean
 }
 
-export default function Notification({ data, alive }: NotificationProps) {
+const Notification = React.memo(function Notification({ data, alive }: NotificationProps) {
     const status = data.status || "normal";
 
     return (
@@ -16,4 +17,6 @@ export default function Notification({ data, alive }: NotificationProps) {
             </div>
         </div>
     )
-}
+});
+
+export default Notification;

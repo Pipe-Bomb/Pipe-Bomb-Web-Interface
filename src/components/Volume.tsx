@@ -4,8 +4,9 @@ import { Button } from "@nextui-org/react";
 import { useEffect, useRef, useState } from "react";
 import AudioPlayer from "../logic/AudioPlayer";
 import Slider from "./Slider";
+import React from "react";
 
-export default function Volume() {
+const Volume = React.memo(function Volume() {
     const audioPlayer = AudioPlayer.getInstance();
 
     const input = useRef(null);
@@ -56,4 +57,6 @@ export default function Volume() {
             </div>
         </div>
     )
-}
+});
+
+export default Volume;
