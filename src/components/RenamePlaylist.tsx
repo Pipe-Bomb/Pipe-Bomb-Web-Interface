@@ -1,6 +1,5 @@
-import { Button, Grid, Input, Loading, Modal, Text } from '@nextui-org/react';
-import { useState, useRef } from "react";
-import PipeBombConnection from '../logic/PipeBombConnection';
+import { Button, Grid, Input, Loading } from '@nextui-org/react';
+import React, { useState, useRef } from "react";
 import PlaylistIndex from '../logic/PlaylistIndex';
 import CustomModal from './CustomModal';
 import Playlist from 'pipebomb.js/dist/collection/Playlist';
@@ -13,7 +12,7 @@ export function openRenamePlaylist(playlist?: Playlist) {
     openModal();
 }
 
-export default function RenamePlaylist() {
+const RenamePlaylist = React.memo(function RenamePlaylist() {
     const input = useRef<HTMLInputElement>(null);
     const [visible, setVisible] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -68,4 +67,6 @@ export default function RenamePlaylist() {
             </Grid.Container>
         </CustomModal>
     )
-}
+});
+
+export default RenamePlaylist;
