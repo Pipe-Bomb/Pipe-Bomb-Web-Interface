@@ -29,6 +29,7 @@ import LoadingPage from "./pages/LoadingPage";
 import SettingsPage from "./pages/SettingsPage";
 import { getSetting, setSetting } from "./logic/SettingsIndex";
 import Theme from "./logic/ThemeIndex";
+import RenamePlaylist from "./components/RenamePlaylist";
 
 const theme = Theme.getTheme(getSetting("theme", "Classic"));
 
@@ -122,6 +123,7 @@ function App() {
                             </Player>
                             <AddToPlaylist />
                             <CreatePlaylist />
+                            <RenamePlaylist />
                             <ContextMenu />
 
                             <div className={styles.content}>
