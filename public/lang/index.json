@@ -1,0 +1,8 @@
+{
+	"languages": {
+		"en-US": {
+			"displayName": "English (United States)"
+		}
+	},
+	"default": "en-US"
+}
