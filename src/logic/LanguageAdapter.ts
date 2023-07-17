@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction, useState } from "react";
 import Language from "./Language";
 import axios from 'axios';
 
@@ -11,17 +10,21 @@ interface LanguagesIndex {
 	languages: {
 		[key: string]: LanguageMeta
 	},
+	primaryDialects: {
+		[key: string]: string
+	},
 	default: string
 }
 
 // Interface for Listeners
 type LanguageChangeListener = () => void;
 
-let languages : Map<string, Language>;
+let languages : Map<string, Language> = new Map();
+let primaryDialects : Map<string, string> = new Map();
 let defaultLanguage : Language;
 let currentLanguage : Language;
 
-let listeners : LanguageChangeListener[];
+let listeners : LanguageChangeListener[] = [];
 
 /**
  * Get first preferred language by the browser that we also support.
@@ -35,24 +38,67 @@ function getPreferredLanguage() : string {
 	if (navigator.languages) {
 		// Find first language we support
 		for (let language of navigator.languages) {
-			if (this.languages.has(language)) {
-				return language;
+			let supportedLanguage = getSupportedLanguage(language, navigator.languages);
+
+			if (supportedLanguage) {
+				return supportedLanguage;
 			}
 		}
 	} else {
 		// old browsers
-		if (this.languages.has(navigator.language)) {
-			return navigator.language;
+		let supportedLanguage = getSupportedLanguage(navigator.language, [navigator.language]);
+
+		if (supportedLanguage) {
+			return supportedLanguage;
 		}
 	}
 
-	return this.defaultLanguage;
+	return defaultLanguage.getId();
+}
+
+/**
+ * Finds a language code for a supported language that best suits the given language requested.
+ * @param language the language to find the supported language for.
+ * @param allLanguages the list of all languages requested, to assist with finding the most suitable language.
+ * That is, if a generic language code like "en" is requested, this will be checked to see if a more specific version is requested
+ * later.
+ * @returns the best supported language for the given requested language, or undefined if none match.
+ */
+function getSupportedLanguage(language: string, allLanguages: readonly string[]): string | undefined {
+	// first, prioritise exact matches
+	if (languages.has(language)) {
+		return language;
+	}
+
+	// if a 2-letter code (generic language), find best localisation
+	if (language.length === 2) {
+		// check allLanguages to see if more specific localisation is preferred.
+		for (let requestedLanguage of allLanguages) {
+			if (requestedLanguage.startsWith(language) && languages.has(requestedLanguage)) {
+				return requestedLanguage;
+			}
+		}
+
+		// check primary dialect
+		let primaryDialect = primaryDialects.get(language);
+
+		// ensure the primary dialect actually exists before using it
+		if (primaryDialect && languages.has(primaryDialect)) {
+			return primaryDialect;
+		}
+
+		// check for any version of the language supported
+		for (let supportedLanguage of languages.keys()) {
+			if (supportedLanguage.startsWith(language)) {
+				return supportedLanguage;
+			}
+		}
+	}
+
+	return undefined;
 }
 
 export function initialiseLanguageAdapter() {
-	// initialise
-	languages = new Map();
-
 	// set dummy value for current and default language to begin with.
 	defaultLanguage = currentLanguage = new Language("xx-XX", "No Translation");
 
@@ -63,6 +109,10 @@ export function initialiseLanguageAdapter() {
 		// read index data
 		for (const [key, value] of Object.entries(data.languages)) {
 			languages.set(key, new Language(key, value.displayName));
+		}
+
+		for (const [key, value] of Object.entries(data.primaryDialects)) {
+			primaryDialects.set(key, value);
 		}
 
 		// load default language
@@ -78,11 +128,17 @@ export function initialiseLanguageAdapter() {
 }
 
 export function loadLanguage(language: string) : Language {
-	currentLanguage = this.languages.get(language);
+	console.log("Loading Language: " + language);
 
-	currentLanguage.resolve().then(() => {
-		// update listeners
-	});
+	// only update if language not current
+	if (language !== currentLanguage.getId()) {
+		currentLanguage = languages.get(language);
+
+		// notify all listeners
+		currentLanguage.resolve().then(() => {
+			listeners.forEach(listener => listener());
+		});
+	}
 	
 	return currentLanguage;
 }

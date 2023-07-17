@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import axios from 'axios';
 
 export default class Language {
 	private languageId: string;
@@ -15,9 +15,8 @@ export default class Language {
 	 */
 	public async resolve() : Promise<void> {
 		if (!this.translations) {
-			const response = await fetch(`lang/${this.languageId}.json`);
-			const json = await response.json();
-			this.translations = new Map(Object.entries(json));
+			const response = await axios.get(`lang/${this.languageId}.json`); 
+			this.translations = new Map(Object.entries(response.data));
 		}
 	}
 
