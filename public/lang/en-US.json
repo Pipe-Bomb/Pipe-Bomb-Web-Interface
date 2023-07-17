@@ -1,1 +1,5 @@
-{}
+{
+	"buttons.add": "Add",
+	"pages.connect.publicServers": "Public Servers",
+	"pages.connect.title": "Connect to Server"
+}
