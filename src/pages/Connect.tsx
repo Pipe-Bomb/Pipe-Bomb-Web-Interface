@@ -47,7 +47,7 @@ const ConnectPage = React.memo(function ConnectPage() {
     function generateRegistryHTML() {
         if (registryServers === false) {
             return (
-                <Text h4>Couldn't contact public server registry</Text>
+                <Text h4>{useTranslation("pages.connect.publicServers.error")}</Text>
             )
         }
 

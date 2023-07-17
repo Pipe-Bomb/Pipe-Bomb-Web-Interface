@@ -14,10 +14,9 @@ export default class Language {
 	 * Resolve the language data, if not already loaded.
 	 */
 	public async resolve() : Promise<void> {
-		if (!this.translations) {
-			const response = await axios.get(`lang/${this.languageId}.json`); 
-			this.translations = new Map(Object.entries(response.data));
-		}
+		// always update language to ensure the latest translations are present
+		const response = await axios.get(`lang/${this.languageId}.json`); 
+		this.translations = new Map(Object.entries(response.data));
 	}
 
 	/**

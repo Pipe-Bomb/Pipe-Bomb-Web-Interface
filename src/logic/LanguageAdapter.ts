@@ -130,15 +130,12 @@ export function initialiseLanguageAdapter() {
 export function loadLanguage(language: string) : Language {
 	console.log("Loading Language: " + language);
 
-	// only update if language not current
-	if (language !== currentLanguage.getId()) {
-		currentLanguage = languages.get(language);
+	currentLanguage = languages.get(language);
 
-		// notify all listeners
-		currentLanguage.resolve().then(() => {
-			listeners.forEach(listener => listener());
-		});
-	}
+	// notify all listeners after load
+	currentLanguage.resolve().then(() => {
+		listeners.forEach(listener => listener());
+	});
 	
 	return currentLanguage;
 }
