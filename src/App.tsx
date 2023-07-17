@@ -31,10 +31,10 @@ import { getSetting, setSetting } from "./logic/SettingsIndex";
 import Theme from "./logic/ThemeIndex";
 import React from "react";
 import RenamePlaylist from "./components/RenamePlaylist";
-import LanguageAdapter from "./logic/LanguageAdapter";
+import { initialiseLanguageAdapter } from "./logic/LanguageAdapter";
 
 const theme = Theme.getTheme(getSetting("theme", "Classic"));
-const language = new LanguageAdapter();
+initialiseLanguageAdapter();
 
 const App = React.memo(function App() {
     const navigate = useNavigate();
