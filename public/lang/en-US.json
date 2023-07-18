@@ -4,6 +4,6 @@
 	"pages.connect.publicServers": "Public Servers",
 	"pages.connect.publicServers.error": "Couldn't contact public server registry",
 	"pages.connect.title": "Connect to Server",
-	"pages.connect.uptime": "Uptime: {}",
-	"pages.connect.ping": "Ping: {}"
+	"pages.connect.uptime": "Uptime: {0}",
+	"pages.connect.ping": "Ping: {0}"
 }

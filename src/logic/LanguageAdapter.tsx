@@ -1,4 +1,3 @@
-import reactStringReplace from "react-string-replace";
 import Language from "./Language";
 import axios from 'axios';
 import { ReactNode } from "react";
@@ -149,18 +148,45 @@ export function loadLanguage(language: string) : Language {
  * @returns the localisation for the given translation key, searching first in the current language, falling back on the default language, and finally using the translation key
  * if no translation is found.
  */
-export function localise(key: string, args: (ReactNode | string)[]): ReactNode {
-	let localised = currentLanguage.localise(key) ?? defaultLanguage.localise(key) ?? key;
-	// This library is stupid. It provides odd numbers rather than 0,1,2. Might need to implement own function.
-	return reactStringReplace(localised, "{}", (match, i) => {
-		let arg : ReactNode | string = args[Math.floor(i/2)];
+export function localise(key: string, args: (ReactNode | string)[]): ReactNode[] {
+	let localisedTemplate : string = currentLanguage.localise(key) ?? defaultLanguage.localise(key) ?? key;
+	
+	// Insert Args
+	// First, get the args in order that they are present in the template.
+	let indicesToArg : Map<number, ReactNode | string> = new Map();
 
-		if (typeof arg === 'string') {
-			return <span>arg</span>;
-		} else {
-			return arg;
+	for (let i = 0; i < args.length; i++) {
+		let index = localisedTemplate.indexOf(`{${i}}`);
+		
+		if (index > -1) {
+			indicesToArg.set(index, args[i]);
 		}
-	});
+	}
+
+	let orderedIndices = [...indicesToArg.keys()].sort();
+	let split = localisedTemplate.split(/{\d+}/);
+	let components : ReactNode[] = [];
+
+	// add parts of the split with the args added between components
+	for (let i = 0; i < split.length; i++) {
+		// append literal, filtering out blank strings that would just become empty spans
+		let literal = split[i];
+		
+		if (literal.length > 0) {
+			components.push(<span key={"literal_" + i}>{literal}</span>);
+		}
+		
+		// append arg
+		if (i < orderedIndices.length) {
+			let index = orderedIndices[i];
+			let arg : ReactNode | string = indicesToArg.get(index);
+			components.push(<span key={"arg_" + i}>{arg}</span>);
+
+		
+		}
+	}
+
+	return components;
 }
 
 export function registerLanguageChangeListener(listener: LanguageChangeListener): void {
