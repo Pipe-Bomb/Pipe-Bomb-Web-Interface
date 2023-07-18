@@ -173,7 +173,7 @@ export function localise(key: string, args: ReactNode[]): ReactNode[] {
 		let literal = split[i];
 		
 		if (literal.length > 0) {
-			components.push(<span key={"literal_" + i}>{literal}</span>);
+			components.push(literal);
 		}
 		
 		// append arg
@@ -184,7 +184,7 @@ export function localise(key: string, args: ReactNode[]): ReactNode[] {
 			if (isValidElement(arg)) {
 				components.push(cloneElement(arg, { key: "arg_" + i }));
 			} else {
-				components.push(<span key={"arg_" + i}>{arg}</span>);
+				components.push(arg);
 			}
 		}
 	}

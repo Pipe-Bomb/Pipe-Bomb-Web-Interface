@@ -1,11 +1,18 @@
 {
 	"buttons.add": "Add",
+	"buttons.close": "Close",
 	"buttons.connect.getPing": "Get Ping",
 	"pages.connect.ping": "Ping: {0}",
 	"pages.connect.publicServers": "Public Servers",
 	"pages.connect.publicServers.error": "Couldn't contact public server registry",
 	"pages.connect.title": "Connect to Server",
 	"pages.connect.uptime": "Uptime: {0}",
+	"pages.login.modal.0": "Because Pipe Bomb accounts can be used on any Pipe Bomb server without a centralized database, accounts don't use the standard username + password model.",
+	"pages.login.modal.1": "Your username and password are used to create a public and private key pair, which is also used to generate your user ID.",
+	"pages.login.modal.2": "If you can prove to a Pipe Bomb server that you have both the public and private keys used to generate your user ID, the server considers you the owner of the account.",
+	"pages.login.modal.3": "Because of this architecture, there is no \"registration\" of accounts. You can just enter any username and password, and your keys will be generated behind the scenes for you.",
+	"pages.login.modal.4": "However there is a caveat. You cannot change your username or password, as the new combination would generate completely different keys and a different user ID, effectively logging you into a different account.",
+	"pages.login.modal.5": "Because your account keys are generated using both your username and password, usernames are not unique. Two accounts with the same username but different passwords will generate different keys and a differrent user ID.",
 	"pages.login.notice": "Enter the credentials to a new or existing account",
 	"pages.login.title": "Login"
 }
