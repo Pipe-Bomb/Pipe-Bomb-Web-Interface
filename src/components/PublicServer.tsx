@@ -77,7 +77,7 @@ const PublicServer = React.memo(function PublicServer({ server, connectCallback 
                     <Text h5>{server.address}</Text>
                 </Grid>
                 <Grid className={styles.details}>
-                    <Text h5>{useTranslation("pages.connect.uptime", <span>{formatTimeWords(server.uptime)}</span>)}</Text>
+                    <Text h5>{useTranslation("pages.connect.uptime", <span className={styles.value}>{formatTimeWords(server.uptime)}</span>)}</Text>
                     <div className={styles.ping}>
                         <Text h5>Ping: </Text>
                         { generatePingHTML() }

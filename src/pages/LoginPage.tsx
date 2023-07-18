@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import CustomModal from "../components/CustomModal";
 import React from "react";
+import useTranslation from "../hooks/TranslationHook";
 
 const LoginPage = React.memo(function LoginPage() {
     const authStatus = useAuthenticationStatus();
@@ -65,9 +66,9 @@ const LoginPage = React.memo(function LoginPage() {
     return (
         <>
             <div className={styles.container}>
-                <h1 className={styles.title}>Login</h1>
+                <h1 className={styles.title}>{useTranslation("pages.login.title")}</h1>
                 <form className={styles.modal} ref={form}>
-                    <p className={styles.notice}>Enter the credentials to a new or existing account</p>
+                    <p className={styles.notice}>{useTranslation("pages.login.notice")}</p>
                     <div className={styles.input}>
                         <Input width="100%" name="username" bordered labelPlaceholder="Username" value={username || ""} onKeyDown={keyPress} onInput={e => setUsername(e.currentTarget.value)} helperColor={usernameStatus} helperText={usernameMessage} />
                     </div>

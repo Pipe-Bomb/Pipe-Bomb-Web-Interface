@@ -1,6 +1,6 @@
 import Language from "./Language";
 import axios from 'axios';
-import { ReactNode } from "react";
+import { ReactNode, isValidElement, cloneElement } from "react";
 
 // Interface for structure of the language metadata file
 interface LanguageMeta {
@@ -71,9 +71,9 @@ function getSupportedLanguage(language: string, allLanguages: readonly string[])
 		return language;
 	}
 
-	// if a 2-letter code (generic language), find best localisation
+	// if a 2-letter code (generic language), find best specific localisation
 	if (language.length === 2) {
-		// check allLanguages to see if more specific localisation is preferred.
+		// check allLanguages to see if more specific localisation is preferred by the user.
 		for (let requestedLanguage of allLanguages) {
 			if (requestedLanguage.startsWith(language) && languages.has(requestedLanguage)) {
 				return requestedLanguage;
@@ -148,12 +148,12 @@ export function loadLanguage(language: string) : Language {
  * @returns the localisation for the given translation key, searching first in the current language, falling back on the default language, and finally using the translation key
  * if no translation is found.
  */
-export function localise(key: string, args: (ReactNode | string)[]): ReactNode[] {
+export function localise(key: string, args: ReactNode[]): ReactNode[] {
 	let localisedTemplate : string = currentLanguage.localise(key) ?? defaultLanguage.localise(key) ?? key;
 	
 	// Insert Args
 	// First, get the args in order that they are present in the template.
-	let indicesToArg : Map<number, ReactNode | string> = new Map();
+	let indicesToArg : Map<number, ReactNode> = new Map();
 
 	for (let i = 0; i < args.length; i++) {
 		let index = localisedTemplate.indexOf(`{${i}}`);
@@ -179,10 +179,13 @@ export function localise(key: string, args: (ReactNode | string)[]): ReactNode[]
 		// append arg
 		if (i < orderedIndices.length) {
 			let index = orderedIndices[i];
-			let arg : ReactNode | string = indicesToArg.get(index);
-			components.push(<span key={"arg_" + i}>{arg}</span>);
-
-		
+			let arg : ReactNode = indicesToArg.get(index);
+			
+			if (isValidElement(arg)) {
+				components.push(cloneElement(arg, { key: "arg_" + i }));
+			} else {
+				components.push(<span key={"arg_" + i}>{arg}</span>);
+			}
 		}
 	}
 
