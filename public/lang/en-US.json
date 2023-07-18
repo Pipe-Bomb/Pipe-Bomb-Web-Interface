@@ -3,5 +3,7 @@
 	"buttons.connect.getPing": "Get Ping",
 	"pages.connect.publicServers": "Public Servers",
 	"pages.connect.publicServers.error": "Couldn't contact public server registry",
-	"pages.connect.title": "Connect to Server"
+	"pages.connect.title": "Connect to Server",
+	"pages.connect.uptime": "Uptime: {}",
+	"pages.connect.ping": "Ping: {}"
 }

@@ -1,5 +1,7 @@
+import reactStringReplace from "react-string-replace";
 import Language from "./Language";
 import axios from 'axios';
+import { ReactNode } from "react";
 
 // Interface for structure of the language metadata file
 interface LanguageMeta {
@@ -143,11 +145,22 @@ export function loadLanguage(language: string) : Language {
 /**
  * Localise the given translation key to the current language.
  * @param key the translation key to localise.
+ * @param args the args to substitute for {%d} instances in the localisation.
  * @returns the localisation for the given translation key, searching first in the current language, falling back on the default language, and finally using the translation key
  * if no translation is found.
  */
-export function localise(key: string): string {
-	return currentLanguage.localise(key) ?? defaultLanguage.localise(key) ?? key;
+export function localise(key: string, args: (ReactNode | string)[]): ReactNode {
+	let localised = currentLanguage.localise(key) ?? defaultLanguage.localise(key) ?? key;
+	// This library is stupid. It provides odd numbers rather than 0,1,2. Might need to implement own function.
+	return reactStringReplace(localised, "{}", (match, i) => {
+		let arg : ReactNode | string = args[Math.floor(i/2)];
+
+		if (typeof arg === 'string') {
+			return <span>arg</span>;
+		} else {
+			return arg;
+		}
+	});
 }
 
 export function registerLanguageChangeListener(listener: LanguageChangeListener): void {

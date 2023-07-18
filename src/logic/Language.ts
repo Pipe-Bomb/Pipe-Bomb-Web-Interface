@@ -22,7 +22,7 @@ export default class Language {
 	/**
 	 * Localise the given translation key to the localised string to use.
 	 * @param key the translation key to find the localised translation for.
-	 * @returns the localised string to display. If there is no translation, will return undefined.
+	 * @returns the localised string to display, without applying any formatting. If there is no translation, will return undefined.
 	 */
 	public localise(key: string): string | undefined {
 		return this.translations?.get(key);

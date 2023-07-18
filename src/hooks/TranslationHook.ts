@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import { localise, registerLanguageChangeListener, unregisterLanguageChangeListener } from "../logic/LanguageAdapter";
 
 /**
  * Get the localised string from the provided translation key.
  * @param translationKey the translation key to look up in the current language.
+ * @param args arguments to substitute for '{}' instances in the localised string.
  */
-export default function useTranslation(translationKey: string) : string {
-	const [translation, setTranslation] = useState(localise(translationKey));
+export default function useTranslation(translationKey: string, ...args: (string | ReactNode)[]) : ReactNode {
+	const [translation, setTranslation] = useState(localise(translationKey, args));
 	
 	function onLanguageChange() {
-		setTranslation(localise(translationKey));
+		setTranslation(localise(translationKey, args));
 	}
 
 	useEffect(() => {
