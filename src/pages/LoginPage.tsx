@@ -83,7 +83,7 @@ const LoginPage = React.memo(function LoginPage() {
                         )
                     }</Button>
                     <div>
-                        <Button className={styles.modalOpen} size="xs" light auto onPress={() => setModalOpen(true)}>How does this work?</Button>
+                        <Button className={styles.modalOpen} size="xs" light auto onPress={() => setModalOpen(true)}>{useTranslation("pages.login.modal.prompt")}</Button>
                     </div>
                 </form>
             </div>

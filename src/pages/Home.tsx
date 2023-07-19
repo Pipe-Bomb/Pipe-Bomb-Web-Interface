@@ -10,6 +10,7 @@ import ChartIndex from "../logic/ChartIndex";
 import SquareChart from "../components/SquareChart";
 import PlaylistCollection from "../components/PlaylistCollection";
 import React from "react";
+import useTranslation from "../hooks/TranslationHook";
 
 const HomePage = React.memo(function HomePage() {
     const [playlists, setPlaylists] = useState(PlaylistIndex.getInstance().getPlaylists());
@@ -45,7 +46,7 @@ const HomePage = React.memo(function HomePage() {
         if (playlists.length) {
             return (
                 <>
-                    <Text h2 className={styles.title}>Playlists</Text>
+                    <Text h2 className={styles.title}>{useTranslation("pages.home.playlists")}</Text>
                     <PlaylistCollection playlists={playlists} />
                 </>
             )
@@ -66,7 +67,7 @@ const HomePage = React.memo(function HomePage() {
         if (charts.length) {
             return (
                 <>
-                    <Text h2 className={styles.title}>Charts</Text>
+                    <Text h2 className={styles.title}>{useTranslation("pages.home.charts")}</Text>
                     <div className={styles.charts}>
                         {charts.map((chart, index) => (
                             <div key={index} className={styles.chart}>
@@ -86,9 +87,9 @@ const HomePage = React.memo(function HomePage() {
         <Grid.Container justify="space-between" alignItems="center">
             <Grid>
                 {userData ? (
-                    <h1>Welcome, {userData.username}!</h1>
+                    <h1>{useTranslation("pages.home.welcomeUser", userData.username)}</h1>
                 ) : (
-                    <h1>Welcome!</h1>
+                    <h1>{useTranslation("pages.home.welcome")}</h1>
                 )}
             </Grid>
             <Grid>
