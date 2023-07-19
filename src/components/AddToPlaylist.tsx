@@ -9,6 +9,7 @@ import Loader from './Loader';
 import Playlist from 'pipebomb.js/dist/collection/Playlist';
 import { createNotification } from './NotificationManager';
 import React from 'react';
+import useTranslation from '../hooks/TranslationHook';
 
 let openModal = () => {};
 let addToPlaylist = (playlistID: string) => {};
@@ -95,7 +96,7 @@ const AddToPlaylist = React.memo(function AddToPlaylist() {
     }
 
     function generatePlaylistHTML() {
-        if (!playlists) return <Loader text="Loading Playlists" />;
+        if (!playlists) return <Loader text={useTranslation("common.loader.playlists") as string} />;
 
         return playlists.map(playlist => (
             <div key={playlist.collectionID} className={styles.playlist}>
