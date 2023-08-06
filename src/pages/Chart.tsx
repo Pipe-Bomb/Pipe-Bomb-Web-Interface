@@ -91,7 +91,7 @@ const ChartPage = React.memo(function ChartPage() {
                             </Button>
                         </Dropdown.Trigger>
                         <Dropdown.Menu onAction={contextMenu}>
-                            <Dropdown.Item key="queue">{useTranslation("buttons.addToQueue")}</Dropdown.Item>
+                            <Dropdown.Item key="queue">{useTranslation("buttons.queue")}</Dropdown.Item>
                             <Dropdown.Item key="share">{useTranslation("buttons.share")}</Dropdown.Item>
                             <Dropdown.Item key="m3u">{useTranslation("buttons.m3u")}</Dropdown.Item>
                         </Dropdown.Menu>

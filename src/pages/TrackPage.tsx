@@ -221,7 +221,7 @@ const TrackPage = React.memo(function TrackPage() {
                                         </Dropdown.Trigger>
                                         <Dropdown.Menu disabledKeys={[]} onAction={contextMenu}>
                                             <Dropdown.Item key="next-up">{useTranslation("buttons.playNext")}</Dropdown.Item>
-                                            <Dropdown.Item key="queue">{useTranslation("buttons.addToQueue")}</Dropdown.Item>
+                                            <Dropdown.Item key="queue">{useTranslation("buttons.queue")}</Dropdown.Item>
                                             <Dropdown.Item key="share">{useTranslation("buttons.share")}</Dropdown.Item>
                                             <Dropdown.Item key="playlist">{useTranslation("buttons.addToPlaylist")}</Dropdown.Item>
                                             <Dropdown.Item key="download">{useTranslation("buttons.download")}</Dropdown.Item>

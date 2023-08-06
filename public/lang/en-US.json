@@ -1,6 +1,6 @@
 {
 	"buttons.add": "Add",
-	"buttons.addToQueue": "Add to Queue",
+	"buttons.queue": "Add to Queue",
 	"buttons.addToPlaylist": "Add to Playlist",
 	"buttons.close": "Close",
 	"buttons.download": "Download as MP3",

@@ -100,7 +100,7 @@ const ExternalPlaylistPage = React.memo(function ExternalPlaylistPage() {
         <>
             <PlaylistTop name={collection.getName()} trackCount={collection.getTrackListLength()} onPlay={playPlaylist} onShuffle={shufflePlaylist} image={collection.getThumbnailUrl()} contextMenu={
                 <Dropdown.Menu onAction={contextMenu} disabledKeys={["like"]}>
-                    <Dropdown.Item key="queue">{useTranslation("buttons.addToQueue")}</Dropdown.Item>
+                    <Dropdown.Item key="queue">{useTranslation("buttons.queue")}</Dropdown.Item>
                     <Dropdown.Item key="share">{useTranslation("buttons.share")}</Dropdown.Item>
                     <Dropdown.Item key="like">{useTranslation("buttons.likePlaylist")}</Dropdown.Item>
                     <Dropdown.Item key="m3u">{useTranslation("buttons.m3u")}</Dropdown.Item>
