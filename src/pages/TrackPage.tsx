@@ -21,6 +21,7 @@ import { BiPlus } from "react-icons/bi";
 import PipeBombConnection from "../logic/PipeBombConnection";
 import React from "react";
 import useTranslation from "../hooks/TranslationHook";
+import ErrorPage from "./ErrorPage";
 
 const TrackPage = React.memo(function TrackPage() {
     let paramID: any = useParams().ID;
@@ -66,8 +67,7 @@ const TrackPage = React.memo(function TrackPage() {
 
     if (!trackMeta || !track) {
         return <>
-            <Text h1>{useTranslation("error.404")}</Text>
-            <Text h3>{useTranslation("error.404.track")}</Text>
+            <ErrorPage type="404" cause="track"></ErrorPage>
         </>
     }
 

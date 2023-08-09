@@ -104,7 +104,7 @@ export function initialiseLanguageAdapter() {
 	defaultLanguage = currentLanguage = new Language("xx-XX", "No Translation");
 
 	// load language index for metadata such as supported languages
-	axios.get("lang/index.json")
+	axios.get("/lang/index.json")
 	.then(response => response.data)
 	.then((data: LanguagesIndex) => {
 		// read index data
@@ -148,7 +148,7 @@ export function loadLanguage(language: string) : Language {
  * @returns the localisation for the given translation key, searching first in the current language, falling back on the default language, and finally using the translation key
  * if no translation is found.
  */
-export function localise(key: string, args: ReactNode[]): ReactNode[] {
+export function localise(key: string, ...args: ReactNode[]): ReactNode[] {
 	let localisedTemplate : string = currentLanguage.localise(key) ?? defaultLanguage.localise(key) ?? key;
 	
 	// Insert Args

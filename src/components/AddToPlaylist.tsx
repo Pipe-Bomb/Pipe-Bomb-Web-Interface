@@ -10,6 +10,7 @@ import Playlist from 'pipebomb.js/dist/collection/Playlist';
 import { createNotification } from './NotificationManager';
 import React from 'react';
 import useTranslation from '../hooks/TranslationHook';
+import { localise } from '../logic/LanguageAdapter';
 
 let openModal = () => {};
 let addToPlaylist = (playlistID: string) => {};
@@ -38,6 +39,10 @@ const AddToPlaylist = React.memo(function AddToPlaylist() {
         value: "",
         isAdded: false
     });
+
+    const lastTrackButtonAdd = useTranslation("components.addToPlaylist.lastTrackButton.add");
+    const lastTrackButtonAdded = useTranslation("components.addToPlaylist.lastTrackButton.added");
+    const lastTrackButtonError = useTranslation("components.addToPlaylist.lastTrackButton.error");
 
     openModal = () => {
         setLastTrackButton({
@@ -76,11 +81,11 @@ const AddToPlaylist = React.memo(function AddToPlaylist() {
                     trackName = (await selectedTrack.loadMetadata()).title;
                 }
                 createNotification({
-                    text: useTranslation("components.addToPlaylist.notifications.added", trackName, playlist.getName())
+                    text: localise("components.addToPlaylist.notifications.added", trackName, playlist.getName())
                 });
                 setLastTrackButton({
                     playlistID: playlist.collectionID,
-                    value: useTranslation("components.addToPlaylist.lastTrackButton.added"),
+                    value: lastTrackButtonAdded,
                     isAdded: true
                 });
             }).catch(async (error: any) => {
@@ -90,24 +95,26 @@ const AddToPlaylist = React.memo(function AddToPlaylist() {
                     trackName = (await selectedTrack.loadMetadata()).title;
                 }
                 createNotification({
-                    text: useTranslation("components.addToPlaylist.notifications.failed", trackName, playlist.getName())
+                    text: localise("components.addToPlaylist.notifications.failed", trackName, playlist.getName())
                 });
                 setLastTrackButton({
                     playlistID: playlist.collectionID,
-                    value: useTranslation("components.addToPlaylist.lastTrackButton.error"),
+                    value: lastTrackButtonError,
                     isAdded: false
                 });
             });
         })
     }
 
+    const playlistsLoaderText = useTranslation("common.loader.playlists");
+
     function generatePlaylistHTML() {
-        if (!playlists) return <Loader text={useTranslation("common.loader.playlists") as string} />;
+        if (!playlists) return <Loader text={playlistsLoaderText as string} />;
 
         return playlists.map(playlist => (
             <div key={playlist.collectionID} className={styles.playlist}>
                 <Text className={styles.name} h3>{playlist.getName()}</Text>
-                <Button className={styles.add} color="secondary" auto onPress={() => addToPlaylist(playlist.collectionID)} disabled={lastTrackButton.playlistID == playlist.collectionID}>{lastTrackButton.playlistID == playlist.collectionID ? lastTrackButton.value : useTranslation("components.addToPlaylist.lastTrackButton.add")}</Button>
+                <Button className={styles.add} color="secondary" auto onPress={() => addToPlaylist(playlist.collectionID)} disabled={lastTrackButton.playlistID == playlist.collectionID}>{lastTrackButton.playlistID == playlist.collectionID ? lastTrackButton.value : lastTrackButtonAdd}</Button>
             </div>
         ));
     }

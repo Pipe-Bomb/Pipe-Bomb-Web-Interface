@@ -15,6 +15,7 @@ import PlaylistTop from "../components/PlaylistTop";
 import { ViewportList } from "react-viewport-list";
 import React from "react";
 import useTranslation from "../hooks/TranslationHook";
+import ErrorPage from "./ErrorPage";
 
 const ExternalPlaylistPage = React.memo(function ExternalPlaylistPage() {
     const collectionID = useParams().collectionID;
@@ -50,8 +51,7 @@ const ExternalPlaylistPage = React.memo(function ExternalPlaylistPage() {
     if (collection === false) {
         return (
             <>
-                <Text h1>{useTranslation("error.404")}</Text>
-                <Text h2>{useTranslation("error.404.playlist")}</Text>
+                <ErrorPage type="404" cause="playlist"></ErrorPage>
             </>
         )
     }

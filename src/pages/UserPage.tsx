@@ -10,6 +10,7 @@ import { Text } from "@nextui-org/react"
 import PlaylistCollection from "../components/PlaylistCollection";
 import React from "react";
 import useTranslation from "../hooks/TranslationHook";
+import ErrorPage from "./ErrorPage";
 
 const UserPage = React.memo(function UserPage() {
     const userID = useParams().userID;
@@ -33,8 +34,7 @@ const UserPage = React.memo(function UserPage() {
     if (user === false) {
         return (
             <>
-                <Text h1>{useTranslation("error.404")}</Text>
-                <Text h3>{useTranslation("error.404.user")}</Text>
+                <ErrorPage type="404" cause="user"></ErrorPage>
             </>
         )
     }

@@ -13,6 +13,7 @@ import useTrack from "../hooks/TrackHook";
 import useTrackMeta from "../hooks/TrackMetaHook";
 import React from "react";
 import useTranslation from "../hooks/TranslationHook";
+import ErrorPage from "./ErrorPage";
 
 const SuggestionsPlaylist = React.memo(function SuggestionsPlaylist() {
     let paramID: any = useParams().ID;
@@ -43,8 +44,7 @@ const SuggestionsPlaylist = React.memo(function SuggestionsPlaylist() {
 
     if (!trackMeta) {
         return <>
-            <Text h1>{useTranslation("error.404")}</Text>
-            <Text h3>{useTranslation("error.404.track")}</Text>
+            <ErrorPage type="404" cause="track"></ErrorPage>
         </>
     }
 

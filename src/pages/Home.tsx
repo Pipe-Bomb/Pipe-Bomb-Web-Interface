@@ -34,6 +34,8 @@ const HomePage = React.memo(function HomePage() {
         }
     }, []);
 
+    const playlistsText = useTranslation("pages.home.playlists");
+    
     function generatePlaylistHTML() {
         if (playlists === null) {
             return (
@@ -46,7 +48,7 @@ const HomePage = React.memo(function HomePage() {
         if (playlists.length) {
             return (
                 <>
-                    <Text h2 className={styles.title}>{useTranslation("pages.home.playlists")}</Text>
+                    <Text h2 className={styles.title}>{playlistsText}</Text>
                     <PlaylistCollection playlists={playlists} />
                 </>
             )
@@ -54,6 +56,8 @@ const HomePage = React.memo(function HomePage() {
 
         return null;
     }
+
+    const chartsText = useTranslation("pages.home.charts");
 
     function generateChartHTML() {
         if (charts === null) {
@@ -67,7 +71,7 @@ const HomePage = React.memo(function HomePage() {
         if (charts.length) {
             return (
                 <>
-                    <Text h2 className={styles.title}>{useTranslation("pages.home.charts")}</Text>
+                    <Text h2 className={styles.title}>{chartsText}</Text>
                     <div className={styles.charts}>
                         {charts.map((chart, index) => (
                             <div key={index} className={styles.chart}>
